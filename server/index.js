@@ -8,7 +8,7 @@ const memberRoutes = require("./routes/members");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 app.use(cors());
 app.use(express.json());
