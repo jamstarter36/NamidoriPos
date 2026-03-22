@@ -67,7 +67,7 @@ export const MemberPage = ({ member, onLogout }) => {
             </div>
             <div className="w-13 h-13"><img src={NamiLogo} /></div>
           </div>
-          <p className="text-xs text-white/60 mb-4">Collect 8 stamps to earn a free drink!</p>
+          <p className="text-xs text-white/60 mb-4">Collect 8 stamps to get a free drink (up to 145). Add extra if your chosen drink exceeds the value.</p>
           <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className={`w-8 h-8 md:w-9 md:h-9 rounded-full border-2 flex items-center justify-center text-xs md:text-sm transition-all ${
