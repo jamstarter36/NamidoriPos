@@ -48,7 +48,7 @@
         </nav>
 
         {/* ── Hero ── */}
-        <section className="relative flex flex-col items-center justify-center text-center px-6 py-28 overflow-hidden bg-[#d4dbb8]">
+        <section className="relative flex flex-col items-center justify-center text-center px-6 py-15 overflow-hidden bg-[#d4dbb8]">
           <div className="absolute -top-16 -left-16 w-72 h-72 rounded-full bg-[#5c3317]/5 pointer-events-none" />
           <div className="absolute -bottom-20 -right-10 w-96 h-96 rounded-full bg-green-800/5 pointer-events-none" />
 
@@ -70,7 +70,7 @@
             </span>
           ))}
 
-          <div className="text-6xl mb-5 drop-shadow-lg"><img src={BowlWhisk} /></div>
+          <div className="drop-shadow-lg"><img src={BowlWhisk} /></div>
           <p className="text-[10px] font-bold tracking-[0.24em] text-[#5c3317] uppercase mb-4 font-display">
             Est. 2025 · Ormoc City
           </p>

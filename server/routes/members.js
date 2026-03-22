@@ -101,7 +101,7 @@ router.post("/login", async (req, res) => {
     );
 
     if (!member) {
-      return res.status(401).json({ error: "Invalid email or password" });
+      return res.status(401).json({ error: "Invalid username or password" });
     }
 
     const { password: _, ...memberData } = member;
