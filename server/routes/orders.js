@@ -58,7 +58,7 @@ router.post("/", async (req, res) => {
         const stampsAfter    = currentStamps + itemsOrdered;
 
         // Reset to 0 if reached 8, otherwise add stamps
-        const newStamps = stampsAfter >= 8 ? 0 : stampsAfter;
+        const newStamps = stampsAfter >= 8 ? stampsAfter % 8 : stampsAfter;
 
         const sheetRow   = memberRowIndex + 1; // 1-indexed
         const stampsCell = `${MEMBER_SHEET}!${String.fromCharCode(65 + stampsCol)}${sheetRow}`;
