@@ -50,7 +50,7 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
         {/* Item header */}
         <div className="relative">
           {isUrl ? (
-            <img src={item.icon} alt={item.name} className="w-full h-36 object-cover" />
+            <img src={item.icon} alt={item.name} className="w-full h-36 object-contain bg-white" />
           ) : (
             <div className="w-full h-36 bg-green-50 flex items-center justify-center text-6xl">
               {item.icon}
