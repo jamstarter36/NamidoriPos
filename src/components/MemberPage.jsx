@@ -43,7 +43,7 @@ export const MemberPage = ({ member, onLogout }) => {
           <div className="p-4 md:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
             {[
               { label: "Full Name",    value: member.full_name,   icon: "👤" },
-              { label: "Email",        value: member.email,       icon: "📧" },
+              { label: "Username",        value: member.email,       icon: "📧" },
               { label: "Phone",        value: member.phone,       icon: "📱" },
               { label: "Member Since", value: member.joined_date, icon: "📅" },
             ].map(({ label, value, icon }) => (
