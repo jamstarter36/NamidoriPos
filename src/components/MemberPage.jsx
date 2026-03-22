@@ -13,7 +13,7 @@ export const MemberPage = ({ member, onLogout }) => {
           <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/20 flex items-center justify-center text-base md:text-lg"><img src={NamiLogo} /></div>
           <div>
             <p className="text-xs md:text-sm font-bold tracking-[0.14em] text-white uppercase font-display">NAMIDORI</p>
-            <p className="hidden sm:block text-[9px] text-white/50 tracking-widest uppercase">Matcha Shop</p>
+            <p className="hidden sm:block text-[9px] text-white/50 tracking-widest uppercase">Matcha Cafe</p>
           </div>
         </div>
         <button onClick={onLogout} className="px-4 md:px-5 py-1.5 md:py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase text-white border border-white/40 hover:border-white transition-all">
