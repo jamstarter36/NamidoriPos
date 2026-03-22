@@ -3,6 +3,11 @@
   import { SignupModal } from "./SignupModal";
   import NamiLogo from "../images/NamiLogo.png";
   import BowlWhisk from "../images/BowlWhisk2.png"
+  import Naturals from "../images/TheNaturals.jpg"
+  import Thorns from "../images/ThornsRoses.jpg"
+  import Lucid from "../images/LucidDream.png"
+
+
   import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
 
   export const LandingPage = ({ onLoginSuccess, onSignupSuccess }) => {
@@ -41,8 +46,7 @@
           {/* Mobile — single button */}
           <button
             onClick={() => setShowLogin(true)}
-            className="sm:hidden px-4 py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase text-green-800 bg-[#d4dbb8] transition-all"
-          >
+            className="sm:hidden px-4 py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase text-green-800 bg-[#d4dbb8] transition-all">
             Get Started
           </button>
         </nav>
@@ -142,9 +146,9 @@
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {[
-                { icon: "🍵", name: "The Naturals",    price: "₱135", tag: "Bestseller" },
-                { icon: "🍵", name: "Thorns and Roses",     price: "₱145", tag: "Bestseller"   },
-                { icon: "✨", name: "Lucid Dream", price: "₱155", tag: "Bestseller"    },
+                { icon: Naturals, name: "The Naturals",    price: "₱135", tag: "Bestseller" },
+                { icon: Thorns, name: "Thorns and Roses",     price: "₱145", tag: "Bestseller"   },
+                { icon: Lucid, name: "Lucid Dream", price: "₱155", tag: "Bestseller"    },
               ].map(({ icon, name, price, tag }) => (
                 <div key={name} className="bg-white border-2 border-[#a8b48a] rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all">
                   <div className="bg-green-50 h-24 flex items-center justify-center text-4xl">{icon}</div>
