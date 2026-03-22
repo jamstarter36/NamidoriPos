@@ -37,7 +37,7 @@ export const Header = ({ view, setView, onLogout }) => {
         <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/20 flex items-center justify-center text-base md:text-lg shadow-sm"><img src={NamiLogo} /></div>
         <div>
           <p className="text-xs md:text-sm font-bold tracking-widest text-white uppercase">Namidori</p>
-          <p className="hidden sm:block text-[9px] text-white/50 tracking-widest uppercase">Matcha Shop · POS</p>
+          <p className="hidden sm:block text-[9px] text-white/50 tracking-widest uppercase">Matcha Cafe · POS</p>
         </div>
       </div>
 
