@@ -28,8 +28,8 @@ export const SignupModal = ({ onClose, onSuccess, onSwitchToLogin }) => {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-      <div className="bg-white border-2 border-[#a8b48a] rounded-t-2xl sm:rounded-2xl p-6 md:p-8 w-full sm:max-w-sm shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white border-2 border-[#a8b48a] rounded-2xl p-6 w-full max-w-sm shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="text-center mb-5">
           <div className="text-4xl mb-3">🍵</div>
           <h2 className="text-xl font-bold text-green-800 font-display tracking-wide">Join Namidori</h2>
