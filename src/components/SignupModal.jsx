@@ -22,7 +22,7 @@ export const SignupModal = ({ onClose, onSuccess, onSwitchToLogin }) => {
 
   const fields = [
     { label: "Full Name",    key: "full_name", type: "text",     ph: "e.g. Juan dela Cruz" },
-    { label: "Email",        key: "email",     type: "email",    ph: "e.g. juan@email.com" },
+    { label: "Username",        key: "email",     type: "text",    ph: "e.g. juandelacruz" },
     { label: "Phone Number", key: "phone",     type: "tel",      ph: "e.g. 09123456789" },
     { label: "Password",     key: "password",  type: "password", ph: "At least 6 characters" },
   ];

@@ -1,4 +1,4 @@
-export const CATEGORIES = ["All", "Hot", "Cold", "Special"];
+export const CATEGORIES = ["All", "Hot", "Cold", "Seasonal"];
 
 export const INITIAL_ITEMS = [
   { id: 1, name: "THE NATURALS",        category: "Cold",     price: 135, icon: "🥤", stock: 50 },

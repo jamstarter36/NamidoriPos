@@ -174,7 +174,7 @@
             onClick={() => setShowSignup(true)}
             className="px-10 py-3.5 rounded-xl text-xs font-bold tracking-widest uppercase text-white bg-green-700 hover:bg-green-900 hover:-translate-y-0.5 transition-all shadow-lg shadow-green-700/30 font-display"
           >
-            Sign Up Free 🍃
+            Sign Up For Free 🍃
           </button>
         </section>
 
