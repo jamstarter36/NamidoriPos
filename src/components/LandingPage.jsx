@@ -151,8 +151,8 @@
                 { image: Lucid, name: "Lucid Dream", price: "₱155", tag: "Bestseller"    },
               ].map(({ image, name, price, tag }) => (
                 <div key={name} className="bg-white border-2 border-[#a8b48a] rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all">
-                  <div className="h-40 overflow-hidden">
-                    <img src={image} alt={name} className="w-full h-full object-cover" />
+                  <div className="h-48 overflow-hidden">
+                    <img src={image} alt={name} className="w-full h-full object-cover object-center" />
                   </div>
                   <div className="p-4">
                     <p className="text-xs font-bold text-green-950 mb-2 font-display tracking-wide">{name}</p>
