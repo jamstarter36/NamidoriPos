@@ -10,6 +10,8 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
   const [selectedMember, setSelectedMember] = useState(null);
   const [showFreeDrink, setShowFreeDrink]   = useState(false);
   const [freeAdded, setFreeAdded]           = useState(false);
+  const [search, setSearch]                 = useState("");
+  const [showDropdown, setShowDropdown]     = useState(false);
 
   const selectedMemberRef = useRef(selectedMember);
   useEffect(() => { selectedMemberRef.current = selectedMember; }, [selectedMember]);
@@ -33,6 +35,26 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
     return () => clearInterval(interval);
   }, []);
 
+  const filteredMembers = members.filter((m) =>
+    m.full_name.toLowerCase().includes(search.toLowerCase()) ||
+    m.email?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleSelectMember = (member) => {
+    member.stamps = parseInt(member.stamps) || 0;
+    setSelectedMember(member);
+    setSearch(member.full_name);
+    setShowDropdown(false);
+    setFreeAdded(false);
+  };
+
+  const handleClearMember = () => {
+    setSelectedMember(null);
+    setSearch("");
+    setShowDropdown(false);
+    setFreeAdded(false);
+  };
+
   const subtotal   = cart.reduce((s, c) => s + c.price * c.qty, 0);
   const vatAmount  = vatEnabled ? Math.round(subtotal * (vatRate / 100)) : 0;
   const total      = subtotal + vatAmount;
@@ -41,14 +63,6 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
 
   const handleCheckout = () => {
     onCheckout(subtotal, vatEnabled ? vatRate : 0, vatAmount, total, selectedMember);
-  };
-
-  const handleSelectMember = (memberId) => {
-    if (!memberId) { setSelectedMember(null); setFreeAdded(false); return; }
-    const member = members.find((m) => m.id == memberId);
-    if (member) member.stamps = parseInt(member.stamps) || 0;
-    setSelectedMember(member);
-    setFreeAdded(false);
   };
 
   const stampsAfter   = selectedMember ? (parseInt(selectedMember.stamps) || 0) + totalItems : 0;
@@ -72,17 +86,45 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
       {/* Member section */}
       <div className="px-4 md:px-5 pt-3 pb-3 border-b border-stone-100 bg-[#f5f2e8]">
         <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Attach Member</p>
+
+        {/* Search input */}
         <div className="relative">
-          <select
-            onChange={(e) => handleSelectMember(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-xl border-2 border-[#a8b48a] bg-white text-stone-700 text-xs font-semibold outline-none focus:border-green-500 transition-all appearance-none cursor-pointer"
-          >
-            <option value="">👤 Walk-in customer</option>
-            {members.map((m) => (
-              <option key={m.id} value={m.id}>{m.full_name} — {m.stamps} stamp{m.stamps !== 1 ? "s" : ""}</option>
-            ))}
-          </select>
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none text-xs">▾</span>
+          <input
+            type="text"
+            value={search}
+            placeholder="🔍 Search member name..."
+            onChange={(e) => { setSearch(e.target.value); setShowDropdown(true); setSelectedMember(null); }}
+            onFocus={() => setShowDropdown(true)}
+            className="w-full px-3 py-2.5 rounded-xl border-2 border-[#a8b48a] bg-white text-stone-700 text-xs font-semibold outline-none focus:border-green-500 transition-all"
+          />
+          {search && (
+            <button onClick={handleClearMember} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-red-400 text-sm font-bold">
+              ✕
+            </button>
+          )}
+
+          {/* Dropdown results */}
+          {showDropdown && search && filteredMembers.length > 0 && (
+            <div className="absolute top-full left-0 right-0 bg-white border-2 border-[#a8b48a] rounded-xl mt-1 shadow-lg z-20 max-h-36 overflow-y-auto">
+              {filteredMembers.map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => handleSelectMember(m)}
+                  className="w-full text-left px-3 py-2.5 hover:bg-green-50 transition-all border-b border-stone-100 last:border-0"
+                >
+                  <p className="text-xs font-semibold text-stone-700">{m.full_name}</p>
+                  <p className="text-[10px] text-stone-400">{m.stamps} stamp{m.stamps !== 1 ? "s" : ""} · {m.email}</p>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* No results */}
+          {showDropdown && search && filteredMembers.length === 0 && (
+            <div className="absolute top-full left-0 right-0 bg-white border-2 border-[#a8b48a] rounded-xl mt-1 shadow-lg z-20 p-3 text-center">
+              <p className="text-xs text-stone-400">No member found</p>
+            </div>
+          )}
         </div>
 
         {selectedMember && (
@@ -95,11 +137,9 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
                   <p className="text-[10px] text-stone-400">{selectedMember.stamps} stamps collected</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                  +{totalItems} new
-                </span>
-              </div>
+              <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                +{totalItems} new
+              </span>
             </div>
             <div className="flex gap-0.5">
               {Array.from({ length: 8 }).map((_, i) => (
