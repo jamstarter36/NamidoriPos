@@ -2,12 +2,13 @@ const express = require("express");
 const router = express.Router();
 const { getSheets, SPREADSHEET_ID } = require("../services/sheets");
 
-const ORDER_SHEET = "Orders";
+const ORDER_SHEET   = "Orders";
+const MEMBER_SHEET  = "Members";
 
 // ── POST /orders — save a new order ──────────────────────────────────────────
 router.post("/", async (req, res) => {
   try {
-    const { items, subtotal, vat_rate, vat_amount, total } = req.body;
+    const { items, subtotal, vat_rate, vat_amount, total, member_id, discount } = req.body;
     const sheets = await getSheets();
 
     // Generate order ID
@@ -16,17 +17,15 @@ router.post("/", async (req, res) => {
       range: `${ORDER_SHEET}!A1:H1000`,
     });
     const rows = response.data.values || [];
-    const nextOrderId = rows.length; // header row counts as 1 so no +1 needed
+    const nextOrderId = rows.length;
 
     // Format date and time
-    const now = new Date();
+    const now  = new Date();
     const date = now.toLocaleDateString("en-PH");
     const time = now.toLocaleTimeString("en-PH");
 
-    // Format items as readable string e.g. "Matcha Latte x2, Iced Matcha x1"
-    const itemsString = items
-      .map((i) => `${i.name} x${i.qty}`)
-      .join(", ");
+    // Format items as readable string
+    const itemsString = items.map((i) => `${i.name} x${i.qty}`).join(", ");
 
     // Append new order row
     await sheets.spreadsheets.values.append({
@@ -37,6 +36,40 @@ router.post("/", async (req, res) => {
         values: [[nextOrderId, date, time, itemsString, subtotal, vat_rate, vat_amount, total]],
       },
     });
+
+    // ── Update member stamps if member is attached ──
+    if (member_id) {
+      const memberRes = await sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `${MEMBER_SHEET}!A1:Z1000`,
+      });
+
+      const memberRows   = memberRes.data.values || [];
+      const memberHeader = memberRows[0];
+      const idCol        = memberHeader.indexOf("id");
+      const stampsCol    = memberHeader.indexOf("stamps");
+
+      const memberRowIndex = memberRows.findIndex((row, i) => i > 0 && String(row[idCol]) === String(member_id));
+
+      if (memberRowIndex !== -1) {
+        const currentStamps  = parseInt(memberRows[memberRowIndex][stampsCol]) || 0;
+        const itemsOrdered   = items.filter(i => !i.isFree).reduce((s, i) => s + i.qty, 0);
+        const stampsAfter    = currentStamps + itemsOrdered;
+
+        // Reset to 0 if reached 8, otherwise add stamps
+        const newStamps = stampsAfter >= 8 ? 0 : stampsAfter;
+
+        const sheetRow   = memberRowIndex + 1; // 1-indexed
+        const stampsCell = `${MEMBER_SHEET}!${String.fromCharCode(65 + stampsCol)}${sheetRow}`;
+
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: SPREADSHEET_ID,
+          range: stampsCell,
+          valueInputOption: "RAW",
+          requestBody: { values: [[newStamps]] },
+        });
+      }
+    }
 
     res.json({ order_id: nextOrderId, date, time, itemsString, subtotal, vat_rate, vat_amount, total });
   } catch (error) {
