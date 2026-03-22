@@ -14,7 +14,7 @@ export const LoginModal = ({ onClose, onSuccess }) => {
       const res = await loginMember(form);
       onSuccess(res.data);
     } catch (err) {
-      setError(err.response?.data?.error || "Invalid email or password");
+      setError(err.response?.data?.error || "Invalid username or password");
     } finally {
       setLoading(false);
     }
@@ -30,7 +30,7 @@ export const LoginModal = ({ onClose, onSuccess }) => {
         </div>
 
         {[
-          { key: "email", label: "Email or Username", type: "text", ph: "Enter your email or username" },
+          { key: "email", label: "Username", type: "text", ph: "Enter your username" },
           { key: "password", label: "Password", type: "password", ph: "Enter your password" },
         ].map(({ key, label, type, ph }) => (
           <div key={key} className="mb-4">
