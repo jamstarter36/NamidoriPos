@@ -59,7 +59,7 @@ router.post("/signup", async (req, res) => {
     const existing = members.find((m) => m.email.toLowerCase() === email.toLowerCase());
 
     if (existing) {
-      return res.status(409).json({ error: "Email already registered" });
+      return res.status(409).json({ error: "Username already registered" });
     }
 
     const nextId      = members.length > 0 ? Math.max(...members.map((m) => m.id)) + 1 : 1;
