@@ -146,12 +146,12 @@
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {[
-                { icon: Naturals, name: "The Naturals",    price: "₱135", tag: "Bestseller" },
-                { icon: Thorns, name: "Thorns and Roses",     price: "₱145", tag: "Bestseller"   },
-                { icon: Lucid, name: "Lucid Dream", price: "₱155", tag: "Bestseller"    },
-              ].map(({ icon, name, price, tag }) => (
+                { image: Naturals, name: "The Naturals",    price: "₱135", tag: "Bestseller" },
+                { image: Thorns, name: "Thorns and Roses",     price: "₱145", tag: "Bestseller"   },
+                { image: Lucid, name: "Lucid Dream", price: "₱155", tag: "Bestseller"    },
+              ].map(({ image, name, price, tag }) => (
                 <div key={name} className="bg-white border-2 border-[#a8b48a] rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all">
-                  <div className="bg-green-50 h-24 flex items-center justify-center text-4xl">{icon}</div>
+                  <div className="bg-green-50 h-24 flex items-center justify-center text-4xl">{image}</div>
                   <div className="p-4">
                     <p className="text-xs font-bold text-green-950 mb-2 font-display tracking-wide">{name}</p>
                     <div className="flex items-center justify-between">
