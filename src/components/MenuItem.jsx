@@ -35,7 +35,7 @@ export const MenuItem = ({ item, inCart, onAdd }) => {
       {/* Image or emoji */}
       {isUrl ? (
         <div className="w-full h-20 md:h-24 overflow-hidden">
-          <img src={item.icon} alt={item.name} className="w-full h-full object-cover" />
+          <img src={item.icon} alt={item.name} className="w-full h-full object-contain bg-white" />
         </div>
       ) : (
         <div className="px-3 pt-3 text-2xl md:text-3xl">{item.icon}</div>

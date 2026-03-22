@@ -4,7 +4,7 @@ const FIELDS = [
   { label: "Name",         key: "name",  type: "text",   ph: "e.g. Strawberry Matcha" },
   { label: "Price (₱)",    key: "price", type: "number", ph: "160" },
   { label: "Stock qty",    key: "stock", type: "number", ph: "30" },
-  { label: "Icon (emoji)", key: "icon",  type: "text",   ph: "🍵" },
+  { label: "Image URL",    key: "icon",  type: "text",   ph: "https://i.ibb.co/your-image.jpg" },
 ];
 
 export const AddFlavorModal = ({ onAdd, onClose }) => {
