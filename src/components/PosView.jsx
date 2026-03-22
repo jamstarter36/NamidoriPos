@@ -30,9 +30,15 @@ export const PosView = ({ items, setItems, cart, onAdd, onRemove, onClear, payAn
       {/* Mobile cart toggle button */}
       <button
         onClick={() => setShowCart(!showCart)}
-        className="md:hidden fixed bottom-5 right-5 z-30 w-14 h-14 rounded-full bg-green-700 text-white shadow-xl flex items-center justify-center text-xl active:scale-95 transition-all"
+        className="md:hidden fixed bottom-5 right-5 z-30 w-14 h-14 rounded-full bg-white border-2 border-green-700 text-green-700 shadow-xl flex items-center justify-center text-xl active:scale-95 transition-all"
       >
-        {showCart ? "←" : "🛒"}
+        {showCart ? (
+          <span className="text-lg font-bold">✕</span>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6h11" />
+          </svg>
+        )}
         {!showCart && cartCount > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
             {cartCount}
