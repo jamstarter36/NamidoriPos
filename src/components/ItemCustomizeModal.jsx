@@ -6,10 +6,10 @@ const SIZES = [
 ];
 
 const ADDONS = [
-  { key: "matcha",      label: "Extra Matcha",    desc: "2g matcha powder",    price: 30 },
-  { key: "seasalt",     label: "Sea Salt Cream",   desc: "10ml sea salt cream", price: 15 },
+  { key: "matcha",      label: "Extra Matcha",    desc: "2g matcha powder",      price: 30 },
+  { key: "seasalt",     label: "Sea Salt Cream",   desc: "10ml sea salt cream",   price: 15 },
   { key: "strawberry",  label: "Strawberry Purée", desc: "10ml strawberry purée", price: 15 },
-  { key: "mango",       label: "Mango Purée",      desc: "10ml mango purée",    price: 15 },
+  { key: "mango",       label: "Mango Purée",      desc: "10ml mango purée",      price: 15 },
 ];
 
 export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
@@ -24,13 +24,12 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
     );
   };
 
-  const addonTotal  = addons.reduce((s, a) => s + a.price, 0);
-  const totalPrice  = item.price + size.extraPrice + addonTotal;
+  const addonTotal = addons.reduce((s, a) => s + a.price, 0);
+  const totalPrice = item.price + size.extraPrice + addonTotal;
 
   const handleAdd = () => {
     const customizedItem = {
       ...item,
-      // Give unique id so same item with different options = separate cart entry
       id: `${item.id}_${size.label}_${addons.map(a => a.key).join("_") || "plain"}`,
       originalId: item.id,
       price: totalPrice,
@@ -46,45 +45,45 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
   const isUrl = item.icon && item.icon.startsWith("http");
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-      <div className="bg-white border-2 border-[#a8b48a] rounded-t-2xl sm:rounded-2xl w-full sm:max-w-sm shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end justify-center z-50">
+      <div className="bg-white border-2 border-[#a8b48a] rounded-t-2xl w-full max-w-sm shadow-2xl flex flex-col max-h-[92vh]">
 
-        {/* Item header */}
-        <div className="relative">
+        {/* Item header - compact */}
+        <div className="relative flex-shrink-0">
           {isUrl ? (
-            <img src={item.icon} alt={item.name} className="w-full h-36 object-contain bg-white" />
+            <img src={item.icon} alt={item.name} className="w-full h-28 object-contain bg-white" />
           ) : (
-            <div className="w-full h-36 bg-green-50 flex items-center justify-center text-6xl">
+            <div className="w-full h-28 bg-green-50 flex items-center justify-center text-5xl">
               {item.icon}
             </div>
           )}
-          {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/30 text-white flex items-center justify-center text-sm font-bold hover:bg-black/50 transition-all"
+            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/30 text-white flex items-center justify-center text-xs font-bold hover:bg-black/50 transition-all"
           >
             ✕
           </button>
         </div>
 
-        <div className="p-5">
-          <div className="flex items-start justify-between mb-4">
+        {/* Scrollable content */}
+        <div className="overflow-y-auto flex-1 p-4">
+          <div className="flex items-start justify-between mb-3">
             <div>
-              <h3 className="text-base font-bold text-stone-800">{item.name}</h3>
+              <h3 className="text-sm font-bold text-stone-800">{item.name}</h3>
               <p className="text-xs text-stone-400">{item.category}</p>
             </div>
-            <p className="text-lg font-bold text-amber-700">₱{totalPrice}</p>
+            <p className="text-base font-bold text-amber-700">₱{totalPrice}</p>
           </div>
 
           {/* Size selector */}
-          <div className="mb-4">
+          <div className="mb-3">
             <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Size</p>
             <div className="flex gap-2">
               {SIZES.map((s) => (
                 <button
                   key={s.label}
                   onClick={() => setSize(s)}
-                  className={`flex-1 py-2.5 rounded-xl border-2 transition-all ${
+                  className={`flex-1 py-2 rounded-xl border-2 transition-all ${
                     size.label === s.label
                       ? "border-green-600 bg-green-50 text-green-800"
                       : "border-stone-200 bg-stone-50 text-stone-600 hover:border-green-300"
@@ -100,26 +99,26 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
           </div>
 
           {/* Add-ons */}
-          <div className="mb-5">
+          <div className="mb-3">
             <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Add-ons</p>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               {ADDONS.map((addon) => {
                 const selected = addons.find((a) => a.key === addon.key);
                 return (
                   <button
                     key={addon.key}
                     onClick={() => toggleAddon(addon)}
-                    className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all text-left ${
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl border-2 transition-all text-left ${
                       selected
                         ? "border-green-600 bg-green-50"
                         : "border-stone-200 bg-stone-50 hover:border-green-300"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded-md border-2 flex items-center justify-center transition-all flex-shrink-0 ${
                         selected ? "border-green-600 bg-green-600" : "border-stone-300"
                       }`}>
-                        {selected && <span className="text-white text-[10px] font-bold">✓</span>}
+                        {selected && <span className="text-white text-[9px] font-bold">✓</span>}
                       </div>
                       <div>
                         <p className={`text-xs font-semibold ${selected ? "text-green-800" : "text-stone-700"}`}>
@@ -138,7 +137,7 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
           </div>
 
           {/* Price breakdown */}
-          <div className="bg-stone-50 rounded-xl px-4 py-3 mb-4 border border-stone-100">
+          <div className="bg-stone-50 rounded-xl px-3 py-2.5 mb-3 border border-stone-100">
             <div className="flex justify-between text-xs text-stone-400 mb-1">
               <span>Base price ({size.label})</span>
               <span>₱{item.price + size.extraPrice}</span>
@@ -154,11 +153,13 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
               <span className="text-amber-700">₱{totalPrice}</span>
             </div>
           </div>
+        </div>
 
-          {/* Add to cart button */}
+        {/* Sticky bottom button */}
+        <div className="p-4 flex-shrink-0 border-t border-stone-100">
           <button
             onClick={handleAdd}
-            className="w-full py-3.5 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold transition-all shadow-md active:scale-95"
+            className="w-full py-3 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold transition-all shadow-md active:scale-95"
           >
             Add to Cart — ₱{totalPrice}
           </button>
