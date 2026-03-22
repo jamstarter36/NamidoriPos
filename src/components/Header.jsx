@@ -1,8 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NamiLogo from "../images/NamiLogo.png"
 
 export const Header = ({ view, setView, onLogout }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen]     = useState(false);
+  const [serverStatus, setServerStatus] = useState("checking"); // "online" | "offline" | "checking"
+
+  useEffect(() => {
+    const checkStatus = () => {
+      fetch(`${import.meta.env.VITE_API_URL}/health`)
+        .then(() => setServerStatus("online"))
+        .catch(() => setServerStatus("offline"));
+    };
+    checkStatus();
+    const interval = setInterval(checkStatus, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const statusConfig = {
+    online:   { color: "bg-green-400",  text: "Live",     pulse: true  },
+    offline:  { color: "bg-red-500",    text: "Offline",  pulse: false },
+    checking: { color: "bg-yellow-400", text: "Checking", pulse: true  },
+  };
+
+  const status = statusConfig[serverStatus];
 
   const tabs = [
     { key: "pos",   label: "⚡ Order" },
@@ -41,8 +61,8 @@ export const Header = ({ view, setView, onLogout }) => {
       {/* Right side */}
       <div className="flex items-center gap-3">
         <div className="hidden sm:flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-[11px] text-white/60">Live</span>
+          <span className={`w-2 h-2 rounded-full ${status.color} ${status.pulse ? "animate-pulse" : ""}`} />
+          <span className="text-[11px] text-white/60">{status.text}</span>
         </div>
         <button
           onClick={onLogout}
