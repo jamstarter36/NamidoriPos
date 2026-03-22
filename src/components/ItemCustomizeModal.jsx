@@ -46,7 +46,7 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 sm:p-4">
-      <div className="bg-white border-2 border-[#a8b48a] rounded-t-2xl sm:rounded-2xl w-full sm:max-w-sm shadow-2xl flex flex-col max-h-[92vh]">
+      <div className="bg-white border-2 border-[#a8b48a] rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm shadow-2xl flex flex-col max-h-[92vh]">
 
         {/* Item header - compact */}
         <div className="relative flex-shrink-0">
