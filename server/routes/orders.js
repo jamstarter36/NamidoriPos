@@ -8,6 +8,7 @@ const MEMBER_SHEET  = "Members";
 // ── POST /orders — save a new order ──────────────────────────────────────────
 router.post("/", async (req, res) => {
   try {
+    console.log("ORDER BODY:", JSON.stringify(req.body));
     const { items, subtotal, vat_rate, vat_amount, total, member_id, discount } = req.body;
     const sheets = await getSheets();
 
