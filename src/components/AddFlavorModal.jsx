@@ -50,7 +50,7 @@ export const AddFlavorModal = ({ onAdd, onClose }) => {
         <div className="mb-5">
           <label className="block text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Category</label>
           <div className="flex gap-2">
-            {["Hot", "Cold", "Special"].map((cat) => (
+            {["Hot", "Cold", "Seasonal"].map((cat) => (
               <button key={cat} onClick={() => setNewItem((p) => ({ ...p, category: cat }))}
                 className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${
                   newItem.category === cat ? "bg-green-700 text-white border-green-700" : "bg-stone-50 text-stone-500 border-stone-200 hover:border-green-300 hover:text-green-700"
