@@ -3,9 +3,10 @@
   import { SignupModal } from "./SignupModal";
   import NamiLogo from "../images/NamiLogo.png";
   import BowlWhisk from "../images/BowlWhisk2.png"
-  import Naturals from "../images/TheNaturals.jpg"
-  import Thorns from "../images/ThornsRoses.jpg"
+  import Naturals from "../images/TheNaturals.png"
+  import Thorns from "../images/ThornsRoses.png"
   import Lucid from "../images/LucidDream.png"
+  
 
 
   import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
@@ -143,16 +144,15 @@
                 Matcha <span className="italic text-[#5c3317] font-normal">Diaries</span>
               </h2>
             </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
               {[
                 { image: Naturals, name: "The Naturals",    price: "₱135", tag: "Bestseller" },
                 { image: Thorns, name: "Thorns and Roses",     price: "₱145", tag: "Bestseller"   },
                 { image: Lucid, name: "Lucid Dream", price: "₱155", tag: "Bestseller"    },
               ].map(({ image, name, price, tag }) => (
                 <div key={name} className="bg-white border-2 border-[#a8b48a] rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all">
-                  <div className="h-48 overflow-hidden">
-                    <img src={image} alt={name} className="w-full h-full object-cover object-center" />
+                  <div className="overflow-hidden">
+                    <img src={image} alt={name} className="object-cover" />
                   </div>
                   <div className="p-4">
                     <p className="text-xs font-bold text-green-950 mb-2 font-display tracking-wide">{name}</p>
