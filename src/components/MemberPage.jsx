@@ -1,8 +1,8 @@
 import NamiLogo from "../images/NamiLogo.png"
 export const MemberPage = ({ member, onLogout }) => {
   const stamps     = parseInt(member.stamps) || 0;
-  const stampsLeft = 10 - (stamps % 10);
-  const completed  = Math.floor(stamps / 10);
+  const stampsLeft = 8 - (stamps % 8);
+  const completed  = Math.floor(stamps / 8);
 
   return (
     <div className="min-h-screen bg-[#f5f2e8] font-body">
@@ -67,20 +67,20 @@ export const MemberPage = ({ member, onLogout }) => {
             </div>
             <div className="w-13 h-13"><img src={NamiLogo} /></div>
           </div>
-          <p className="text-xs text-white/60 mb-4">Collect 10 stamps to earn a free drink!</p>
+          <p className="text-xs text-white/60 mb-4">Collect 8 stamps to earn a free drink!</p>
           <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
-            {Array.from({ length: 10 }).map((_, i) => (
+            {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className={`w-8 h-8 md:w-9 md:h-9 rounded-full border-2 flex items-center justify-center text-xs md:text-sm transition-all ${
-                i < (stamps % 10) ? "bg-green-800 border-green-200 text-white" : "border-white/30 bg-white/10"
+                i < (stamps % 8) ? "bg-green-800 border-green-200 text-white" : "border-white/30 bg-white/10"
               }`}>
-                {i < (stamps % 10) ? "🍵" : ""}
+                {i < (stamps % 8) ? "🍵" : ""}
               </div>
             ))}
           </div>
           <p className="text-[11px] text-white/60">
-            {stamps % 10} / 10 stamps
+            {stamps % 8} / 8 stamps
             {stamps === 0 ? " — Start ordering to collect stamps!"
-              : stamps % 10 === 0 ? " — You earned a free drink! 🎉"
+              : stamps % 8 === 0 ? " — You earned a free drink! 🎉"
               : ` — ${stampsLeft} more to go!`}
           </p>
           {completed > 0 && (

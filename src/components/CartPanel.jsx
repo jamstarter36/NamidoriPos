@@ -11,7 +11,6 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
   const [showFreeDrink, setShowFreeDrink]   = useState(false);
   const [freeAdded, setFreeAdded]           = useState(false);
 
-  // useRef to always have the latest selectedMember inside the interval
   const selectedMemberRef = useRef(selectedMember);
   useEffect(() => { selectedMemberRef.current = selectedMember; }, [selectedMember]);
 
@@ -34,9 +33,9 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
     return () => clearInterval(interval);
   }, []);
 
-  const subtotal  = cart.reduce((s, c) => s + c.price * c.qty, 0);
-  const vatAmount = vatEnabled ? Math.round(subtotal * (vatRate / 100)) : 0;
-  const total     = subtotal + vatAmount;
+  const subtotal   = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const vatAmount  = vatEnabled ? Math.round(subtotal * (vatRate / 100)) : 0;
+  const total      = subtotal + vatAmount;
   const totalItems = cart.filter(c => !c.isFree).reduce((s, c) => s + c.qty, 0);
   const hasFreeItem = cart.some((c) => c.price === 0 && c.isFree);
 
@@ -53,7 +52,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
   };
 
   const stampsAfter   = selectedMember ? (parseInt(selectedMember.stamps) || 0) + totalItems : 0;
-  const reachesTarget = selectedMember && stampsAfter >= 10 && !hasFreeItem && !freeAdded;
+  const reachesTarget = selectedMember && stampsAfter >= 8 && !hasFreeItem && !freeAdded;
 
   const handleAddFreeDrink = (item) => {
     onAdd({ ...item, id: `free_${item.id}_${Date.now()}`, price: 0, isFree: true, qty: 1, name: `${item.name} (FREE 🎉)` });
@@ -102,21 +101,21 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
                 </span>
               </div>
             </div>
-            <div className="flex gap-1">
-              {Array.from({ length: 10 }).map((_, i) => (
+            <div className="flex gap-0.5">
+              {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className={`flex-1 h-2 rounded-full transition-all ${
                   i < (parseInt(selectedMember.stamps) || 0) ? "bg-green-500"
                   : i < stampsAfter ? "bg-amber-400" : "bg-stone-200"
                 }`} />
               ))}
             </div>
-            <p className="text-[10px] text-stone-400 mt-1 text-right">{Math.min(stampsAfter, 10)}/10</p>
+            <p className="text-[10px] text-stone-400 mt-1 text-right">{Math.min(stampsAfter, 8)}/8</p>
           </div>
         )}
 
         {reachesTarget && (
           <button onClick={() => setShowFreeDrink(true)} className="mt-2 w-full py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-white text-[11px] font-bold tracking-wide transition-all shadow-md hover:shadow-lg active:scale-95">
-            🎉 10 Stamps Reached! Choose Free Drink
+            🎉 8 Stamps Reached! Choose Free Drink
           </button>
         )}
         {freeAdded && (
@@ -189,10 +188,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
               onClear();
               setFreeAdded(false);
               setShowFreeDrink(false);
-              // Revert selectedMember stamps back from DB (fetchMembers will update it)
-              if (selectedMember) {
-                fetchMembers();
-              }
+              if (selectedMember) fetchMembers();
             }}
             className="w-full mt-2 py-2 rounded-lg text-xs text-stone-400 border border-stone-200 hover:border-red-300 hover:text-red-400 transition-all bg-white"
           >
