@@ -7,6 +7,10 @@ export default function App() {
   const [page, setPage]     = useState(sessionStorage.getItem("page") || "landing");
   const [member, setMember] = useState(JSON.parse(sessionStorage.getItem("member")) || null);
 
+  // Check if URL has ?signup=true
+  const params = new URLSearchParams(window.location.search);
+  const autoSignup = params.get("signup") === "true";
+
   // Keep Render backend alive
   useEffect(() => {
     const keepAlive = () => {
@@ -49,6 +53,7 @@ export default function App() {
     <LandingPage
       onLoginSuccess={handleLoginSuccess}
       onSignupSuccess={handleSignupSuccess}
+      autoSignup={autoSignup}
     />
   );
 
