@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LandingPage } from "./components/LandingPage";
 import { NamidoriPos } from "./components/NamidoriPos";
 import { MemberPage } from "./components/MemberPage";
@@ -6,6 +6,18 @@ import { MemberPage } from "./components/MemberPage";
 export default function App() {
   const [page, setPage]     = useState(sessionStorage.getItem("page") || "landing");
   const [member, setMember] = useState(JSON.parse(sessionStorage.getItem("member")) || null);
+
+  // Keep Render backend alive
+  useEffect(() => {
+    const keepAlive = () => {
+      fetch(`${import.meta.env.VITE_API_URL}/health`)
+        .then(() => console.log("Server kept alive"))
+        .catch(() => console.log("Server ping failed"));
+    };
+    keepAlive();
+    const interval = setInterval(keepAlive, 4 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLoginSuccess = (data) => {
     if (data.role === "admin") {
