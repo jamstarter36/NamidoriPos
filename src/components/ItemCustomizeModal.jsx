@@ -49,7 +49,7 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
       <div className="bg-white border-2 border-[#a8b48a] rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm shadow-2xl flex flex-col max-h-[92vh]">
 
         {/* Item header - compact */}
-        <div className="relative flex-shrink-0">
+        <div className="relative flex-shrink-0 rounded-t-3xl overflow-hidden">
           {isUrl ? (
             <img src={item.icon} alt={item.name} className="w-full h-28 object-contain bg-white" />
           ) : (
