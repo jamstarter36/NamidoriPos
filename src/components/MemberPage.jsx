@@ -1,5 +1,7 @@
-// ─── Star Picker (interactive) ────────────────────────────────────────────────
 import { useState, useEffect } from "react";
+import NamiLogo from "../images/NamiLogo.png";
+import { getLoyaltyCards, getTestimony, submitTestimony } from "../api";
+
 const StarPicker = ({ value, onChange }) => {
   const [hovered, setHovered] = useState(0);
   return (
