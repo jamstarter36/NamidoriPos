@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
         const stampsAfter   = currentStamps + itemsOrdered;
 
         // Only reset stamps if discount was actually used
-        const newStamps = discountUsed ? stampsAfter % 8 : stampsAfter;
+        const newStamps = discountUsed ? stampsAfter % 8 : Math.min(stampsAfter, 8);
 
         const sheetRow   = memberRowIndex + 1;
         const stampsCell = `${MEMBER_SHEET}!${String.fromCharCode(65 + stampsCol)}${sheetRow}`;
