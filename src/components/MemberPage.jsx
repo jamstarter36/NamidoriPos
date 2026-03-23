@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import NamiLogo from "../images/NamiLogo.png";
 import { getLoyaltyCards, getTestimony, submitTestimony } from "../api";
 
@@ -26,11 +26,11 @@ const StarPicker = ({ value, onChange }) => {
 
 const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 0 }) => (
   <div className={`rounded-2xl p-5 md:p-6 text-white shadow-lg ${
-    card?.used
-      ? "bg-gray-400"          // redeemed → solid gray
-      : card?.completed
-      ? "bg-orange-400"        // reward available → orange
-      : "bg-[#5c3317]"         // active/default
+  card?.used
+    ? "bg-gray-400"          // redeemed → solid gray
+    : card?.completed
+    ? "bg-orange-400"        // reward available → orange
+    : "bg-[#5c3317]"         // active/default
   }`}>
     <div className="flex items-center justify-between mb-2">
       <div>
@@ -90,9 +90,6 @@ export const MemberPage = ({ member, onLogout }) => {
   const [success,   setSuccess]   = useState(false);
   const [error,     setError]     = useState("");
 
-  // ✅ NEW: card order state for cycle feature
-  const [cardOrder, setCardOrder] = useState([]);
-
   useEffect(() => {
     getLoyaltyCards(member.id)
       .then((res) => setCards(res.data))
@@ -119,20 +116,6 @@ export const MemberPage = ({ member, onLogout }) => {
   // All non-active cards for stacking (completed unused + used)
   const allOtherCards = [...usedCards, ...completedUnusedCards];
   const stackCount    = allOtherCards.length;
-
-  // ✅ NEW: sync order whenever cards change
-  useEffect(() => {
-    setCardOrder(allOtherCards);
-  }, [cards]);
-
-  // ✅ NEW: rotate/cycle function for background cards
-  const rotateCards = () => {
-    setCardOrder((prev) => {
-      if (prev.length <= 1) return prev;
-      const [first, ...rest] = prev;
-      return [...rest, first];
-    });
-  };
 
   const handleSubmitTestimony = async () => {
     if (!text.trim()) return setError("Please write your testimony.");
@@ -217,58 +200,58 @@ export const MemberPage = ({ member, onLogout }) => {
           </div>
         </div>
 
-    {/* ── Stacked Loyalty Cards ── */}
-    <div className="mb-6">
-      <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
+        {/* ── Stacked Loyalty Cards ── */}
+        <div className="mb-6">
+          <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
 
-      {/* Stack wrapper */}
-      <div
-        className="relative"
-        style={{ paddingBottom: cardOrder.length > 0 ? `${cardOrder.length * 10}px` : "0" }}
-      >
-        {/* All cards including active for cycling */}
-        {cardOrder.map((card, index) => {
-          const isActiveCard = card.id === activeCard?.id;
-          return (
-            <div
-              key={card.id}
-              onClick={rotateCards} // ✅ Click to cycle
-              className="absolute w-full cursor-pointer"
-              style={{
-                top:    `${(cardOrder.length - index) * 10}px`,
-                left:   `${(cardOrder.length - index) * 4}px`,
-                right:  `-${(cardOrder.length - index) * 4}px`,
-                zIndex: index + 1,
-                width:  `calc(100% - ${(cardOrder.length - index) * 8}px)`,
-              }}
-            >
+          {/* Stack wrapper */}
+          <div
+            className="relative"
+            style={{ paddingBottom: stackCount > 0 ? `${stackCount * 10}px` : "0" }}
+          >
+            {/* Background stacked cards (other cards) */}
+            {allOtherCards.map((card, index) => (
+              <div
+                key={card.id}
+                className="absolute w-full"
+                style={{
+                  top:    `${(stackCount - index) * 10}px`,
+                  left:   `${(stackCount - index) * 4}px`,
+                  right:  `-${(stackCount - index) * 4}px`,
+                  zIndex: index + 1,
+                  width:  `calc(100% - ${(stackCount - index) * 8}px)`,
+                }}
+              >
+                <LoyaltyCardUI card={card} />
+              </div>
+            ))}
+
+            {/* Active card on top */}
+            <div className="relative" style={{ zIndex: stackCount + 1 }}>
               <LoyaltyCardUI
-                card={card}
-                isActive={isActiveCard}
-                activeStamps={isActiveCard ? activeStamps : 0}
-                stampsLeft={isActiveCard ? stampsLeft : 0}
+                isActive
+                activeStamps={activeStamps}
+                stampsLeft={stampsLeft}
               />
             </div>
-          );
-        })}
-      </div>
+          </div>
 
-  {/* Card count summary */}
-  {stackCount > 0 && (
-    <div className="mt-3 flex gap-2 flex-wrap">
-      {completedUnusedCards.length > 0 && (
-        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
-          🏆 {completedUnusedCards.length} reward{completedUnusedCards.length !== 1 ? "s" : ""} available
-        </span>
-      )}
-      {usedCards.length > 0 && (
-        <span className="text-[10px] font-bold text-stone-400 bg-stone-100 border border-stone-200 px-2 py-1 rounded-full">
-          ✅ {usedCards.length} redeemed
-        </span>
-      )}
-    </div>
-  )}
-</div>
+          {/* Card count summary */}
+          {stackCount > 0 && (
+            <div className="mt-3 flex gap-2 flex-wrap">
+              {completedUnusedCards.length > 0 && (
+                <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
+                  🏆 {completedUnusedCards.length} reward{completedUnusedCards.length !== 1 ? "s" : ""} available
+                </span>
+              )}
+              {usedCards.length > 0 && (
+                <span className="text-[10px] font-bold text-stone-400 bg-stone-100 border border-stone-200 px-2 py-1 rounded-full">
+                  ✅ {usedCards.length} redeemed
+                </span>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* ── Testimony ── */}
         <div className="mt-5 md:mt-6">
