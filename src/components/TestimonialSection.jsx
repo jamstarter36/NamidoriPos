@@ -43,7 +43,7 @@ function TestimonialCard({ full_name, testimony, stars }) {
 }
 
 // ── Main section ──────────────────────────────────────────────────────────────
-export function TestimonialsSection() {
+export function TestimonialSection() {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState(null);
