@@ -114,7 +114,7 @@ export const MemberPage = ({ member, onLogout }) => {
   const stampsLeft           = 8 - activeStamps;
 
   // All non-active cards for stacking (completed unused + used)
-  const allOtherCards = [...completedUnusedCards, ...usedCards];
+  const allOtherCards = [...usedCards, ...completedUnusedCards];
   const stackCount    = allOtherCards.length;
 
   const handleSubmitTestimony = async () => {
