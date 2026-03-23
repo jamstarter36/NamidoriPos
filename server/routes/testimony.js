@@ -4,7 +4,32 @@ const { getSheets, SPREADSHEET_ID } = require("../services/sheets");
 
 const TESTIMONY_SHEET = "Testimony";
 
-// GET /api/testimony/:member_id
+// GET /api/testimony — returns ALL testimonials
+router.get("/", async (req, res) => {
+  try {
+    const sheets   = await getSheets();
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${TESTIMONY_SHEET}!A1:E1000`,
+    });
+    const rows = (response.data.values || []).slice(1);
+    const data = rows
+      .filter((r) => r[2] && r[3])
+      .map((row) => ({
+        id:        row[0] || "",
+        member_id: row[1] || "",
+        full_name: row[2] || "",
+        testimony: row[3] || "",
+        stars:     parseInt(row[4]) || 0,
+      }));
+    res.json(data);
+  } catch (error) {
+    console.error("GET /testimony error:", error);
+    res.status(500).json({ error: "Failed to fetch testimonials" });
+  }
+});
+
+// GET /api/testimony/:member_id — returns one member's testimony
 router.get("/:member_id", async (req, res) => {
   try {
     const sheets   = await getSheets();
@@ -28,12 +53,12 @@ router.get("/:member_id", async (req, res) => {
 
     res.json(match || null);
   } catch (error) {
-    console.error("GET /testimony error:", error);
+    console.error("GET /testimony/:member_id error:", error);
     res.status(500).json({ error: "Failed to fetch testimony" });
   }
 });
 
-// POST /api/testimony (insert or update)
+// POST /api/testimony — insert or update a testimony
 router.post("/", async (req, res) => {
   try {
     const { member_id, full_name, testimony, stars } = req.body;
