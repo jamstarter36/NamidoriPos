@@ -175,19 +175,23 @@ export const MemberPage = ({ member, onLogout }) => {
           <div className="mb-4">
             <p className="text-xs font-bold text-green-800 uppercase tracking-widest mb-2">🎉 Rewards Available</p>
             {completedUnusedCards.map((card) => (
-              <div key={card.id} className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 mb-2">
-                <div className="flex items-center justify-between">
+              <div key={card.id} className="bg-[#5c3317] rounded-2xl p-5 md:p-6 text-white shadow-lg mb-3">
+                <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-xs font-bold text-amber-700">₱145 Discount Ready!</p>
-                    <p className="text-[10px] text-amber-600">Completed on {card.completed_date}</p>
+                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
+                    <p className="text-base md:text-lg font-bold font-display tracking-wide">Loyalty Card</p>
                   </div>
-                  <span className="text-2xl">🏆</span>
+                  <div className="w-10 h-10"><img src={NamiLogo} /></div>
                 </div>
-                <div className="flex gap-1 mt-2">
+                <p className="text-xs text-white/60 mb-4">Completed on {card.completed_date} · ₱145 discount ready!</p>
+                <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
                   {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="flex-1 h-1.5 rounded-full bg-amber-400" />
+                    <div key={i} className="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 bg-green-800 border-green-200 text-white flex items-center justify-center text-xs md:text-sm">
+                      🍵
+                    </div>
                   ))}
                 </div>
+                <p className="text-[11px] text-amber-300 font-bold">🏆 Ready to redeem!</p>
               </div>
             ))}
           </div>
@@ -198,19 +202,23 @@ export const MemberPage = ({ member, onLogout }) => {
           <div>
             <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">📜 Redeemed Cards</p>
             {usedCards.map((card) => (
-              <div key={card.id} className="bg-white border border-stone-200 rounded-2xl p-4 mb-2 opacity-60">
-                <div className="flex items-center justify-between">
+              <div key={card.id} className="bg-[#3a1f0a] rounded-2xl p-5 md:p-6 text-white shadow-lg mb-3 opacity-50">
+                <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-xs font-semibold text-stone-500">₱145 Discount Used</p>
-                    <p className="text-[10px] text-stone-400">Redeemed on {card.used_date}</p>
+                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
+                    <p className="text-base md:text-lg font-bold font-display tracking-wide">Loyalty Card</p>
                   </div>
-                  <span className="text-xl">✅</span>
+                  <div className="w-10 h-10"><img src={NamiLogo} /></div>
                 </div>
-                <div className="flex gap-1 mt-2">
+                <p className="text-xs text-white/60 mb-4">Redeemed on {card.used_date}</p>
+                <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
                   {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="flex-1 h-1.5 rounded-full bg-stone-300" />
+                    <div key={i} className="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-xs md:text-sm text-white/40">
+                      🍵
+                    </div>
                   ))}
                 </div>
+                <p className="text-[11px] text-white/40">✅ Discount used</p>
               </div>
             ))}
           </div>
