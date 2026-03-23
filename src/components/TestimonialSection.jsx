@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
-import { getAllTestimonials } from "../api"; // uses your existing api.js
+import { useState, useEffect } from "react";
+import { getAllTestimonials } from "../api";
+
+const SWIPER_THRESHOLD = 5;
+const VISIBLE_COUNT = 3;
 
 // ── Star display ──────────────────────────────────────────────────────────────
-function StarRating({ count }) {
+function StarRating({ count, size = "text-sm" }) {
   return (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i} className={`text-sm ${i <= count ? "text-amber-400" : "text-stone-200"}`}>★</span>
+        <span key={i} className={`${size} ${i <= count ? "text-amber-400" : "text-[#c0c89e]"}`}>
+          ★
+        </span>
       ))}
     </div>
   );
@@ -22,21 +27,125 @@ function TestimonialCard({ full_name, testimony, stars }) {
     .toUpperCase();
 
   return (
-    <div className="bg-white border-2 border-[#d4dbb8] rounded-2xl p-6 shadow-sm flex flex-col gap-3
-                    hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+    <div className="bg-white border-2 border-[#d4dbb8] rounded-2xl p-5 flex flex-col gap-3
+                    hover:-translate-y-1 transition-transform duration-200">
       <span className="text-5xl leading-none text-[#d4dbb8] font-serif select-none -mb-2">"</span>
-      <p className="text-sm text-[#4a5a3a] leading-loose flex-1 italic">"{testimony}"</p>
+      <p className="text-sm text-[#4a5a3a] leading-loose italic flex-1 font-serif">
+        "{testimony}"
+      </p>
       <div className="flex items-center justify-between pt-3 border-t border-[#e8e4d8]">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-full bg-[#d4dbb8] flex items-center justify-center
-                          text-[11px] font-bold text-green-800 font-display tracking-wide shrink-0">
+                          text-[11px] font-bold text-green-800 tracking-wide shrink-0">
             {initials}
           </div>
-          <p className="text-xs font-bold text-green-950 font-display tracking-wide truncate">
-            {full_name}
-          </p>
+          <p className="text-xs font-bold text-green-950 tracking-wide truncate">{full_name}</p>
         </div>
         <StarRating count={stars} />
+      </div>
+    </div>
+  );
+}
+
+// ── Grid layout (≤ SWIPER_THRESHOLD) ─────────────────────────────────────────
+function GridLayout({ testimonials }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {testimonials.map((t, i) => (
+        <TestimonialCard key={t.id || i} {...t} />
+      ))}
+    </div>
+  );
+}
+
+// ── Swiper layout (> SWIPER_THRESHOLD) ───────────────────────────────────────
+function SwiperLayout({ testimonials }) {
+  const [current, setCurrent] = useState(0);
+  const maxIndex = testimonials.length - VISIBLE_COUNT;
+
+  const go = (dir) =>
+    setCurrent((prev) => Math.max(0, Math.min(prev + dir, maxIndex)));
+
+  return (
+    <div>
+      <div className="overflow-hidden">
+        <div
+          className="flex gap-4 transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
+          style={{
+            transform: `translateX(calc(-${current} * (100% / ${VISIBLE_COUNT} + ${16 / VISIBLE_COUNT}px)))`,
+          }}
+        >
+          {testimonials.map((t, i) => (
+            <div
+              key={t.id || i}
+              className="flex-shrink-0"
+              style={{ width: `calc((100% - ${(VISIBLE_COUNT - 1) * 16}px) / ${VISIBLE_COUNT})` }}
+            >
+              <TestimonialCard {...t} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center justify-between mt-6">
+        {/* Dots */}
+        <div className="flex gap-1.5">
+          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === current ? "w-5 bg-green-900" : "w-1.5 bg-[#aab890]"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Arrows */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => go(-1)}
+            disabled={current === 0}
+            className="w-9 h-9 rounded-full border border-[#b0ba90] text-[#4a5a3a] flex items-center
+                       justify-center hover:bg-green-900 hover:text-white hover:border-green-900
+                       transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            ←
+          </button>
+          <button
+            onClick={() => go(1)}
+            disabled={current === maxIndex}
+            className="w-9 h-9 rounded-full border border-[#b0ba90] text-[#4a5a3a] flex items-center
+                       justify-center hover:bg-green-900 hover:text-white hover:border-green-900
+                       transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Overall rating box ────────────────────────────────────────────────────────
+function OverallRating({ testimonials }) {
+  const avg = (
+    testimonials.reduce((s, t) => s + t.stars, 0) / testimonials.length
+  ).toFixed(1);
+
+  return (
+    <div className="flex justify-center mb-10">
+      <div className="bg-[#eef1e4] border border-[#c0c89e] rounded-2xl px-5 py-4
+                      flex items-center gap-4">
+        <span className="text-4xl font-bold text-green-900 font-sans leading-none">{avg}</span>
+        <div className="flex flex-col gap-1">
+          <p className="text-[10px] font-bold tracking-[0.15em] text-[#5c3317] uppercase">
+            Overall Rating
+          </p>
+          <StarRating count={Math.round(parseFloat(avg))} />
+          <p className="text-[11px] text-[#7a8a6a]">Based on {testimonials.length} reviews</p>
+        </div>
       </div>
     </div>
   );
@@ -45,8 +154,8 @@ function TestimonialCard({ full_name, testimony, stars }) {
 // ── Main section ──────────────────────────────────────────────────────────────
 export function TestimonialSection() {
   const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     getAllTestimonials()
@@ -55,47 +164,56 @@ export function TestimonialSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  return (
-    <section className="flex justify-center w-full bg-[#d4dbb8] py-20 px-6 sm:px-10 md:px-16 lg:px-24">
-      <div className="max-w-6xl mx-auto">
+  const useSwiper = testimonials.length > SWIPER_THRESHOLD;
 
-        <div className="text-center mb-12">
-          <p className="text-[10px] font-bold tracking-[0.22em] text-[#5c3317] uppercase mb-3 font-display">
+  return (
+    <section className="w-full bg-[#d4dbb8] py-20 px-6 sm:px-10 md:px-16 lg:px-24">
+      <div className="max-w-5xl mx-auto">
+
+        {/* Header */}
+        <div className="text-center mb-10">
+          <p className="text-[10px] font-bold tracking-[0.22em] text-[#5c3317] uppercase mb-3">
             What Readers Say
           </p>
-          <h2 className="text-3xl font-semibold text-green-950 font-display">
-            Matcha <span className="italic text-[#5c3317] font-normal">Memories</span>
+          <h2 className="text-3xl font-semibold text-green-950 font-serif">
+            Matcha <em className="italic text-[#5c3317] font-normal">Memories</em>
           </h2>
           <p className="mt-3 text-sm text-[#4a5a3a] max-w-sm mx-auto leading-loose">
             Every sip leaves a story. Here's what our readers have to say.
           </p>
         </div>
 
+        {/* Loading */}
         {loading && (
           <div className="flex justify-center items-center py-16 gap-2 text-[#8a9070]">
             <span className="animate-spin inline-block text-xl">🍃</span>
-            <span className="text-sm font-display tracking-wide">Brewing testimonials…</span>
+            <span className="text-sm tracking-wide">Brewing testimonials…</span>
           </div>
         )}
 
+        {/* Error */}
         {!loading && error && (
           <p className="text-center text-sm text-red-400 py-10">
             Couldn't load testimonials: {error}
           </p>
         )}
 
+        {/* Empty */}
         {!loading && !error && testimonials.length === 0 && (
-          <p className="text-center text-sm text-[#8a9070] py-10 font-display tracking-wide">
+          <p className="text-center text-sm text-[#8a9070] py-10 tracking-wide">
             No testimonials yet — be the first! 🍃
           </p>
         )}
 
+        {/* Content */}
         {!loading && !error && testimonials.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {testimonials.map((t, i) => (
-              <TestimonialCard key={t.id || i} {...t} />
-            ))}
-          </div>
+          <>
+            <OverallRating testimonials={testimonials} />
+            {useSwiper
+              ? <SwiperLayout testimonials={testimonials} />
+              : <GridLayout testimonials={testimonials} />
+            }
+          </>
         )}
 
       </div>
