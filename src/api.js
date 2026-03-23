@@ -27,3 +27,4 @@ export const createCard      = (member_id)                    => api.post("/loya
 // ── Testimony ─────────────────────────────────────────────────────────────────
 export const getTestimony    = (member_id) => api.get(`/testimony/${member_id}`);
 export const submitTestimony = (data)      => api.post("/testimony", data);
+export const getAllTestimonials = () => api.get("/testimony");
