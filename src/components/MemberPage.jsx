@@ -144,48 +144,52 @@ export const MemberPage = ({ member, onLogout }) => {
         </div>
 
         {/* ── Stacked Loyalty Cards ─────────────────────────────────────────── */}
-        <div className="relative mb-8" style={{ height: `${120 + (completedUnusedCards.length + usedCards.length) * 18}px` }}>
+        <div
+          className="relative mb-8"
+          style={{ height: `${280 + (completedUnusedCards.length + usedCards.length) * 14}px` }}
+        >
 
-          {/* Used cards — bottom of stack */}
+          {/* Used cards — very bottom */}
           {[...usedCards].reverse().map((card, i) => (
             <div
               key={card.id}
-              className="absolute w-full bg-stone-400 rounded-2xl p-5 shadow-md"
+              className="absolute w-full rounded-2xl p-5 shadow-md"
               style={{
-                top: `${(completedUnusedCards.length + usedCards.length - 1 - i) * 18}px`,
-                zIndex: i,
-                filter: "brightness(0.75)",
+                top: `${(completedUnusedCards.length + usedCards.length - i) * 14}px`,
+                zIndex: i + 1,
+                backgroundColor: "#78716c",
               }}
             >
               <div className="flex items-center justify-between mb-1">
                 <div>
-                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
-                  <p className="text-sm font-bold font-display tracking-wide text-white/70">Discount Used</p>
+                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/50 font-display">Namidori</p>
+                  <p className="text-sm font-bold font-display tracking-wide text-white/60">Discount Used ✅</p>
                 </div>
-                <div className="w-8 h-8 opacity-50"><img src={NamiLogo} /></div>
+                <div className="w-8 h-8 opacity-40"><img src={NamiLogo} /></div>
               </div>
-              <p className="text-[10px] text-white/50 mb-3">Redeemed on {card.used_date}</p>
+              <p className="text-[10px] text-white/40 mb-3">Redeemed on {card.used_date}</p>
               <div className="flex gap-1">
                 {Array.from({ length: 8 }).map((_, j) => (
-                  <div key={j} className="flex-1 h-1.5 rounded-full bg-white/30" />
+                  <div key={j} className="flex-1 h-1.5 rounded-full bg-white/20" />
                 ))}
               </div>
             </div>
           ))}
 
-          {/* Completed unused cards — middle of stack */}
+          {/* Completed unused — middle */}
           {[...completedUnusedCards].reverse().map((card, i) => (
             <div
               key={card.id}
-              className="absolute w-full bg-amber-500 rounded-2xl p-5 shadow-md"
+              className="absolute w-full rounded-2xl p-5 shadow-md"
               style={{
-                top: `${(completedUnusedCards.length - 1 - i) * 18}px`,
-                zIndex: usedCards.length + i,
+                top: `${(completedUnusedCards.length - i) * 14}px`,
+                zIndex: usedCards.length + i + 1,
+                backgroundColor: "#d97706",
               }}
             >
               <div className="flex items-center justify-between mb-1">
                 <div>
-                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/70 font-display">Namidori</p>
+                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
                   <p className="text-sm font-bold font-display tracking-wide text-white">🎉 Discount Ready!</p>
                 </div>
                 <div className="w-8 h-8"><img src={NamiLogo} /></div>
@@ -193,19 +197,16 @@ export const MemberPage = ({ member, onLogout }) => {
               <p className="text-[10px] text-white/70 mb-3">Completed on {card.completed_date}</p>
               <div className="flex gap-1">
                 {Array.from({ length: 8 }).map((_, j) => (
-                  <div key={j} className="flex-1 h-1.5 rounded-full bg-white/60" />
+                  <div key={j} className="flex-1 h-1.5 rounded-full bg-white/50" />
                 ))}
               </div>
             </div>
           ))}
 
-          {/* Active card — always on top */}
+          {/* Active card — always on top at position 0 */}
           <div
             className="absolute w-full bg-[#5c3317] rounded-2xl p-5 md:p-6 text-white shadow-xl"
-            style={{
-              top: `${(completedUnusedCards.length + usedCards.length) * 18}px`,
-              zIndex: completedUnusedCards.length + usedCards.length + 1,
-            }}
+            style={{ top: 0, zIndex: completedUnusedCards.length + usedCards.length + 2 }}
           >
             <div className="flex items-center justify-between mb-2">
               <div>
