@@ -10,6 +10,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
   const [selectedMember, setSelectedMember] = useState(null);
   const [search, setSearch]                 = useState("");
   const [showDropdown, setShowDropdown]     = useState(false);
+  const [useDiscount, setUseDiscount]       = useState(false);
 
   const selectedMemberRef = useRef(selectedMember);
   useEffect(() => { selectedMemberRef.current = selectedMember; }, [selectedMember]);
@@ -43,28 +44,30 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
     setSelectedMember(member);
     setSearch(member.full_name);
     setShowDropdown(false);
+    setUseDiscount(false);
   };
 
   const handleClearMember = () => {
     setSelectedMember(null);
     setSearch("");
     setShowDropdown(false);
+    setUseDiscount(false);
   };
 
   const subtotal    = cart.reduce((s, c) => s + c.price * c.qty, 0);
   const vatAmount   = vatEnabled ? Math.round(subtotal * (vatRate / 100)) : 0;
   const totalItems  = cart.filter(c => !c.isFree).reduce((s, c) => s + c.qty, 0);
-  const stampsAfter = selectedMember ? (parseInt(selectedMember.stamps) || 0) + totalItems : 0;
 
-  // Discount logic
-  const DISCOUNT_AMOUNT   = 145;
-  const STAMP_TARGET      = 8;
-  const discountApplied   = selectedMember && stampsAfter >= STAMP_TARGET;
-  const discount          = discountApplied ? Math.min(DISCOUNT_AMOUNT, subtotal + vatAmount) : 0;
-  const total             = Math.max(0, subtotal + vatAmount - discount);
+  // Discount logic — only available if member already has >= 8 stamps BEFORE this order
+  const DISCOUNT_AMOUNT  = 145;
+  const STAMP_TARGET     = 8;
+  const currentStamps    = selectedMember ? (parseInt(selectedMember.stamps) || 0) : 0;
+  const hasDiscount      = selectedMember && currentStamps >= STAMP_TARGET;
+  const discount         = hasDiscount && useDiscount ? Math.min(DISCOUNT_AMOUNT, subtotal + vatAmount) : 0;
+  const total            = Math.max(0, subtotal + vatAmount - discount);
 
   const handleCheckout = () => {
-    onCheckout(subtotal, vatEnabled ? vatRate : 0, vatAmount, total, selectedMember, discountApplied ? discount : 0);
+    onCheckout(subtotal, vatEnabled ? vatRate : 0, vatAmount, total, selectedMember, useDiscount && hasDiscount ? discount : 0);
   };
 
   return (
@@ -127,7 +130,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
                 <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-sm">👤</div>
                 <div>
                   <p className="text-xs font-bold text-green-800">{selectedMember.full_name}</p>
-                  <p className="text-[10px] text-stone-400">{selectedMember.stamps} stamps collected</p>
+                  <p className="text-[10px] text-stone-400">{currentStamps} stamps collected</p>
                 </div>
               </div>
               <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
@@ -137,20 +140,32 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
             <div className="flex gap-0.5">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className={`flex-1 h-2 rounded-full transition-all ${
-                  i < (parseInt(selectedMember.stamps) || 0) ? "bg-green-500"
-                  : i < stampsAfter ? "bg-amber-400" : "bg-stone-200"
+                  i < currentStamps ? "bg-green-500" : "bg-stone-200"
                 }`} />
               ))}
             </div>
-            <p className="text-[10px] text-stone-400 mt-1 text-right">{Math.min(stampsAfter, 8)}/8</p>
+            <p className="text-[10px] text-stone-400 mt-1 text-right">{Math.min(currentStamps, 8)}/8</p>
           </div>
         )}
 
-        {/* Discount notice */}
-        {discountApplied && (
-          <div className="mt-2 flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-green-50 border border-green-200">
-            <span className="text-xs">🎉</span>
-            <p className="text-[11px] text-green-700 font-bold">₱145 discount applied!</p>
+        {/* Discount option — only shows if member already has 8+ stamps */}
+        {hasDiscount && (
+          <div className="mt-2 bg-amber-50 border-2 border-amber-200 rounded-xl p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-amber-700">🎉 ₱145 Reward Available!</p>
+                <p className="text-[10px] text-amber-600 mt-0.5">Member completed 8 stamps</p>
+              </div>
+              <button
+                onClick={() => setUseDiscount((v) => !v)}
+                className={`relative w-9 h-5 rounded-full transition-all flex-shrink-0 ${useDiscount ? "bg-green-600" : "bg-stone-300"}`}
+              >
+                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${useDiscount ? "left-4" : "left-0.5"}`} />
+              </button>
+            </div>
+            {useDiscount && (
+              <p className="text-[10px] text-green-700 font-semibold mt-2 text-center">✅ ₱145 discount will be applied!</p>
+            )}
           </div>
         )}
       </div>
@@ -204,7 +219,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
           <div className={`flex justify-between text-xs mb-1 ${vatEnabled ? "text-stone-400" : "text-stone-300 line-through"}`}>
             <span>VAT ({vatRate}%)</span><span>₱{vatAmount}</span>
           </div>
-          {discountApplied && (
+          {useDiscount && hasDiscount && (
             <div className="flex justify-between text-xs text-green-600 font-semibold mb-1">
               <span>🎉 Loyalty Discount</span>
               <span>-₱{discount}</span>
@@ -223,6 +238,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
               onClear();
               setSearch("");
               setSelectedMember(null);
+              setUseDiscount(false);
               if (selectedMember) fetchMembers();
             }}
             className="w-full mt-2 py-2 rounded-lg text-xs text-stone-400 border border-stone-200 hover:border-red-300 hover:text-red-400 transition-all bg-white"
