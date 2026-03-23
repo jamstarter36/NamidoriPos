@@ -158,9 +158,7 @@ export const MemberPage = ({ member, onLogout }) => {
                 className="absolute w-full rounded-2xl p-5 shadow-md"
                 style={{
                   top: `${totalOffset * 20}px`,
-                  left: `${totalOffset * -6}px`,
-                  right: `${totalOffset * -6}px`,
-                  width: `calc(100% + ${totalOffset * 12}px)`,
+                  left: `${totalOffset * 8}px`,
                   zIndex: i + 1,
                   backgroundColor: "#78716c",
                 }}
@@ -191,9 +189,7 @@ export const MemberPage = ({ member, onLogout }) => {
                 className="absolute w-full rounded-2xl p-5 shadow-md"
                 style={{
                   top: `${totalOffset * 20}px`,
-                  left: `${totalOffset * -6}px`,
-                  right: `${totalOffset * -6}px`,
-                  width: `calc(100% + ${totalOffset * 12}px)`,
+                  left: `${totalOffset * 8}px`,
                   zIndex: usedCards.length + i + 1,
                   backgroundColor: "#d97706",
                 }}
@@ -215,7 +211,7 @@ export const MemberPage = ({ member, onLogout }) => {
             );
           })}
 
-          {/* Active card — top of stack at position 0, full width */}
+          {/* Active card — always on top */}
           <div
             className="absolute w-full bg-[#5c3317] rounded-2xl p-5 md:p-6 text-white shadow-xl"
             style={{ top: 0, left: 0, right: 0, zIndex: completedUnusedCards.length + usedCards.length + 2 }}
