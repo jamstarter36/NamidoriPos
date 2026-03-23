@@ -217,7 +217,7 @@
             </div>
           </div>
 
-      {/* ── Stacked Loyalty Cards ── */}
+ {/* ── Stacked Loyalty Cards ── */}
 <div className="mb-6">
   <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
 
@@ -227,18 +227,20 @@
     style={{ paddingBottom: cardOrder.length > 0 ? `${cardOrder.length * 10}px` : "0" }}
   >
     {cardOrder.map((card, index) => {
-      const isActiveCard = card.id === activeCard?.id;
+      // Determine if this is the currently active card (top card)
+      const isActiveCard = index === cardOrder.length - 1;
+
       return (
         <div
           key={card.id}
           onClick={rotateCards}
           className="absolute w-full cursor-pointer"
           style={{
-            top:    `${(cardOrder.length - index) * 10}px`,
-            left:   `${(cardOrder.length - index) * 4}px`,
-            right:  `-${(cardOrder.length - index) * 4}px`,
-            zIndex: isActiveCard ? cardOrder.length + 1 : index + 1, // ✅ active card on top
-            width:  `calc(100% - ${(cardOrder.length - index) * 8}px)`,
+            top: `${(cardOrder.length - index) * 10}px`,
+            left: `${(cardOrder.length - index) * 4}px`,
+            right: `-${(cardOrder.length - index) * 4}px`,
+            zIndex: index + 1, // all cards stacked by index
+            width: `calc(100% - ${(cardOrder.length - index) * 8}px)`,
           }}
         >
           <LoyaltyCardUI
