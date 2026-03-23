@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { CartRow } from "./CartRow";
-import { getMembers } from "../api";
+import { getMembers, getLoyaltyCards, addStamps, saveOrder } from "../api";
 
 export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim, items }) => {
   const [vatEnabled, setVatEnabled]         = useState(false);
@@ -8,6 +8,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
   const [editingVat, setEditingVat]         = useState(false);
   const [members, setMembers]               = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
+  const [loyaltyCards, setLoyaltyCards]     = useState([]);
   const [search, setSearch]                 = useState("");
   const [showDropdown, setShowDropdown]     = useState(false);
   const [useDiscount, setUseDiscount]       = useState(false);
@@ -15,14 +16,14 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
   const selectedMemberRef = useRef(selectedMember);
   useEffect(() => { selectedMemberRef.current = selectedMember; }, [selectedMember]);
 
-  const fetchMembers = (silent = true) => {
+  const fetchMembers = () => {
     getMembers()
       .then((res) => {
         setMembers(res.data);
         const current = selectedMemberRef.current;
         if (current) {
           const updated = res.data.find((m) => m.id === current.id);
-          if (updated) setSelectedMember({ ...updated, stamps: parseInt(updated.stamps) || 0 });
+          if (updated) setSelectedMember(updated);
         }
       })
       .catch((err) => console.error("Failed to fetch members:", err));
@@ -30,9 +31,15 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
 
   useEffect(() => {
     fetchMembers();
-    const interval = setInterval(() => fetchMembers(), 5000);
+    const interval = setInterval(fetchMembers, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const fetchLoyaltyCards = (member_id) => {
+    getLoyaltyCards(member_id)
+      .then((res) => setLoyaltyCards(res.data))
+      .catch((err) => console.error("Failed to fetch loyalty cards:", err));
+  };
 
   const filteredMembers = members.filter((m) =>
     m.full_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -40,34 +47,39 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
   );
 
   const handleSelectMember = (member) => {
-    member.stamps = parseInt(member.stamps) || 0;
     setSelectedMember(member);
     setSearch(member.full_name);
     setShowDropdown(false);
     setUseDiscount(false);
+    fetchLoyaltyCards(member.id);
   };
 
   const handleClearMember = () => {
     setSelectedMember(null);
+    setLoyaltyCards([]);
     setSearch("");
     setShowDropdown(false);
     setUseDiscount(false);
   };
 
-  const subtotal    = cart.reduce((s, c) => s + c.price * c.qty, 0);
-  const vatAmount   = vatEnabled ? Math.round(subtotal * (vatRate / 100)) : 0;
-  const totalItems  = cart.filter(c => !c.isFree).reduce((s, c) => s + c.qty, 0);
+  const subtotal   = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const vatAmount  = vatEnabled ? Math.round(subtotal * (vatRate / 100)) : 0;
+  const totalItems = cart.filter(c => !c.isFree).reduce((s, c) => s + c.qty, 0);
 
-  // Discount logic — only available if member already has >= 8 stamps BEFORE this order
-  const DISCOUNT_AMOUNT  = 145;
-  const STAMP_TARGET     = 8;
-  const currentStamps    = selectedMember ? (parseInt(selectedMember.stamps) || 0) : 0;
-  const hasDiscount      = selectedMember && currentStamps >= STAMP_TARGET;
-  const discount         = hasDiscount && useDiscount ? Math.min(DISCOUNT_AMOUNT, subtotal + vatAmount) : 0;
-  const total            = Math.max(0, subtotal + vatAmount - discount);
+  // Active card = not completed yet
+  const activeCard          = loyaltyCards.find((c) => !c.completed);
+  const activeStamps        = activeCard ? activeCard.stamps : 0;
+
+  // Completed but unused cards = available for discount
+  const completedUnusedCards = loyaltyCards.filter((c) => c.completed && !c.used);
+  const hasDiscount          = completedUnusedCards.length > 0;
+
+  const DISCOUNT_AMOUNT = 145;
+  const discount        = hasDiscount && useDiscount ? Math.min(DISCOUNT_AMOUNT, subtotal + vatAmount) : 0;
+  const total           = Math.max(0, subtotal + vatAmount - discount);
 
   const handleCheckout = () => {
-    onCheckout(subtotal, vatEnabled ? vatRate : 0, vatAmount, total, selectedMember, useDiscount && hasDiscount ? discount : 0);
+    onCheckout(subtotal, vatEnabled ? vatRate : 0, vatAmount, total, selectedMember, useDiscount && hasDiscount ? discount : 0, totalItems);
   };
 
   return (
@@ -83,39 +95,29 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
       <div className="px-4 md:px-5 pt-3 pb-3 border-b border-stone-100 bg-[#f5f2e8]">
         <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Attach Member</p>
 
-        {/* Search input */}
         <div className="relative">
           <input
             type="text"
             value={search}
             placeholder="🔍 Search member name..."
-            onChange={(e) => { setSearch(e.target.value); setShowDropdown(true); setSelectedMember(null); }}
+            onChange={(e) => { setSearch(e.target.value); setShowDropdown(true); setSelectedMember(null); setLoyaltyCards([]); }}
             onFocus={() => setShowDropdown(true)}
             className="w-full px-3 py-2.5 rounded-xl border-2 border-[#a8b48a] bg-white text-stone-700 text-xs font-semibold outline-none focus:border-green-500 transition-all"
           />
           {search && (
-            <button onClick={handleClearMember} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-red-400 text-sm font-bold">
-              ✕
-            </button>
+            <button onClick={handleClearMember} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-red-400 text-sm font-bold">✕</button>
           )}
-
-          {/* Dropdown results */}
           {showDropdown && search && filteredMembers.length > 0 && (
             <div className="absolute top-full left-0 right-0 bg-white border-2 border-[#a8b48a] rounded-xl mt-1 shadow-lg z-20 max-h-36 overflow-y-auto">
               {filteredMembers.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => handleSelectMember(m)}
-                  className="w-full text-left px-3 py-2.5 hover:bg-green-50 transition-all border-b border-stone-100 last:border-0"
-                >
+                <button key={m.id} onClick={() => handleSelectMember(m)}
+                  className="w-full text-left px-3 py-2.5 hover:bg-green-50 transition-all border-b border-stone-100 last:border-0">
                   <p className="text-xs font-semibold text-stone-700">{m.full_name}</p>
-                  <p className="text-[10px] text-stone-400">{m.stamps} stamp{m.stamps !== 1 ? "s" : ""} · {m.email}</p>
+                  <p className="text-[10px] text-stone-400">{m.email}</p>
                 </button>
               ))}
             </div>
           )}
-
-          {/* No results */}
           {showDropdown && search && filteredMembers.length === 0 && (
             <div className="absolute top-full left-0 right-0 bg-white border-2 border-[#a8b48a] rounded-xl mt-1 shadow-lg z-20 p-3 text-center">
               <p className="text-xs text-stone-400">No member found</p>
@@ -123,6 +125,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
           )}
         </div>
 
+        {/* Active stamp card */}
         {selectedMember && (
           <div className="mt-2.5 bg-white border-2 border-[#a8b48a] rounded-xl p-3">
             <div className="flex items-center justify-between mb-2">
@@ -130,7 +133,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
                 <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-sm">👤</div>
                 <div>
                   <p className="text-xs font-bold text-green-800">{selectedMember.full_name}</p>
-                  <p className="text-[10px] text-stone-400">{currentStamps} stamps collected</p>
+                  <p className="text-[10px] text-stone-400">{activeStamps} stamps · {completedUnusedCards.length} reward{completedUnusedCards.length !== 1 ? "s" : ""} available</p>
                 </div>
               </div>
               <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
@@ -140,21 +143,21 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
             <div className="flex gap-0.5">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className={`flex-1 h-2 rounded-full transition-all ${
-                  i < currentStamps ? "bg-green-500" : "bg-stone-200"
+                  i < activeStamps ? "bg-green-500" : "bg-stone-200"
                 }`} />
               ))}
             </div>
-            <p className="text-[10px] text-stone-400 mt-1 text-right">{Math.min(currentStamps, 8)}/8</p>
+            <p className="text-[10px] text-stone-400 mt-1 text-right">{activeStamps}/8</p>
           </div>
         )}
 
-        {/* Discount option — only shows if member already has 8+ stamps */}
+        {/* Discount toggle */}
         {hasDiscount && (
           <div className="mt-2 bg-amber-50 border-2 border-amber-200 rounded-xl p-3">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-bold text-amber-700">🎉 ₱145 Reward Available!</p>
-                <p className="text-[10px] text-amber-600 mt-0.5">Member completed 8 stamps</p>
+                <p className="text-[10px] text-amber-600 mt-0.5">{completedUnusedCards.length} completed card{completedUnusedCards.length !== 1 ? "s" : ""}</p>
               </div>
               <button
                 onClick={() => setUseDiscount((v) => !v)}
@@ -187,7 +190,6 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
       {/* Totals + Checkout */}
       {cart.length > 0 && (
         <div className="px-4 md:px-5 py-4 border-t border-stone-100 bg-stone-50">
-          {/* VAT Toggle */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <button onClick={() => setVatEnabled((v) => !v)} className={`relative w-9 h-5 rounded-full transition-all flex-shrink-0 ${vatEnabled ? "bg-green-600" : "bg-stone-300"}`}>
@@ -234,13 +236,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
             {payAnim ? "⏳ Processing…" : `💳 Checkout — ₱${total}`}
           </button>
           <button
-            onClick={() => {
-              onClear();
-              setSearch("");
-              setSelectedMember(null);
-              setUseDiscount(false);
-              if (selectedMember) fetchMembers();
-            }}
+            onClick={() => { onClear(); setSearch(""); setSelectedMember(null); setLoyaltyCards([]); setUseDiscount(false); }}
             className="w-full mt-2 py-2 rounded-lg text-xs text-stone-400 border border-stone-200 hover:border-red-300 hover:text-red-400 transition-all bg-white"
           >
             Clear Order

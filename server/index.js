@@ -8,6 +8,8 @@ const memberRoutes = require("./routes/members");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const loyaltyRoutes = require("./routes/loyaltycards");
+app.use("/api/loyalty", loyaltyRoutes);
 
 app.use(cors());
 app.use(express.json());
@@ -27,3 +29,4 @@ app.get("/api/health", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🍃 Namidori POS server running on http://localhost:${PORT}`);
 });
+

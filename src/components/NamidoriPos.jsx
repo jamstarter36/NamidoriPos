@@ -4,6 +4,7 @@ import { Header } from "./Header";
 import { PosView } from "./PosView";
 import { SalesView } from "./SalesView";
 import { StockView } from "./StockView";
+import { getProducts, updateStock, saveOrder, addStamps } from "../api";
 
 export const NamidoriPos = ({ onLogout }) => {
   const [view, setView]       = useState("pos");
@@ -38,7 +39,7 @@ export const NamidoriPos = ({ onLogout }) => {
         : prev.map((c) => (c.id === id ? { ...c, qty: c.qty - 1 } : c));
     });
 
-  const handleCheckout = (subtotal, vatRate, vatAmount, total, member, discount = 0) => {
+  const handleCheckout = (subtotal, vatRate, vatAmount, total, member, discount = 0, stampsToAdd = 0) => {
     if (!cart.length) return;
     setPayAnim(true);
     setTimeout(async () => {
@@ -59,6 +60,11 @@ export const NamidoriPos = ({ onLogout }) => {
         };
 
         await Promise.all([...stockUpdates, saveOrder(order)]);
+
+        // Update loyalty cards if member attached
+        if (member && stampsToAdd > 0) {
+          await addStamps(member.id, stampsToAdd, discount > 0);
+        }
 
         getProducts().then((res) => setItems(res.data));
         setCart([]);
