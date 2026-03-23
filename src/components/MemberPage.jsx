@@ -1,5 +1,5 @@
 // ─── Star Picker (interactive) ────────────────────────────────────────────────
-
+import { useState, useEffect } from "react";
 const StarPicker = ({ value, onChange }) => {
   const [hovered, setHovered] = useState(0);
   return (
