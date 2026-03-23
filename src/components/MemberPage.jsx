@@ -143,113 +143,78 @@ export const MemberPage = ({ member, onLogout }) => {
           </div>
         </div>
 
-        {/* ── Stacked Loyalty Cards ─────────────────────────────────────────── */}
-        <div
-          className="relative mb-8"
-          style={{ height: `${260 + (completedUnusedCards.length + usedCards.length) * 20}px` }}
-        >
-
-          {/* Used cards — very bottom */}
-          {[...usedCards].reverse().map((card, i) => {
-            const totalOffset = completedUnusedCards.length + usedCards.length - i;
-            return (
-              <div
-                key={card.id}
-                className="absolute rounded-2xl p-5 shadow-md"
-                style={{
-                  top: `${totalOffset * 20}px`,
-                  left: `${totalOffset * -8}px`,
-                  right: 0,
-                  width: "auto",
-                  zIndex: i + 1,
-                  backgroundColor: "#78716c",
-                }}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <div>
-                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/50 font-display">Namidori</p>
-                    <p className="text-sm font-bold font-display tracking-wide text-white/60">Discount Used ✅</p>
-                  </div>
-                  <div className="w-8 h-8 opacity-40"><img src={NamiLogo} /></div>
-                </div>
-                <p className="text-[10px] text-white/40 mb-3">Redeemed on {card.used_date}</p>
-                <div className="flex gap-1">
-                  {Array.from({ length: 8 }).map((_, j) => (
-                    <div key={j} className="flex-1 h-1.5 rounded-full bg-white/20" />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Completed unused — middle */}
-          {[...completedUnusedCards].reverse().map((card, i) => {
-            const totalOffset = completedUnusedCards.length - i;
-            return (
-              <div
-                key={card.id}
-                className="absolute rounded-2xl p-5 shadow-md"
-                style={{
-                  top: `${totalOffset * 20}px`,
-                  left: `${totalOffset * -8}px`,
-                  right: 0,
-                  width: "auto",
-                  width: "100%",
-                  zIndex: usedCards.length + i + 1,
-                  backgroundColor: "#d97706",
-                }}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <div>
-                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
-                    <p className="text-sm font-bold font-display tracking-wide text-white">🎉 Discount Ready!</p>
-                  </div>
-                  <div className="w-8 h-8"><img src={NamiLogo} /></div>
-                </div>
-                <p className="text-[10px] text-white/70 mb-3">Completed on {card.completed_date}</p>
-                <div className="flex gap-1">
-                  {Array.from({ length: 8 }).map((_, j) => (
-                    <div key={j} className="flex-1 h-1.5 rounded-full bg-white/50" />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Active card — always on top */}
-          <div
-            className="absolute rounded-2xl p-5 md:p-6 text-white shadow-xl bg-[#5c3317]"
-            style={{ top: 0, left: 0, width: "100%", zIndex: completedUnusedCards.length + usedCards.length + 2 }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div>
-                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
-                <p className="text-base md:text-lg font-bold font-display tracking-wide">Current Card</p>
-              </div>
-              <div className="w-10 h-10"><img src={NamiLogo} /></div>
+        {/* Active loyalty card */}
+        <div className="bg-[#5c3317] rounded-2xl p-5 md:p-6 text-white shadow-lg mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
+              <p className="text-base md:text-lg font-bold font-display tracking-wide">Current Card</p>
             </div>
-            <p className="text-xs text-white/60 mb-4">Collect 8 stamps to get a ₱145 discount!</p>
-            <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className={`w-8 h-8 md:w-9 md:h-9 rounded-full border-2 flex items-center justify-center text-xs md:text-sm transition-all ${
-                  i < activeStamps ? "bg-green-800 border-green-200 text-white" : "border-white/30 bg-white/10"
-                }`}>
-                  {i < activeStamps ? "🍵" : ""}
-                </div>
-              ))}
-            </div>
-            <p className="text-[11px] text-white/60">
-              {activeStamps} / 8 stamps
-              {activeStamps === 0 ? " — Start ordering to collect stamps!"
-                : activeStamps === 8 ? " — Card complete! 🎉"
-                : ` — ${stampsLeft} more to go!`}
-            </p>
+            <div className="w-10 h-10"><img src={NamiLogo} /></div>
           </div>
-
+          <p className="text-xs text-white/60 mb-4">Collect 8 stamps to get a ₱145 discount!</p>
+          <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className={`w-8 h-8 md:w-9 md:h-9 rounded-full border-2 flex items-center justify-center text-xs md:text-sm transition-all ${
+                i < activeStamps ? "bg-green-800 border-green-200 text-white" : "border-white/30 bg-white/10"
+              }`}>
+                {i < activeStamps ? "🍵" : ""}
+              </div>
+            ))}
+          </div>
+          <p className="text-[11px] text-white/60">
+            {activeStamps} / 8 stamps
+            {activeStamps === 0 ? " — Start ordering to collect stamps!"
+              : activeStamps === 8 ? " — Card complete! 🎉"
+              : ` — ${stampsLeft} more to go!`}
+          </p>
         </div>
-        {/* ── End Stacked Cards ─────────────────────────────────────────────── */}
 
+        {/* Completed unused cards */}
+        {completedUnusedCards.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-bold text-green-800 uppercase tracking-widest mb-2">🎉 Rewards Available</p>
+            {completedUnusedCards.map((card) => (
+              <div key={card.id} className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 mb-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-amber-700">₱145 Discount Ready!</p>
+                    <p className="text-[10px] text-amber-600">Completed on {card.completed_date}</p>
+                  </div>
+                  <span className="text-2xl">🏆</span>
+                </div>
+                <div className="flex gap-1 mt-2">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="flex-1 h-1.5 rounded-full bg-amber-400" />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
+        {/* Used cards history */}
+        {usedCards.length > 0 && (
+          <div>
+            <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">📜 Redeemed Cards</p>
+            {usedCards.map((card) => (
+              <div key={card.id} className="bg-white border border-stone-200 rounded-2xl p-4 mb-2 opacity-60">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-stone-500">₱145 Discount Used</p>
+                    <p className="text-[10px] text-stone-400">Redeemed on {card.used_date}</p>
+                  </div>
+                  <span className="text-xl">✅</span>
+                </div>
+                <div className="flex gap-1 mt-2">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="flex-1 h-1.5 rounded-full bg-stone-300" />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* ── Testimony ──────────────────────────────────────────────────────── */}
         <div className="mt-5 md:mt-6">
