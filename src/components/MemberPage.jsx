@@ -1,7 +1,3 @@
-import { useState, useEffect } from "react";
-import NamiLogo from "../images/NamiLogo.png";
-import { getLoyaltyCards, getTestimony, submitTestimony } from "../api";
-
 // ─── Star Picker (interactive) ────────────────────────────────────────────────
 
 const StarPicker = ({ value, onChange }) => {
@@ -33,8 +29,6 @@ export const MemberPage = ({ member, onLogout }) => {
 
   // testimony state
   const [testimony, setTestimony] = useState(null);
-  const [company,   setCompany]   = useState("");
-  const [position,  setPosition]  = useState("");
   const [text,      setText]      = useState("");
   const [stars,     setStars]     = useState(0);
   const [loading,   setLoading]   = useState(false);
@@ -51,10 +45,8 @@ export const MemberPage = ({ member, onLogout }) => {
         const t = res.data;
         if (t) {
           setTestimony(t);
-          setCompany(t.company   || "");
-          setPosition(t.position || "");
-          setText(t.testimony    || "");
-          setStars(t.stars       || 0);
+          setText(t.testimony || "");
+          setStars(t.stars    || 0);
         }
       })
       .catch((err) => console.error("Failed to fetch testimony:", err));
@@ -75,12 +67,10 @@ export const MemberPage = ({ member, onLogout }) => {
       await submitTestimony({
         member_id: member.id,
         full_name: member.full_name,
-        company,
-        position,
         testimony: text,
         stars,
       });
-      setTestimony({ company, position, testimony: text, stars });
+      setTestimony({ testimony: text, stars });
       setSuccess(true);
     } catch (err) {
       setError("Something went wrong. Please try again.");
@@ -90,7 +80,6 @@ export const MemberPage = ({ member, onLogout }) => {
     }
   };
 
-  // avatar initials for testimony card
   const initials = member.full_name
     .split(" ")
     .map((w) => w[0])
@@ -228,7 +217,6 @@ export const MemberPage = ({ member, onLogout }) => {
         {/* ── Testimony ──────────────────────────────────────────────────────── */}
         <div className="mt-5 md:mt-6">
 
-          {/* Section label */}
           <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">⭐ My Testimony</p>
 
           {/* Existing testimony display */}
@@ -252,8 +240,6 @@ export const MemberPage = ({ member, onLogout }) => {
                 <p className="text-xs md:text-sm text-stone-600 italic leading-relaxed mb-3">"{testimony.testimony}"</p>
                 <p className="text-[11px] text-stone-400">
                   <span className="font-semibold text-stone-600">{member.full_name}</span>
-                  {testimony.position && ` · ${testimony.position}`}
-                  {testimony.company  && ` · ${testimony.company}`}
                 </p>
               </div>
             </div>
@@ -271,29 +257,6 @@ export const MemberPage = ({ member, onLogout }) => {
               </div>
             </div>
             <div className="p-4 md:p-6 flex flex-col gap-4">
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Company</p>
-                  <input
-                    type="text"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    placeholder="e.g. Acme Corp"
-                    className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50 text-xs md:text-sm text-stone-700 outline-none focus:border-[#a8b48a] transition-colors placeholder:text-stone-300"
-                  />
-                </div>
-                <div>
-                  <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Position</p>
-                  <input
-                    type="text"
-                    value={position}
-                    onChange={(e) => setPosition(e.target.value)}
-                    placeholder="e.g. Software Engineer"
-                    className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50 text-xs md:text-sm text-stone-700 outline-none focus:border-[#a8b48a] transition-colors placeholder:text-stone-300"
-                  />
-                </div>
-              </div>
 
               <div>
                 <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Testimony</p>

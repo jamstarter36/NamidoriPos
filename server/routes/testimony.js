@@ -10,7 +10,7 @@ router.get("/:member_id", async (req, res) => {
     const sheets   = await getSheets();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${TESTIMONY_SHEET}!A1:G1000`,
+      range: `${TESTIMONY_SHEET}!A1:E1000`,
     });
     const rows = response.data.values || [];
     if (rows.length <= 1) return res.json(null);
@@ -21,10 +21,8 @@ router.get("/:member_id", async (req, res) => {
         id:        row[0] || "",
         member_id: row[1] || "",
         full_name: row[2] || "",
-        company:   row[3] || "",
-        position:  row[4] || "",
-        testimony: row[5] || "",
-        stars:     parseInt(row[6]) || 0,
+        testimony: row[3] || "",
+        stars:     parseInt(row[4]) || 0,
       }))
       .find((t) => String(t.member_id) === String(req.params.member_id));
 
@@ -35,42 +33,39 @@ router.get("/:member_id", async (req, res) => {
   }
 });
 
-// POST /api/testimony  (insert or update)
+// POST /api/testimony (insert or update)
 router.post("/", async (req, res) => {
   try {
-    const { member_id, full_name, company, position, testimony, stars } = req.body;
+    const { member_id, full_name, testimony, stars } = req.body;
     const sheets   = await getSheets();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${TESTIMONY_SHEET}!A1:G1000`,
+      range: `${TESTIMONY_SHEET}!A1:E1000`,
     });
     const rows = response.data.values || [];
 
-    // Check if member already has a testimony row
     const existingRowIndex = rows.findIndex(
       (row, i) => i > 0 && String(row[1]) === String(member_id)
     );
 
     if (existingRowIndex !== -1) {
-      // Update existing row
       const rowNumber = existingRowIndex + 1;
       await sheets.spreadsheets.values.update({
         spreadsheetId: SPREADSHEET_ID,
-        range: `${TESTIMONY_SHEET}!A${rowNumber}:G${rowNumber}`,
+        range: `${TESTIMONY_SHEET}!A${rowNumber}:E${rowNumber}`,
         valueInputOption: "RAW",
         requestBody: {
-          values: [[rows[existingRowIndex][0], member_id, full_name, company, position, testimony, stars]],
+          values: [[rows[existingRowIndex][0], member_id, full_name, testimony, stars]],
         },
       });
     } else {
-      // Insert new row
       const nextId = rows.length;
       await sheets.spreadsheets.values.append({
         spreadsheetId: SPREADSHEET_ID,
         range: `${TESTIMONY_SHEET}!A1`,
         valueInputOption: "RAW",
         requestBody: {
-          values: [[nextId, member_id, full_name, company, position, testimony, stars]],
+          values: [[nextId, member_id, full_name, testimony, stars]],
         },
       });
     }
