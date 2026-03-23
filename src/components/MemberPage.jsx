@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import NamiLogo from "../images/NamiLogo.png";
 import { getLoyaltyCards, getTestimony, submitTestimony } from "../api";
 
@@ -26,11 +26,11 @@ const StarPicker = ({ value, onChange }) => {
 
 const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 0 }) => (
   <div className={`rounded-2xl p-5 md:p-6 text-white shadow-lg ${
-    card?.used
-      ? "bg-gray-400"
-      : card?.completed
-      ? "bg-orange-400"
-      : "bg-[#5c3317]"
+  card?.used
+    ? "bg-gray-400"          // redeemed → solid gray
+    : card?.completed
+    ? "bg-orange-400"        // reward available → orange
+    : "bg-[#5c3317]"         // active/default
   }`}>
     <div className="flex items-center justify-between mb-2">
       <div>
@@ -81,137 +81,6 @@ const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 
   </div>
 );
 
-// ── Cycling Deck ────────────────────────────────────────────────────────────
-const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
-  // Build the ordered deck: active first, then completed-unused, then used
-  const completedUnused = cards.filter((c) => c.completed && !c.used);
-  const used            = cards.filter((c) => c.used);
-
-  // deck[0] = front card, deck[last] = back card
-  const buildDeck = useCallback(() => {
-    const list = [];
-    if (activeCard)          list.push({ __type: "active" });
-    completedUnused.forEach((c) => list.push(c));
-    used.forEach((c)            => list.push(c));
-    return list;
-  }, [cards]);
-
-  const [deck,      setDeck]      = useState(buildDeck);
-  const [animating, setAnimating] = useState(false);
-  const [flipping,  setFlipping]  = useState(false); // triggers CSS class
-
-  useEffect(() => { setDeck(buildDeck()); }, [buildDeck]);
-
-  const cycleCard = () => {
-    if (animating || deck.length <= 1) return;
-    setAnimating(true);
-    setFlipping(true);
-
-    // After flip-out animation, move front card to back
-    setTimeout(() => {
-      setDeck((prev) => {
-        const [first, ...rest] = prev;
-        return [...rest, first];
-      });
-      setFlipping(false);
-    }, 320);
-
-    setTimeout(() => setAnimating(false), 600);
-  };
-
-  if (deck.length === 0) return null;
-
-  const MAX_PEEK = 3; // max cards visible in stack behind
-  const peekCount = Math.min(deck.length - 1, MAX_PEEK);
-
-  return (
-    <div className="relative select-none" style={{ paddingBottom: `${peekCount * 12 + 8}px` }}>
-      {/* ── Peeking background cards ── */}
-      {deck
-        .slice(1, 1 + peekCount)
-        .reverse()
-        .map((card, revIdx) => {
-          const stackIdx = peekCount - revIdx; // 1 = closest to front
-          const offset   = stackIdx * 12;
-          const shrink   = stackIdx * 6;
-          return (
-            <div
-              key={card.__type === "active" ? "active-bg" : card.id}
-              className="absolute rounded-2xl"
-              style={{
-                bottom:    `-${offset}px`,
-                left:      `${shrink / 2}px`,
-                right:     `${shrink / 2}px`,
-                height:    "100%",
-                zIndex:    peekCount - stackIdx,
-                opacity:   1 - stackIdx * 0.15,
-                transform: `scale(${1 - stackIdx * 0.03})`,
-                transition: "all 0.3s ease",
-                pointerEvents: "none",
-                overflow:  "hidden",
-              }}
-            >
-              {/* Blurred ghost of the card color */}
-              <div className={`w-full h-full rounded-2xl ${
-                card.__type === "active" || (!card?.used && !card?.completed)
-                  ? "bg-[#5c3317]"
-                  : card?.used
-                  ? "bg-gray-400"
-                  : "bg-orange-400"
-              }`} />
-            </div>
-          );
-        })}
-
-      {/* ── Front card with flip animation ── */}
-      <div
-        onClick={cycleCard}
-        className="relative cursor-pointer"
-        style={{
-          zIndex: peekCount + 1,
-          perspective: "1000px",
-        }}
-      >
-        <div
-          style={{
-            transition: flipping
-              ? "transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.32s ease"
-              : "transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.28s ease",
-            transform: flipping
-              ? "rotateY(-90deg) scale(0.95)"
-              : "rotateY(0deg) scale(1)",
-            opacity: flipping ? 0.4 : 1,
-            transformOrigin: "left center",
-          }}
-        >
-          {(() => {
-            const front = deck[0];
-            if (front.__type === "active") {
-              return (
-                <LoyaltyCardUI
-                  isActive
-                  activeStamps={activeStamps}
-                  stampsLeft={stampsLeft}
-                />
-              );
-            }
-            return <LoyaltyCardUI card={front} />;
-          })()}
-        </div>
-
-        {/* Tap hint */}
-        {deck.length > 1 && (
-          <div className="absolute bottom-3 right-4 text-[9px] text-white/40 font-semibold tracking-widest uppercase pointer-events-none">
-            tap to cycle
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// ────────────────────────────────────────────────────────────────────────────
-
 export const MemberPage = ({ member, onLogout }) => {
   const [cards, setCards] = useState([]);
   const [testimony, setTestimony] = useState(null);
@@ -238,13 +107,15 @@ export const MemberPage = ({ member, onLogout }) => {
       .catch((err) => console.error("Failed to fetch testimony:", err));
   }, [member.id]);
 
-  const activeCard   = cards.find((c) => !c.completed);
-  const activeStamps = activeCard ? activeCard.stamps : 0;
-  const stampsLeft   = 8 - activeStamps;
-
+  const activeCard           = cards.find((c) => !c.completed);
   const completedUnusedCards = cards.filter((c) => c.completed && !c.used);
   const usedCards            = cards.filter((c) => c.used);
-  const stackCount           = completedUnusedCards.length + usedCards.length;
+  const activeStamps         = activeCard ? activeCard.stamps : 0;
+  const stampsLeft           = 8 - activeStamps;
+
+  // All non-active cards for stacking (completed unused + used)
+  const allOtherCards = [...usedCards, ...completedUnusedCards];
+  const stackCount    = allOtherCards.length;
 
   const handleSubmitTestimony = async () => {
     if (!text.trim()) return setError("Please write your testimony.");
@@ -329,16 +200,41 @@ export const MemberPage = ({ member, onLogout }) => {
           </div>
         </div>
 
-        {/* ── Cycling Loyalty Card Deck ── */}
+        {/* ── Stacked Loyalty Cards ── */}
         <div className="mb-6">
           <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
 
-          <CyclingDeck
-            cards={cards}
-            activeCard={activeCard}
-            activeStamps={activeStamps}
-            stampsLeft={stampsLeft}
-          />
+          {/* Stack wrapper */}
+          <div
+            className="relative"
+            style={{ paddingBottom: stackCount > 0 ? `${stackCount * 10}px` : "0" }}
+          >
+            {/* Background stacked cards (other cards) */}
+            {allOtherCards.map((card, index) => (
+              <div
+                key={card.id}
+                className="absolute w-full"
+                style={{
+                  top:    `${(stackCount - index) * 10}px`,
+                  left:   `${(stackCount - index) * 4}px`,
+                  right:  `-${(stackCount - index) * 4}px`,
+                  zIndex: index + 1,
+                  width:  `calc(100% - ${(stackCount - index) * 8}px)`,
+                }}
+              >
+                <LoyaltyCardUI card={card} />
+              </div>
+            ))}
+
+            {/* Active card on top */}
+            <div className="relative" style={{ zIndex: stackCount + 1 }}>
+              <LoyaltyCardUI
+                isActive
+                activeStamps={activeStamps}
+                stampsLeft={stampsLeft}
+              />
+            </div>
+          </div>
 
           {/* Card count summary */}
           {stackCount > 0 && (
