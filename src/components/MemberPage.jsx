@@ -1,14 +1,63 @@
 import { useState, useEffect } from "react";
 import NamiLogo from "../images/NamiLogo.png";
-import { getLoyaltyCards } from "../api";
+import { getLoyaltyCards, getTestimony, submitTestimony } from "../api";
+
+// ─── Star Picker (interactive) ────────────────────────────────────────────────
+
+const StarPicker = ({ value, onChange }) => {
+  const [hovered, setHovered] = useState(0);
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <button
+          key={i}
+          type="button"
+          onClick={() => onChange(i)}
+          onMouseEnter={() => setHovered(i)}
+          onMouseLeave={() => setHovered(0)}
+          className={`text-xl transition-colors duration-150 ${
+            i <= (hovered || value) ? "text-amber-400" : "text-slate-200"
+          }`}
+        >
+          ★
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// ─── Member Page ──────────────────────────────────────────────────────────────
 
 export const MemberPage = ({ member, onLogout }) => {
   const [cards, setCards] = useState([]);
+
+  // testimony state
+  const [testimony, setTestimony] = useState(null);
+  const [company,   setCompany]   = useState("");
+  const [position,  setPosition]  = useState("");
+  const [text,      setText]      = useState("");
+  const [stars,     setStars]     = useState(0);
+  const [loading,   setLoading]   = useState(false);
+  const [success,   setSuccess]   = useState(false);
+  const [error,     setError]     = useState("");
 
   useEffect(() => {
     getLoyaltyCards(member.id)
       .then((res) => setCards(res.data))
       .catch((err) => console.error("Failed to fetch cards:", err));
+
+    getTestimony(member.id)
+      .then((res) => {
+        const t = res.data;
+        if (t) {
+          setTestimony(t);
+          setCompany(t.company   || "");
+          setPosition(t.position || "");
+          setText(t.testimony    || "");
+          setStars(t.stars       || 0);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch testimony:", err));
   }, [member.id]);
 
   const activeCard           = cards.find((c) => !c.completed);
@@ -16,6 +65,38 @@ export const MemberPage = ({ member, onLogout }) => {
   const usedCards            = cards.filter((c) => c.used);
   const activeStamps         = activeCard ? activeCard.stamps : 0;
   const stampsLeft           = 8 - activeStamps;
+
+  const handleSubmitTestimony = async () => {
+    if (!text.trim()) return setError("Please write your testimony.");
+    if (stars === 0)  return setError("Please select a star rating.");
+    setError("");
+    setLoading(true);
+    try {
+      await submitTestimony({
+        member_id: member.id,
+        full_name: member.full_name,
+        company,
+        position,
+        testimony: text,
+        stars,
+      });
+      setTestimony({ company, position, testimony: text, stars });
+      setSuccess(true);
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // avatar initials for testimony card
+  const initials = member.full_name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <div className="min-h-screen bg-[#f5f2e8] font-body">
@@ -143,6 +224,108 @@ export const MemberPage = ({ member, onLogout }) => {
             ))}
           </div>
         )}
+
+        {/* ── Testimony ──────────────────────────────────────────────────────── */}
+        <div className="mt-5 md:mt-6">
+
+          {/* Section label */}
+          <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">⭐ My Testimony</p>
+
+          {/* Existing testimony display */}
+          {testimony && (
+            <div className="bg-white border-2 border-[#a8b48a] rounded-2xl shadow-sm overflow-hidden mb-4">
+              <div className="px-4 md:px-6 py-3 border-b border-stone-100 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center font-bold text-sm text-green-800">
+                  {initials}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-green-800 font-display">Your Submitted Testimony</p>
+                  <p className="text-[10px] text-stone-400">Visible on the Namidori website</p>
+                </div>
+              </div>
+              <div className="p-4 md:p-6">
+                <div className="flex gap-0.5 mb-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <span key={i} className={`text-sm ${i <= testimony.stars ? "text-amber-400" : "text-stone-200"}`}>★</span>
+                  ))}
+                </div>
+                <p className="text-xs md:text-sm text-stone-600 italic leading-relaxed mb-3">"{testimony.testimony}"</p>
+                <p className="text-[11px] text-stone-400">
+                  <span className="font-semibold text-stone-600">{member.full_name}</span>
+                  {testimony.position && ` · ${testimony.position}`}
+                  {testimony.company  && ` · ${testimony.company}`}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Submit / Update form */}
+          <div className="bg-white border-2 border-[#a8b48a] rounded-2xl shadow-sm overflow-hidden">
+            <div className="px-4 md:px-6 py-3 border-b border-stone-100 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-lg">✏️</div>
+              <div>
+                <p className="text-sm font-bold text-green-800 font-display">
+                  {testimony ? "Update Testimony" : "Write a Testimony"}
+                </p>
+                <p className="text-[10px] text-stone-400">Your feedback helps us grow</p>
+              </div>
+            </div>
+            <div className="p-4 md:p-6 flex flex-col gap-4">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Company</p>
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="e.g. Acme Corp"
+                    className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50 text-xs md:text-sm text-stone-700 outline-none focus:border-[#a8b48a] transition-colors placeholder:text-stone-300"
+                  />
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Position</p>
+                  <input
+                    type="text"
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
+                    placeholder="e.g. Software Engineer"
+                    className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50 text-xs md:text-sm text-stone-700 outline-none focus:border-[#a8b48a] transition-colors placeholder:text-stone-300"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Testimony</p>
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Tell us about your experience at Namidori..."
+                  rows={4}
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50 text-xs md:text-sm text-stone-700 outline-none focus:border-[#a8b48a] transition-colors resize-none placeholder:text-stone-300"
+                />
+              </div>
+
+              <div>
+                <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Rating</p>
+                <StarPicker value={stars} onChange={setStars} />
+              </div>
+
+              {error   && <p className="text-[11px] text-red-400">{error}</p>}
+              {success && <p className="text-[11px] text-green-600 font-semibold">✅ Testimony submitted successfully!</p>}
+
+              <button
+                onClick={handleSubmitTestimony}
+                disabled={loading}
+                className="w-full py-2.5 bg-[#5c3317] text-white rounded-xl text-[11px] font-bold tracking-widest uppercase hover:bg-[#4a2810] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {loading ? "Submitting..." : testimony ? "Update Testimony" : "Submit Testimony"}
+              </button>
+
+            </div>
+          </div>
+        </div>
+        {/* ── End Testimony ──────────────────────────────────────────────────── */}
 
       </section>
     </div>

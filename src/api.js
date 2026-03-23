@@ -23,3 +23,7 @@ export const getMembers   = ()     => api.get("/members");
 export const getLoyaltyCards = (member_id)                    => api.get(`/loyalty/${member_id}`);
 export const addStamps       = (member_id, stamps_to_add, discount_used) => api.patch(`/loyalty/${member_id}/addstamps`, { stamps_to_add, discount_used });
 export const createCard      = (member_id)                    => api.post("/loyalty", { member_id });
+
+// ── Testimony ─────────────────────────────────────────────────────────────────
+export const getTestimony    = (member_id) => api.get(`/testimony/${member_id}`);
+export const submitTestimony = (data)      => api.post("/testimony", data);

@@ -1,11 +1,12 @@
 const express = require("express");
-const cors = require("cors");
+const cors    = require("cors");
 require("dotenv").config();
 
-const productRoutes = require("./routes/products");
-const orderRoutes   = require("./routes/orders");
-const memberRoutes  = require("./routes/members");
-const loyaltyRoutes = require("./routes/loyaltycards");
+const productRoutes   = require("./routes/products");
+const orderRoutes     = require("./routes/orders");
+const memberRoutes    = require("./routes/members");
+const loyaltyRoutes   = require("./routes/loyaltycards");
+const testimonyRoutes = require("./routes/testimony");
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -13,10 +14,11 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/products", productRoutes);
-app.use("/api/orders",   orderRoutes);
-app.use("/api/members",  memberRoutes);
-app.use("/api/loyalty",  loyaltyRoutes);
+app.use("/api/products",  productRoutes);
+app.use("/api/orders",    orderRoutes);
+app.use("/api/members",   memberRoutes);
+app.use("/api/loyalty",   loyaltyRoutes);
+app.use("/api/testimony", testimonyRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Namidori POS server is running! 🍃" });
