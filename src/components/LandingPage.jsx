@@ -6,7 +6,7 @@ import BowlWhisk from "../images/BowlWhisk2.png"
 import Naturals from "../images/TheNaturals.png"
 import Thorns from "../images/ThornsRoses.png"
 import Lucid from "../images/LucidDream.png"
-import { TestimonialsSection } from "./TestimonialsSection";
+import { TestimonialSection } from "./TestimonialSection";
 import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
 
 export const LandingPage = ({ onLoginSuccess, onSignupSuccess, autoSignup }) => {
@@ -180,7 +180,7 @@ export const LandingPage = ({ onLoginSuccess, onSignupSuccess, autoSignup }) => 
           Sign Up For Free 🍃
         </button>
       </section>
-<TestimonialsSection />
+<TestimonialSection />
       {/* ── Footer ── */}
       <footer className="bg-[#5c3317] px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
