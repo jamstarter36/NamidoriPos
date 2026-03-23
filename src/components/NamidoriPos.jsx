@@ -61,6 +61,7 @@ export const NamidoriPos = ({ onLogout }) => {
 
         await Promise.all([...stockUpdates, saveOrder(order)]);
 
+        console.log("Checkout params:", { member, discount, stampsToAdd });
         // Update loyalty cards if member attached
         if (member && stampsToAdd > 0) {
           await addStamps(member.id, stampsToAdd, discount > 0);
