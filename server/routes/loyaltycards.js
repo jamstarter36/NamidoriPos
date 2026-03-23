@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { getSheets, SPREADSHEET_ID } = require("../services/sheets");
 
-const CARD_SHEET = "LoyaltyCard";
+const CARD_SHEET = "LoyaltyCards";
 
 // ── Helper: get all cards for a member ───────────────────────────────────────
 const getMemberCards = async (sheets, member_id) => {
