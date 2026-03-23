@@ -26,11 +26,11 @@ const StarPicker = ({ value, onChange }) => {
 
 const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 0 }) => (
   <div className={`rounded-2xl p-5 md:p-6 text-white shadow-lg ${
-  card?.used
-    ? "bg-gray-400"
-    : card?.completed
-    ? "bg-orange-400"
-    : "bg-[#5c3317]"
+    card?.used
+      ? "bg-gray-400"          // redeemed → solid gray
+      : card?.completed
+      ? "bg-orange-400"        // reward available → orange
+      : "bg-[#5c3317]"         // active/default
   }`}>
     <div className="flex items-center justify-between mb-2">
       <div>
@@ -90,7 +90,7 @@ export const MemberPage = ({ member, onLogout }) => {
   const [success,   setSuccess]   = useState(false);
   const [error,     setError]     = useState("");
 
-  // ✅ NEW: order state
+  // ✅ NEW: card order state for cycle feature
   const [cardOrder, setCardOrder] = useState([]);
 
   useEffect(() => {
@@ -116,15 +116,16 @@ export const MemberPage = ({ member, onLogout }) => {
   const activeStamps         = activeCard ? activeCard.stamps : 0;
   const stampsLeft           = 8 - activeStamps;
 
+  // All non-active cards for stacking (completed unused + used)
   const allOtherCards = [...usedCards, ...completedUnusedCards];
   const stackCount    = allOtherCards.length;
 
-  // ✅ NEW: sync order with cards
+  // ✅ NEW: sync order whenever cards change
   useEffect(() => {
     setCardOrder(allOtherCards);
   }, [cards]);
 
-  // ✅ NEW: rotate function
+  // ✅ NEW: rotate/cycle function for background cards
   const rotateCards = () => {
     setCardOrder((prev) => {
       if (prev.length <= 1) return prev;
@@ -191,21 +192,45 @@ export const MemberPage = ({ member, onLogout }) => {
 
         {/* Member info */}
         <div className="bg-white border-2 border-[#a8b48a] rounded-2xl shadow-sm overflow-hidden mb-5 md:mb-6">
-          ...
+          <div className="px-4 md:px-6 py-3 md:py-4 border-b border-stone-100 flex items-center gap-3">
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-green-100 flex items-center justify-center text-lg md:text-xl">👤</div>
+            <div>
+              <p className="text-sm font-bold text-green-800 font-display">Member Profile</p>
+              <p className="text-[10px] text-stone-400">Your account details</p>
+            </div>
+          </div>
+          <div className="p-4 md:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            {[
+              { label: "Full Name",    value: member.full_name,   icon: "👤" },
+              { label: "Username",     value: member.email,       icon: "🪪" },
+              { label: "Phone",        value: member.phone,       icon: "📱" },
+              { label: "Member Since", value: member.joined_date, icon: "📅" },
+            ].map(({ label, value, icon }) => (
+              <div key={label} className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-stone-50 rounded-xl border border-stone-100">
+                <span className="text-lg md:text-xl">{icon}</span>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest">{label}</p>
+                  <p className="text-xs md:text-sm font-medium text-stone-700 mt-0.5 truncate">{value}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* ── Stacked Loyalty Cards ── */}
         <div className="mb-6">
           <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
 
+          {/* Stack wrapper */}
           <div
             className="relative"
             style={{ paddingBottom: stackCount > 0 ? `${stackCount * 10}px` : "0" }}
           >
+            {/* Background stacked cards (other cards) */}
             {cardOrder.map((card, index) => (
               <div
                 key={card.id}
-                onClick={rotateCards}
+                onClick={rotateCards} // ✅ Click to cycle
                 className="absolute w-full cursor-pointer"
                 style={{
                   top:    `${(stackCount - index) * 10}px`,
@@ -219,12 +244,96 @@ export const MemberPage = ({ member, onLogout }) => {
               </div>
             ))}
 
+            {/* Active card on top */}
             <div className="relative" style={{ zIndex: stackCount + 1 }}>
               <LoyaltyCardUI
                 isActive
                 activeStamps={activeStamps}
                 stampsLeft={stampsLeft}
               />
+            </div>
+          </div>
+
+          {/* Card count summary */}
+          {stackCount > 0 && (
+            <div className="mt-3 flex gap-2 flex-wrap">
+              {completedUnusedCards.length > 0 && (
+                <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
+                  🏆 {completedUnusedCards.length} reward{completedUnusedCards.length !== 1 ? "s" : ""} available
+                </span>
+              )}
+              {usedCards.length > 0 && (
+                <span className="text-[10px] font-bold text-stone-400 bg-stone-100 border border-stone-200 px-2 py-1 rounded-full">
+                  ✅ {usedCards.length} redeemed
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ── Testimony ── */}
+        <div className="mt-5 md:mt-6">
+          <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">⭐ My Testimony</p>
+
+          {testimony && (
+            <div className="bg-white border-2 border-[#a8b48a] rounded-2xl shadow-sm overflow-hidden mb-4">
+              <div className="px-4 md:px-6 py-3 border-b border-stone-100 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center font-bold text-sm text-green-800">
+                  {initials}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-green-800 font-display">Your Submitted Testimony</p>
+                  <p className="text-[10px] text-stone-400">Visible on the Namidori website</p>
+                </div>
+              </div>
+              <div className="p-4 md:p-6">
+                <div className="flex gap-0.5 mb-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <span key={i} className={`text-sm ${i <= testimony.stars ? "text-amber-400" : "text-stone-200"}`}>★</span>
+                  ))}
+                </div>
+                <p className="text-xs md:text-sm text-stone-600 italic leading-relaxed mb-3">"{testimony.testimony}"</p>
+                <p className="text-[11px] text-stone-400">
+                  <span className="font-semibold text-stone-600">{member.full_name}</span>
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white border-2 border-[#a8b48a] rounded-2xl shadow-sm overflow-hidden">
+            <div className="px-4 md:px-6 py-3 border-b border-stone-100 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-lg">✏️</div>
+              <div>
+                <p className="text-sm font-bold text-green-800 font-display">
+                  {testimony ? "Update Testimony" : "Write a Testimony"}
+                </p>
+                <p className="text-[10px] text-stone-400">Your feedback helps us grow</p>
+              </div>
+            </div>
+            <div className="p-4 md:p-6 flex flex-col gap-4">
+              <div>
+                <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Testimony</p>
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Tell us about your experience at Namidori..."
+                  rows={4}
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50 text-xs md:text-sm text-stone-700 outline-none focus:border-[#a8b48a] transition-colors resize-none placeholder:text-stone-300"
+                />
+              </div>
+              <div>
+                <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Rating</p>
+                <StarPicker value={stars} onChange={setStars} />
+              </div>
+              {error   && <p className="text-[11px] text-red-400">{error}</p>}
+              {success && <p className="text-[11px] text-green-600 font-semibold">✅ Testimony submitted successfully!</p>}
+              <button
+                onClick={handleSubmitTestimony}
+                disabled={loading}
+                className="w-full py-2.5 bg-[#5c3317] text-white rounded-xl text-[11px] font-bold tracking-widest uppercase hover:bg-[#4a2810] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {loading ? "Submitting..." : testimony ? "Update Testimony" : "Submit Testimony"}
+              </button>
             </div>
           </div>
         </div>
