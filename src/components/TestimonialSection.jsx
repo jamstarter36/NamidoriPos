@@ -46,6 +46,7 @@ function SwiperLayout({ testimonials }) {
   const [current, setCurrent] = useState(0);
   const [visibleCount, setVisibleCount] = useState(1);
   const wrapRef = useRef(null);
+  const touchStartX = useRef(null);
 
   useEffect(() => {
     const update = () => {
@@ -61,8 +62,15 @@ function SwiperLayout({ testimonials }) {
 
   const maxIndex = Math.max(0, testimonials.length - visibleCount);
   const safeCurrent = Math.min(current, maxIndex);
-
   const go = (dir) => setCurrent((prev) => Math.max(0, Math.min(prev + dir, maxIndex)));
+
+  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) go(diff > 0 ? 1 : -1);
+    touchStartX.current = null;
+  };
 
   const gap = 16;
   const cardWidth = `calc((100% - ${(visibleCount - 1) * gap}px) / ${visibleCount})`;
@@ -76,6 +84,8 @@ function SwiperLayout({ testimonials }) {
             gap: `${gap}px`,
             transform: `translateX(calc(-${safeCurrent} * (100% / ${visibleCount} + ${gap / visibleCount}px)))`,
           }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           {testimonials.map((t, i) => (
             <div key={t.id || i} className="flex-shrink-0" style={{ width: cardWidth }}>
