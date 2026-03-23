@@ -10,6 +10,7 @@ router.post("/", async (req, res) => {
   try {
     console.log("ORDER BODY:", JSON.stringify(req.body));
     const { items, subtotal, vat_rate, vat_amount, total, member_id, discount } = req.body;
+    const discountUsed = discount > 0;
     const sheets = await getSheets();
 
     // Generate order ID
@@ -53,14 +54,14 @@ router.post("/", async (req, res) => {
       const memberRowIndex = memberRows.findIndex((row, i) => i > 0 && String(row[idCol]) === String(member_id));
 
       if (memberRowIndex !== -1) {
-        const currentStamps  = parseInt(memberRows[memberRowIndex][stampsCol]) || 0;
-        const itemsOrdered   = items.filter(i => !i.isFree).reduce((s, i) => s + i.qty, 0);
-        const stampsAfter    = currentStamps + itemsOrdered;
+        const currentStamps = parseInt(memberRows[memberRowIndex][stampsCol]) || 0;
+        const itemsOrdered  = items.filter(i => !i.isFree).reduce((s, i) => s + i.qty, 0);
+        const stampsAfter   = currentStamps + itemsOrdered;
 
-        // Reset to 0 if reached 8, otherwise add stamps
-        const newStamps = stampsAfter >= 8 ? stampsAfter % 8 : stampsAfter;
+        // Only reset stamps if discount was actually used
+        const newStamps = discountUsed ? stampsAfter % 8 : stampsAfter;
 
-        const sheetRow   = memberRowIndex + 1; // 1-indexed
+        const sheetRow   = memberRowIndex + 1;
         const stampsCell = `${MEMBER_SHEET}!${String.fromCharCode(65 + stampsCol)}${sheetRow}`;
 
         await sheets.spreadsheets.values.update({
