@@ -82,9 +82,9 @@ const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 
 );
 
 // ── Cycling Deck ─────────────────────────────────────────────────────────────
-const STRIP_H   = 12; // height of each peeking strip (px)
-const STRIP_GAP = 4;  // gap between strips (px)
 const MAX_PEEK  = 4;
+const STRIP_H   = 14; // visible strip height below card (px)
+const STRIP_GAP = 6;  // gap between each strip (px)
 
 const cardBg = (card) => {
   if (!card || card.__type === "active") return "#5c3317";
@@ -126,43 +126,48 @@ const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
 
   if (deck.length === 0) return null;
 
-  const peekCount  = Math.min(deck.length - 1, MAX_PEEK);
-  const bottomPad  = peekCount * (STRIP_H + STRIP_GAP);
+  const peekCount = Math.min(deck.length - 1, MAX_PEEK);
+  // Total bottom space = strips stacked below card
+  const totalBottom = peekCount * (STRIP_H + STRIP_GAP);
 
   return (
-    <div className="relative select-none" style={{ paddingBottom: `${bottomPad}px` }}>
+    // Outer container reserves space for strips below
+    <div style={{ paddingBottom: `${totalBottom}px`, position: "relative" }}>
 
-      {/* ── Peek strips: thin solid bars stacked below the front card ── */}
-      {deck.slice(1, 1 + peekCount).map((card, idx) => {
-        // idx 0 = closest strip (immediately below front card)
-        const top    = `calc(100% + ${idx * (STRIP_H + STRIP_GAP)}px)`;
-        const inset  = (idx + 1) * 14; // each strip is narrower than the one above
-        return (
-          <div
-            key={card.__type === "active" ? "strip-active" : `strip-${card.id}`}
-            style={{
-              position:        "absolute",
-              top,
-              left:            `${inset}px`,
-              right:           `${inset}px`,
-              height:          `${STRIP_H}px`,
-              borderRadius:    "0 0 10px 10px",
-              backgroundColor: cardBg(card),
-              zIndex:          peekCount - idx,
-              pointerEvents:   "none",
-            }}
-          />
-        );
-      })}
-
-      {/* ── Front card ── */}
+      {/* Card + strips share the same relative wrapper so strips anchor to card bottom */}
       <div
         onClick={cycleCard}
-        className="relative cursor-pointer"
+        className="relative cursor-pointer select-none"
         style={{ zIndex: peekCount + 1, perspective: "1000px" }}
       >
+        {/* ── Peek strips — anchored to bottom of this wrapper ── */}
+        {deck.slice(1, 1 + peekCount).map((card, idx) => {
+          const inset = (idx + 1) * 16;
+          // Each strip sits below the card: bottom = -(idx+1)*(STRIP_H+STRIP_GAP)
+          const bottomOffset = -((idx + 1) * (STRIP_H + STRIP_GAP));
+          return (
+            <div
+              key={card.__type === "active" ? "strip-active" : `strip-${card.id}`}
+              style={{
+                position:        "absolute",
+                bottom:          `${bottomOffset}px`,
+                left:            `${inset}px`,
+                right:           `${inset}px`,
+                height:          `${STRIP_H}px`,
+                borderRadius:    "0 0 12px 12px",
+                backgroundColor: cardBg(card),
+                zIndex:          peekCount - idx,
+                pointerEvents:   "none",
+              }}
+            />
+          );
+        })}
+
+        {/* ── Front card with flip animation ── */}
         <div
           style={{
+            position: "relative",
+            zIndex: peekCount + 1,
             transition:      flipping
               ? "transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease"
               : "transform 0.26s cubic-bezier(0.34,1.56,0.64,1), opacity 0.26s ease",
@@ -180,7 +185,10 @@ const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
 
         {/* Tap hint */}
         {deck.length > 1 && (
-          <div className="absolute bottom-3 right-4 text-[9px] text-white/40 font-semibold tracking-widest uppercase pointer-events-none">
+          <div
+            style={{ position: "absolute", bottom: 12, right: 16, zIndex: peekCount + 2 }}
+            className="text-[9px] text-white/40 font-semibold tracking-widest uppercase pointer-events-none"
+          >
             tap to cycle
           </div>
         )}
@@ -319,7 +327,6 @@ export const MemberPage = ({ member, onLogout }) => {
             stampsLeft={stampsLeft}
           />
 
-          {/* Badges — always rendered below the deck's own padding */}
           {stackCount > 0 && (
             <div className="mt-3 flex gap-2 flex-wrap">
               {completedUnusedCards.length > 0 && (
