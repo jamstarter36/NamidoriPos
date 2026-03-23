@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { getSheets, SPREADSHEET_ID } = require("../services/sheets");
 
-const ORDER_SHEET   = "Orders";
-const MEMBER_SHEET  = "Members";
+const ORDER_SHEET  = "Orders";
+const MEMBER_SHEET = "Members";
 
 // ── POST /orders — save a new order ──────────────────────────────────────────
 router.post("/", async (req, res) => {
@@ -58,8 +58,21 @@ router.post("/", async (req, res) => {
         const itemsOrdered  = items.filter(i => !i.isFree).reduce((s, i) => s + i.qty, 0);
         const stampsAfter   = currentStamps + itemsOrdered;
 
-        // Only reset stamps if discount was actually used
-        const newStamps = discountUsed ? stampsAfter % 8 : Math.min(stampsAfter, 8);
+        /*
+          STAMP LOGIC:
+          - Normal: stamps accumulate up to max 8
+          - When member has 8 stamps and makes a purchase → discount becomes available
+          - If discount IS used → reset to 0 (9th purchase doesn't count as stamp)
+          - If discount is NOT used → stays capped at 8 until they decide to use it
+        */
+        let newStamps;
+        if (discountUsed) {
+          // Discount was redeemed — reset to 0, 9th purchase counts as nothing
+          newStamps = 0;
+        } else {
+          // No discount used — cap at 8
+          newStamps = Math.min(stampsAfter, 8);
+        }
 
         const sheetRow   = memberRowIndex + 1;
         const stampsCell = `${MEMBER_SHEET}!${String.fromCharCode(65 + stampsCol)}${sheetRow}`;
