@@ -24,12 +24,61 @@ const StarPicker = ({ value, onChange }) => {
   );
 };
 
-// ─── Member Page ──────────────────────────────────────────────────────────────
+const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 0 }) => (
+  <div className={`rounded-2xl p-5 md:p-6 text-white shadow-lg ${
+    card?.used ? "bg-[#3a1f0a]" : "bg-[#5c3317]"
+  } ${card?.used ? "opacity-60" : ""}`}>
+    <div className="flex items-center justify-between mb-2">
+      <div>
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
+        <p className="text-base md:text-lg font-bold font-display tracking-wide">
+          {isActive ? "Current Card" : "Loyalty Card"}
+        </p>
+      </div>
+      <div className="w-10 h-10"><img src={NamiLogo} /></div>
+    </div>
+    <p className="text-xs text-white/60 mb-4">
+      {isActive
+        ? "Collect 8 stamps to get a ₱145 discount!"
+        : card?.used
+        ? `Redeemed on ${card.used_date}`
+        : `Completed on ${card?.completed_date} · ₱145 discount ready!`}
+    </p>
+    <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
+      {Array.from({ length: 8 }).map((_, i) => {
+        const filled = isActive ? i < activeStamps : true;
+        return (
+          <div key={i} className={`w-8 h-8 md:w-9 md:h-9 rounded-full border-2 flex items-center justify-center text-xs md:text-sm transition-all ${
+            filled
+              ? card?.used
+                ? "bg-white/10 border-white/20 text-white/40"
+                : "bg-green-800 border-green-200 text-white"
+              : "border-white/30 bg-white/10"
+          }`}>
+            {filled ? "🍵" : ""}
+          </div>
+        );
+      })}
+    </div>
+    <p className="text-[11px]">
+      {isActive ? (
+        <span className="text-white/60">
+          {activeStamps} / 8 stamps
+          {activeStamps === 0 ? " — Start ordering to collect stamps!"
+            : activeStamps === 8 ? " — Card complete! 🎉"
+            : ` — ${stampsLeft} more to go!`}
+        </span>
+      ) : card?.used ? (
+        <span className="text-white/40">✅ Discount used</span>
+      ) : (
+        <span className="text-amber-300 font-bold">🏆 Ready to redeem!</span>
+      )}
+    </p>
+  </div>
+);
 
 export const MemberPage = ({ member, onLogout }) => {
   const [cards, setCards] = useState([]);
-
-  // testimony state
   const [testimony, setTestimony] = useState(null);
   const [text,      setText]      = useState("");
   const [stars,     setStars]     = useState(0);
@@ -59,6 +108,10 @@ export const MemberPage = ({ member, onLogout }) => {
   const usedCards            = cards.filter((c) => c.used);
   const activeStamps         = activeCard ? activeCard.stamps : 0;
   const stampsLeft           = 8 - activeStamps;
+
+  // All non-active cards for stacking (completed unused + used)
+  const allOtherCards = [...completedUnusedCards, ...usedCards];
+  const stackCount    = allOtherCards.length;
 
   const handleSubmitTestimony = async () => {
     if (!text.trim()) return setError("Please write your testimony.");
@@ -143,93 +196,63 @@ export const MemberPage = ({ member, onLogout }) => {
           </div>
         </div>
 
-        {/* Active loyalty card */}
-        <div className="bg-[#5c3317] rounded-2xl p-5 md:p-6 text-white shadow-lg mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
-              <p className="text-base md:text-lg font-bold font-display tracking-wide">Current Card</p>
-            </div>
-            <div className="w-10 h-10"><img src={NamiLogo} /></div>
-          </div>
-          <p className="text-xs text-white/60 mb-4">Collect 8 stamps to get a ₱145 discount!</p>
-          <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className={`w-8 h-8 md:w-9 md:h-9 rounded-full border-2 flex items-center justify-center text-xs md:text-sm transition-all ${
-                i < activeStamps ? "bg-green-800 border-green-200 text-white" : "border-white/30 bg-white/10"
-              }`}>
-                {i < activeStamps ? "🍵" : ""}
+        {/* ── Stacked Loyalty Cards ── */}
+        <div className="mb-6">
+          <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
+
+          {/* Stack wrapper */}
+          <div
+            className="relative"
+            style={{ paddingBottom: stackCount > 0 ? `${stackCount * 10}px` : "0" }}
+          >
+            {/* Background stacked cards (other cards) */}
+            {allOtherCards.map((card, index) => (
+              <div
+                key={card.id}
+                className="absolute w-full"
+                style={{
+                  top:    `${(stackCount - index) * 10}px`,
+                  left:   `${(stackCount - index) * 4}px`,
+                  right:  `-${(stackCount - index) * 4}px`,
+                  zIndex: index + 1,
+                  width:  `calc(100% - ${(stackCount - index) * 8}px)`,
+                }}
+              >
+                <LoyaltyCardUI card={card} />
               </div>
             ))}
+
+            {/* Active card on top */}
+            <div className="relative" style={{ zIndex: stackCount + 1 }}>
+              <LoyaltyCardUI
+                isActive
+                activeStamps={activeStamps}
+                stampsLeft={stampsLeft}
+              />
+            </div>
           </div>
-          <p className="text-[11px] text-white/60">
-            {activeStamps} / 8 stamps
-            {activeStamps === 0 ? " — Start ordering to collect stamps!"
-              : activeStamps === 8 ? " — Card complete! 🎉"
-              : ` — ${stampsLeft} more to go!`}
-          </p>
+
+          {/* Card count summary */}
+          {stackCount > 0 && (
+            <div className="mt-3 flex gap-2 flex-wrap">
+              {completedUnusedCards.length > 0 && (
+                <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
+                  🏆 {completedUnusedCards.length} reward{completedUnusedCards.length !== 1 ? "s" : ""} available
+                </span>
+              )}
+              {usedCards.length > 0 && (
+                <span className="text-[10px] font-bold text-stone-400 bg-stone-100 border border-stone-200 px-2 py-1 rounded-full">
+                  ✅ {usedCards.length} redeemed
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Completed unused cards */}
-        {completedUnusedCards.length > 0 && (
-          <div className="mb-4">
-            <p className="text-xs font-bold text-green-800 uppercase tracking-widest mb-2">🎉 Rewards Available</p>
-            {completedUnusedCards.map((card) => (
-              <div key={card.id} className="bg-[#5c3317] rounded-2xl p-5 md:p-6 text-white shadow-lg mb-3">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
-                    <p className="text-base md:text-lg font-bold font-display tracking-wide">Loyalty Card</p>
-                  </div>
-                  <div className="w-10 h-10"><img src={NamiLogo} /></div>
-                </div>
-                <p className="text-xs text-white/60 mb-4">Completed on {card.completed_date} · ₱145 discount ready!</p>
-                <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 bg-green-800 border-green-200 text-white flex items-center justify-center text-xs md:text-sm">
-                      🍵
-                    </div>
-                  ))}
-                </div>
-                <p className="text-[11px] text-amber-300 font-bold">🏆 Ready to redeem!</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Used cards history */}
-        {usedCards.length > 0 && (
-          <div>
-            <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">📜 Redeemed Cards</p>
-            {usedCards.map((card) => (
-              <div key={card.id} className="bg-[#3a1f0a] rounded-2xl p-5 md:p-6 text-white shadow-lg mb-3 opacity-50">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
-                    <p className="text-base md:text-lg font-bold font-display tracking-wide">Loyalty Card</p>
-                  </div>
-                  <div className="w-10 h-10"><img src={NamiLogo} /></div>
-                </div>
-                <p className="text-xs text-white/60 mb-4">Redeemed on {card.used_date}</p>
-                <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-xs md:text-sm text-white/40">
-                      🍵
-                    </div>
-                  ))}
-                </div>
-                <p className="text-[11px] text-white/40">✅ Discount used</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ── Testimony ──────────────────────────────────────────────────────── */}
+        {/* ── Testimony ── */}
         <div className="mt-5 md:mt-6">
-
           <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">⭐ My Testimony</p>
 
-          {/* Existing testimony display */}
           {testimony && (
             <div className="bg-white border-2 border-[#a8b48a] rounded-2xl shadow-sm overflow-hidden mb-4">
               <div className="px-4 md:px-6 py-3 border-b border-stone-100 flex items-center gap-3">
@@ -255,7 +278,6 @@ export const MemberPage = ({ member, onLogout }) => {
             </div>
           )}
 
-          {/* Submit / Update form */}
           <div className="bg-white border-2 border-[#a8b48a] rounded-2xl shadow-sm overflow-hidden">
             <div className="px-4 md:px-6 py-3 border-b border-stone-100 flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-lg">✏️</div>
@@ -267,7 +289,6 @@ export const MemberPage = ({ member, onLogout }) => {
               </div>
             </div>
             <div className="p-4 md:p-6 flex flex-col gap-4">
-
               <div>
                 <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Testimony</p>
                 <textarea
@@ -278,15 +299,12 @@ export const MemberPage = ({ member, onLogout }) => {
                   className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-stone-50 text-xs md:text-sm text-stone-700 outline-none focus:border-[#a8b48a] transition-colors resize-none placeholder:text-stone-300"
                 />
               </div>
-
               <div>
                 <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest mb-1.5">Rating</p>
                 <StarPicker value={stars} onChange={setStars} />
               </div>
-
               {error   && <p className="text-[11px] text-red-400">{error}</p>}
               {success && <p className="text-[11px] text-green-600 font-semibold">✅ Testimony submitted successfully!</p>}
-
               <button
                 onClick={handleSubmitTestimony}
                 disabled={loading}
@@ -294,11 +312,9 @@ export const MemberPage = ({ member, onLogout }) => {
               >
                 {loading ? "Submitting..." : testimony ? "Update Testimony" : "Submit Testimony"}
               </button>
-
             </div>
           </div>
         </div>
-        {/* ── End Testimony ──────────────────────────────────────────────────── */}
 
       </section>
     </div>
