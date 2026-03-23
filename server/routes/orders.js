@@ -56,23 +56,19 @@ router.post("/", async (req, res) => {
       if (memberRowIndex !== -1) {
         const currentStamps = parseInt(memberRows[memberRowIndex][stampsCol]) || 0;
         const itemsOrdered  = items.filter(i => !i.isFree).reduce((s, i) => s + i.qty, 0);
-        const stampsAfter   = currentStamps + itemsOrdered;
 
-        /*
-          STAMP LOGIC:
-          - Normal: stamps accumulate up to max 8
-          - When member has 8 stamps and makes a purchase → discount becomes available
-          - If discount IS used → reset to 0 (9th purchase doesn't count as stamp)
-          - If discount is NOT used → stays capped at 8 until they decide to use it
-        */
         let newStamps;
+
         if (discountUsed) {
-          // Discount was redeemed — reset to 0, 9th purchase counts as nothing
+          // Discount redeemed — 9th purchase does NOT count as a stamp
+          // Reset to 0 completely
           newStamps = 0;
         } else {
-          // No discount used — cap at 8
-          newStamps = Math.min(stampsAfter, 8);
+          // No discount used — add stamps normally but cap at 8
+          newStamps = Math.min(currentStamps + itemsOrdered, 8);
         }
+
+        console.log(`Stamps: ${currentStamps} + ${itemsOrdered} = ${currentStamps + itemsOrdered} → saved as ${newStamps} (discountUsed: ${discountUsed})`);
 
         const sheetRow   = memberRowIndex + 1;
         const stampsCell = `${MEMBER_SHEET}!${String.fromCharCode(65 + stampsCol)}${sheetRow}`;
