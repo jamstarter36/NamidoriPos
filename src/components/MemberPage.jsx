@@ -159,7 +159,8 @@ export const MemberPage = ({ member, onLogout }) => {
                 style={{
                   top: `${totalOffset * 20}px`,
                   left: `${totalOffset * -8}px`,
-                  width: "100%",
+                  right: 0,
+                  width: "auto",
                   zIndex: i + 1,
                   backgroundColor: "#78716c",
                 }}
@@ -191,6 +192,8 @@ export const MemberPage = ({ member, onLogout }) => {
                 style={{
                   top: `${totalOffset * 20}px`,
                   left: `${totalOffset * -8}px`,
+                  right: 0,
+                  width: "auto",
                   width: "100%",
                   zIndex: usedCards.length + i + 1,
                   backgroundColor: "#d97706",
