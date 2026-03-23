@@ -218,57 +218,57 @@
           </div>
 
       {/* ── Stacked Loyalty Cards ── */}
-      <div className="mb-6">
-        <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
+<div className="mb-6">
+  <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
 
-        {/* Stack wrapper */}
+  {/* Stack wrapper */}
+  <div
+    className="relative"
+    style={{ paddingBottom: cardOrder.length > 0 ? `${cardOrder.length * 10}px` : "0" }}
+  >
+    {/* All cards including active for cycling */}
+    {cardOrder.map((card, index) => {
+      const isActiveCard = card.id === activeCard?.id;
+      return (
         <div
-          className="relative"
-          style={{ paddingBottom: cardOrder.length > 0 ? `${cardOrder.length * 10}px` : "0" }}
+          key={card.id}
+          onClick={rotateCards} // ✅ Click to cycle
+          className="absolute w-full cursor-pointer"
+          style={{
+            top:    `${(cardOrder.length - index) * 10}px`,
+            left:   `${(cardOrder.length - index) * 4}px`,
+            right:  `-${(cardOrder.length - index) * 4}px`,
+            zIndex: index + 1,
+            width:  `calc(100% - ${(cardOrder.length - index) * 8}px)`,
+          }}
         >
-          {/* All cards including active for cycling */}
-          {cardOrder.map((card, index) => {
-            const isActiveCard = card.id === activeCard?.id;
-            return (
-              <div
-                key={card.id}
-                onClick={rotateCards} // ✅ Click to cycle
-                className="absolute w-full cursor-pointer"
-                style={{
-                  top:    `${(cardOrder.length - index) * 10}px`,
-                  left:   `${(cardOrder.length - index) * 4}px`,
-                  right:  `-${(cardOrder.length - index) * 4}px`,
-                  zIndex: index + 1,
-                  width:  `calc(100% - ${(cardOrder.length - index) * 8}px)`,
-                }}
-              >
-                <LoyaltyCardUI
-                  card={card}
-                  isActive={isActiveCard}
-                  activeStamps={isActiveCard ? activeStamps : 0}
-                  stampsLeft={isActiveCard ? stampsLeft : 0}
-                />
-              </div>
-            );
-          })}
+          <LoyaltyCardUI
+            card={card}
+            isActive={isActiveCard}       // ✅ active card styling
+            activeStamps={isActiveCard ? activeStamps : 0}
+            stampsLeft={isActiveCard ? stampsLeft : 0}
+          />
         </div>
-
-    {/* Card count summary */}
-    {stackCount > 0 && (
-      <div className="mt-3 flex gap-2 flex-wrap">
-        {completedUnusedCards.length > 0 && (
-          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
-            🏆 {completedUnusedCards.length} reward{completedUnusedCards.length !== 1 ? "s" : ""} available
-          </span>
-        )}
-        {usedCards.length > 0 && (
-          <span className="text-[10px] font-bold text-stone-400 bg-stone-100 border border-stone-200 px-2 py-1 rounded-full">
-            ✅ {usedCards.length} redeemed
-          </span>
-        )}
-      </div>
-    )}
+      );
+    })}
   </div>
+
+  {/* Card count summary */}
+  {stackCount > 0 && (
+    <div className="mt-3 flex gap-2 flex-wrap">
+      {completedUnusedCards.length > 0 && (
+        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
+          🏆 {completedUnusedCards.length} reward{completedUnusedCards.length !== 1 ? "s" : ""} available
+        </span>
+      )}
+      {usedCards.length > 0 && (
+        <span className="text-[10px] font-bold text-stone-400 bg-stone-100 border border-stone-200 px-2 py-1 rounded-full">
+          ✅ {usedCards.length} redeemed
+        </span>
+      )}
+    </div>
+  )}
+</div>
 
           {/* ── Testimony ── */}
           <div className="mt-5 md:mt-6">
