@@ -1,9 +1,9 @@
-import express from "express";
-import pool from "../db.js"; // adjust to your db import
+const express = require("express");
+const pool    = require("../db");  // adjust if your db file is named differently
 
 const router = express.Router();
 
-// GET /testimony/:member_id
+// GET /api/testimony/:member_id
 router.get("/:member_id", async (req, res) => {
   const { member_id } = req.params;
   try {
@@ -17,14 +17,13 @@ router.get("/:member_id", async (req, res) => {
   }
 });
 
-// POST /testimony
+// POST /api/testimony
 router.post("/", async (req, res) => {
   const { member_id, full_name, company, position, testimony, stars } = req.body;
   try {
-    // Upsert — update if exists, insert if not
     const result = await pool.query(
       `INSERT INTO testimonies (member_id, full_name, company, position, testimony, stars)
-       VALUES ($1,$2,$3,$4,$5,$6)
+       VALUES ($1, $2, $3, $4, $5, $6)
        ON CONFLICT (member_id)
        DO UPDATE SET full_name=$2, company=$3, position=$4, testimony=$5, stars=$6
        RETURNING *`,
@@ -36,4 +35,4 @@ router.post("/", async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
