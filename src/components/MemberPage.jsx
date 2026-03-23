@@ -155,10 +155,12 @@ export const MemberPage = ({ member, onLogout }) => {
             return (
               <div
                 key={card.id}
-                className="absolute w-full rounded-2xl p-5 shadow-md"
+                className="absolute rounded-2xl p-5 shadow-md"
                 style={{
                   top: `${totalOffset * 20}px`,
-                  left: `${totalOffset * 8}px`,
+                  left: 0,
+                  right: `${totalOffset * -8}px`,
+                  width: "100%",
                   zIndex: i + 1,
                   backgroundColor: "#78716c",
                 }}
@@ -186,10 +188,11 @@ export const MemberPage = ({ member, onLogout }) => {
             return (
               <div
                 key={card.id}
-                className="absolute w-full rounded-2xl p-5 shadow-md"
+                className="absolute rounded-2xl p-5 shadow-md"
                 style={{
                   top: `${totalOffset * 20}px`,
-                  left: `${totalOffset * 8}px`,
+                  left: 0,
+                  width: "100%",
                   zIndex: usedCards.length + i + 1,
                   backgroundColor: "#d97706",
                 }}
@@ -213,8 +216,8 @@ export const MemberPage = ({ member, onLogout }) => {
 
           {/* Active card — always on top */}
           <div
-            className="absolute w-full bg-[#5c3317] rounded-2xl p-5 md:p-6 text-white shadow-xl"
-            style={{ top: 0, left: 0, right: 0, zIndex: completedUnusedCards.length + usedCards.length + 2 }}
+            className="absolute rounded-2xl p-5 md:p-6 text-white shadow-xl bg-[#5c3317]"
+            style={{ top: 0, left: 0, width: "100%", zIndex: completedUnusedCards.length + usedCards.length + 2 }}
           >
             <div className="flex items-center justify-between mb-2">
               <div>
