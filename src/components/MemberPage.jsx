@@ -81,24 +81,32 @@ const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 
   </div>
 );
 
-// ── Cycling Deck ────────────────────────────────────────────────────────────
-const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
-  // Build the ordered deck: active first, then completed-unused, then used
-  const completedUnused = cards.filter((c) => c.completed && !c.used);
-  const used            = cards.filter((c) => c.used);
+// ── Cycling Deck ─────────────────────────────────────────────────────────────
+const STRIP_H   = 12; // height of each peeking strip (px)
+const STRIP_GAP = 4;  // gap between strips (px)
+const MAX_PEEK  = 4;
 
-  // deck[0] = front card, deck[last] = back card
+const cardBg = (card) => {
+  if (!card || card.__type === "active") return "#5c3317";
+  if (card.used)      return "#9ca3af";
+  if (card.completed) return "#fb923c";
+  return "#5c3317";
+};
+
+const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
   const buildDeck = useCallback(() => {
+    const completedUnused = cards.filter((c) => c.completed && !c.used);
+    const used            = cards.filter((c) => c.used);
     const list = [];
-    if (activeCard)          list.push({ __type: "active" });
+    if (activeCard) list.push({ __type: "active" });
     completedUnused.forEach((c) => list.push(c));
-    used.forEach((c)            => list.push(c));
+    used.forEach((c) => list.push(c));
     return list;
   }, [cards]);
 
   const [deck,      setDeck]      = useState(buildDeck);
   const [animating, setAnimating] = useState(false);
-  const [flipping,  setFlipping]  = useState(false); // triggers CSS class
+  const [flipping,  setFlipping]  = useState(false);
 
   useEffect(() => { setDeck(buildDeck()); }, [buildDeck]);
 
@@ -106,92 +114,68 @@ const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
     if (animating || deck.length <= 1) return;
     setAnimating(true);
     setFlipping(true);
-
-    // After flip-out animation, move front card to back
     setTimeout(() => {
       setDeck((prev) => {
         const [first, ...rest] = prev;
         return [...rest, first];
       });
       setFlipping(false);
-    }, 320);
-
-    setTimeout(() => setAnimating(false), 600);
+    }, 300);
+    setTimeout(() => setAnimating(false), 560);
   };
 
   if (deck.length === 0) return null;
 
-  const MAX_PEEK = 3; // max cards visible in stack behind
-  const peekCount = Math.min(deck.length - 1, MAX_PEEK);
+  const peekCount  = Math.min(deck.length - 1, MAX_PEEK);
+  const bottomPad  = peekCount * (STRIP_H + STRIP_GAP);
 
   return (
-    <div className="relative select-none" style={{ paddingBottom: `${peekCount * 10}px` }}>
-      {/* ── Peeking solid strips at the bottom ── */}
-      {deck
-        .slice(1, 1 + peekCount)
-        .reverse()
-        .map((card, revIdx) => {
-          const stackIdx = peekCount - revIdx; // 1 = closest to front
-          const inset    = stackIdx * 8;
-          const bottom   = -(stackIdx * 10);
-          const bgColor  =
-            card.__type === "active" || (!card?.used && !card?.completed)
-              ? "#5c3317"
-              : card?.used
-              ? "#9ca3af"   // gray-400
-              : "#fb923c";  // orange-400
-          return (
-            <div
-              key={card.__type === "active" ? "active-bg" : card.id}
-              style={{
-                position:     "absolute",
-                bottom:       `${bottom}px`,
-                left:         `${inset}px`,
-                right:        `${inset}px`,
-                height:       "100%",
-                zIndex:       peekCount - stackIdx,
-                borderRadius: "1rem",
-                backgroundColor: bgColor,
-                pointerEvents:   "none",
-              }}
-            />
-          );
-        })}
+    <div className="relative select-none" style={{ paddingBottom: `${bottomPad}px` }}>
 
-      {/* ── Front card with flip animation ── */}
+      {/* ── Peek strips: thin solid bars stacked below the front card ── */}
+      {deck.slice(1, 1 + peekCount).map((card, idx) => {
+        // idx 0 = closest strip (immediately below front card)
+        const top    = `calc(100% + ${idx * (STRIP_H + STRIP_GAP)}px)`;
+        const inset  = (idx + 1) * 14; // each strip is narrower than the one above
+        return (
+          <div
+            key={card.__type === "active" ? "strip-active" : `strip-${card.id}`}
+            style={{
+              position:        "absolute",
+              top,
+              left:            `${inset}px`,
+              right:           `${inset}px`,
+              height:          `${STRIP_H}px`,
+              borderRadius:    "0 0 10px 10px",
+              backgroundColor: cardBg(card),
+              zIndex:          peekCount - idx,
+              pointerEvents:   "none",
+            }}
+          />
+        );
+      })}
+
+      {/* ── Front card ── */}
       <div
         onClick={cycleCard}
         className="relative cursor-pointer"
-        style={{
-          zIndex: peekCount + 1,
-          perspective: "1000px",
-        }}
+        style={{ zIndex: peekCount + 1, perspective: "1000px" }}
       >
         <div
           style={{
-            transition: flipping
-              ? "transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.32s ease"
-              : "transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.28s ease",
-            transform: flipping
-              ? "rotateY(-90deg) scale(0.95)"
-              : "rotateY(0deg) scale(1)",
-            opacity: flipping ? 0.4 : 1,
+            transition:      flipping
+              ? "transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease"
+              : "transform 0.26s cubic-bezier(0.34,1.56,0.64,1), opacity 0.26s ease",
+            transform:       flipping ? "rotateY(-90deg) scale(0.96)" : "rotateY(0deg) scale(1)",
+            opacity:         flipping ? 0.3 : 1,
             transformOrigin: "left center",
           }}
         >
-          {(() => {
-            const front = deck[0];
-            if (front.__type === "active") {
-              return (
-                <LoyaltyCardUI
-                  isActive
-                  activeStamps={activeStamps}
-                  stampsLeft={stampsLeft}
-                />
-              );
-            }
-            return <LoyaltyCardUI card={front} />;
-          })()}
+          {deck[0].__type === "active" ? (
+            <LoyaltyCardUI isActive activeStamps={activeStamps} stampsLeft={stampsLeft} />
+          ) : (
+            <LoyaltyCardUI card={deck[0]} />
+          )}
         </div>
 
         {/* Tap hint */}
@@ -204,8 +188,7 @@ const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
     </div>
   );
 };
-
-// ────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 
 export const MemberPage = ({ member, onLogout }) => {
   const [cards, setCards] = useState([]);
@@ -233,12 +216,11 @@ export const MemberPage = ({ member, onLogout }) => {
       .catch((err) => console.error("Failed to fetch testimony:", err));
   }, [member.id]);
 
-  const activeCard   = cards.find((c) => !c.completed);
-  const activeStamps = activeCard ? activeCard.stamps : 0;
-  const stampsLeft   = 8 - activeStamps;
-
+  const activeCard           = cards.find((c) => !c.completed);
   const completedUnusedCards = cards.filter((c) => c.completed && !c.used);
   const usedCards            = cards.filter((c) => c.used);
+  const activeStamps         = activeCard ? activeCard.stamps : 0;
+  const stampsLeft           = 8 - activeStamps;
   const stackCount           = completedUnusedCards.length + usedCards.length;
 
   const handleSubmitTestimony = async () => {
@@ -276,7 +258,9 @@ export const MemberPage = ({ member, onLogout }) => {
       {/* Navbar */}
       <nav className="flex items-center justify-between px-4 md:px-8 py-3 md:py-4 bg-[#5c3317] shadow-md">
         <div className="flex items-center gap-2.5 md:gap-3">
-          <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/20 flex items-center justify-center text-base md:text-lg"><img src={NamiLogo} /></div>
+          <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/20 flex items-center justify-center text-base md:text-lg">
+            <img src={NamiLogo} />
+          </div>
           <div>
             <p className="text-xs md:text-sm font-bold tracking-[0.14em] text-white uppercase font-display">NAMIDORI</p>
             <p className="hidden sm:block text-[9px] text-white/50 tracking-widest uppercase">Matcha Cafe</p>
@@ -324,7 +308,7 @@ export const MemberPage = ({ member, onLogout }) => {
           </div>
         </div>
 
-        {/* ── Cycling Loyalty Card Deck ── */}
+        {/* ── Loyalty Cards ── */}
         <div className="mb-6">
           <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
 
@@ -335,7 +319,7 @@ export const MemberPage = ({ member, onLogout }) => {
             stampsLeft={stampsLeft}
           />
 
-          {/* Card count summary */}
+          {/* Badges — always rendered below the deck's own padding */}
           {stackCount > 0 && (
             <div className="mt-3 flex gap-2 flex-wrap">
               {completedUnusedCards.length > 0 && (
