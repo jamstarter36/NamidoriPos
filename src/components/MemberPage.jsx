@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; 
 import NamiLogo from "../images/NamiLogo.png";
 import { getLoyaltyCards, getTestimony, submitTestimony } from "../api";
 
@@ -90,7 +90,7 @@ export const MemberPage = ({ member, onLogout }) => {
   const [success,   setSuccess]   = useState(false);
   const [error,     setError]     = useState("");
 
-  // ✅ NEW: card order state
+  // ✅ NEW: order state
   const [cardOrder, setCardOrder] = useState([]);
 
   useEffect(() => {
@@ -119,7 +119,7 @@ export const MemberPage = ({ member, onLogout }) => {
   const allOtherCards = [...usedCards, ...completedUnusedCards];
   const stackCount    = allOtherCards.length;
 
-  // ✅ NEW: sync order
+  // ✅ NEW: sync order with cards
   useEffect(() => {
     setCardOrder(allOtherCards);
   }, [cards]);
@@ -189,6 +189,11 @@ export const MemberPage = ({ member, onLogout }) => {
 
       <section className="max-w-2xl mx-auto px-4 md:px-8 py-8 md:py-12">
 
+        {/* Member info */}
+        <div className="bg-white border-2 border-[#a8b48a] rounded-2xl shadow-sm overflow-hidden mb-5 md:mb-6">
+          ...
+        </div>
+
         {/* ── Stacked Loyalty Cards ── */}
         <div className="mb-6">
           <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
@@ -223,6 +228,7 @@ export const MemberPage = ({ member, onLogout }) => {
             </div>
           </div>
         </div>
+
       </section>
     </div>
   );
