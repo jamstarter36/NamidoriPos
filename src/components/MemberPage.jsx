@@ -190,7 +190,7 @@ export const MemberPage = ({ member, onLogout }) => {
                 className="absolute rounded-2xl p-5 shadow-md"
                 style={{
                   top: `${totalOffset * 20}px`,
-                  left: `${totalOffset * 8}px`,
+                  left: `${totalOffset * -8}px`,
                   width: "100%",
                   zIndex: usedCards.length + i + 1,
                   backgroundColor: "#d97706",
