@@ -146,67 +146,79 @@ export const MemberPage = ({ member, onLogout }) => {
         {/* ── Stacked Loyalty Cards ─────────────────────────────────────────── */}
         <div
           className="relative mb-8"
-          style={{ height: `${280 + (completedUnusedCards.length + usedCards.length) * 14}px` }}
+          style={{ height: `${260 + (completedUnusedCards.length + usedCards.length) * 20}px` }}
         >
 
           {/* Used cards — very bottom */}
-          {[...usedCards].reverse().map((card, i) => (
-            <div
-              key={card.id}
-              className="absolute w-full rounded-2xl p-5 shadow-md"
-              style={{
-                top: `${(completedUnusedCards.length + usedCards.length - i) * 14}px`,
-                zIndex: i + 1,
-                backgroundColor: "#78716c",
-              }}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <div>
-                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/50 font-display">Namidori</p>
-                  <p className="text-sm font-bold font-display tracking-wide text-white/60">Discount Used ✅</p>
+          {[...usedCards].reverse().map((card, i) => {
+            const totalOffset = completedUnusedCards.length + usedCards.length - i;
+            return (
+              <div
+                key={card.id}
+                className="absolute w-full rounded-2xl p-5 shadow-md"
+                style={{
+                  top: `${totalOffset * 20}px`,
+                  left: `${totalOffset * -6}px`,
+                  right: `${totalOffset * -6}px`,
+                  width: `calc(100% + ${totalOffset * 12}px)`,
+                  zIndex: i + 1,
+                  backgroundColor: "#78716c",
+                }}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div>
+                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/50 font-display">Namidori</p>
+                    <p className="text-sm font-bold font-display tracking-wide text-white/60">Discount Used ✅</p>
+                  </div>
+                  <div className="w-8 h-8 opacity-40"><img src={NamiLogo} /></div>
                 </div>
-                <div className="w-8 h-8 opacity-40"><img src={NamiLogo} /></div>
+                <p className="text-[10px] text-white/40 mb-3">Redeemed on {card.used_date}</p>
+                <div className="flex gap-1">
+                  {Array.from({ length: 8 }).map((_, j) => (
+                    <div key={j} className="flex-1 h-1.5 rounded-full bg-white/20" />
+                  ))}
+                </div>
               </div>
-              <p className="text-[10px] text-white/40 mb-3">Redeemed on {card.used_date}</p>
-              <div className="flex gap-1">
-                {Array.from({ length: 8 }).map((_, j) => (
-                  <div key={j} className="flex-1 h-1.5 rounded-full bg-white/20" />
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Completed unused — middle */}
-          {[...completedUnusedCards].reverse().map((card, i) => (
-            <div
-              key={card.id}
-              className="absolute w-full rounded-2xl p-5 shadow-md"
-              style={{
-                top: `${(completedUnusedCards.length - i) * 14}px`,
-                zIndex: usedCards.length + i + 1,
-                backgroundColor: "#d97706",
-              }}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <div>
-                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
-                  <p className="text-sm font-bold font-display tracking-wide text-white">🎉 Discount Ready!</p>
+          {[...completedUnusedCards].reverse().map((card, i) => {
+            const totalOffset = completedUnusedCards.length - i;
+            return (
+              <div
+                key={card.id}
+                className="absolute w-full rounded-2xl p-5 shadow-md"
+                style={{
+                  top: `${totalOffset * 20}px`,
+                  left: `${totalOffset * -6}px`,
+                  right: `${totalOffset * -6}px`,
+                  width: `calc(100% + ${totalOffset * 12}px)`,
+                  zIndex: usedCards.length + i + 1,
+                  backgroundColor: "#d97706",
+                }}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div>
+                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
+                    <p className="text-sm font-bold font-display tracking-wide text-white">🎉 Discount Ready!</p>
+                  </div>
+                  <div className="w-8 h-8"><img src={NamiLogo} /></div>
                 </div>
-                <div className="w-8 h-8"><img src={NamiLogo} /></div>
+                <p className="text-[10px] text-white/70 mb-3">Completed on {card.completed_date}</p>
+                <div className="flex gap-1">
+                  {Array.from({ length: 8 }).map((_, j) => (
+                    <div key={j} className="flex-1 h-1.5 rounded-full bg-white/50" />
+                  ))}
+                </div>
               </div>
-              <p className="text-[10px] text-white/70 mb-3">Completed on {card.completed_date}</p>
-              <div className="flex gap-1">
-                {Array.from({ length: 8 }).map((_, j) => (
-                  <div key={j} className="flex-1 h-1.5 rounded-full bg-white/50" />
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
-          {/* Active card — always on top at position 0 */}
+          {/* Active card — top of stack at position 0, full width */}
           <div
             className="absolute w-full bg-[#5c3317] rounded-2xl p-5 md:p-6 text-white shadow-xl"
-            style={{ top: 0, zIndex: completedUnusedCards.length + usedCards.length + 2 }}
+            style={{ top: 0, left: 0, right: 0, zIndex: completedUnusedCards.length + usedCards.length + 2 }}
           >
             <div className="flex items-center justify-between mb-2">
               <div>
@@ -235,6 +247,8 @@ export const MemberPage = ({ member, onLogout }) => {
 
         </div>
         {/* ── End Stacked Cards ─────────────────────────────────────────────── */}
+
+
 
         {/* ── Testimony ──────────────────────────────────────────────────────── */}
         <div className="mt-5 md:mt-6">
