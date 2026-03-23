@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { getProducts, updateStock, saveOrder } from "../api";
 import { Header } from "./Header";
 import { PosView } from "./PosView";
 import { SalesView } from "./SalesView";
@@ -60,8 +59,6 @@ export const NamidoriPos = ({ onLogout }) => {
         };
 
         await Promise.all([...stockUpdates, saveOrder(order)]);
-
-        console.log("Checkout params:", { member, discount, stampsToAdd });
         // Update loyalty cards if member attached
         if (member && stampsToAdd > 0) {
           await addStamps(member.id, stampsToAdd, discount > 0);
