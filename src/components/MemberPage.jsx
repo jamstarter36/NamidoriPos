@@ -226,25 +226,24 @@
     className="relative"
     style={{ paddingBottom: cardOrder.length > 0 ? `${cardOrder.length * 10}px` : "0" }}
   >
-    {/* All cards including active for cycling */}
     {cardOrder.map((card, index) => {
       const isActiveCard = card.id === activeCard?.id;
       return (
         <div
           key={card.id}
-          onClick={rotateCards} // ✅ Click to cycle
+          onClick={rotateCards}
           className="absolute w-full cursor-pointer"
           style={{
             top:    `${(cardOrder.length - index) * 10}px`,
             left:   `${(cardOrder.length - index) * 4}px`,
             right:  `-${(cardOrder.length - index) * 4}px`,
-            zIndex: index + 1,
+            zIndex: isActiveCard ? cardOrder.length + 1 : index + 1, // ✅ active card on top
             width:  `calc(100% - ${(cardOrder.length - index) * 8}px)`,
           }}
         >
           <LoyaltyCardUI
             card={card}
-            isActive={isActiveCard}       // ✅ active card styling
+            isActive={isActiveCard}
             activeStamps={isActiveCard ? activeStamps : 0}
             stampsLeft={isActiveCard ? stampsLeft : 0}
           />
