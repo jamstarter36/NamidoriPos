@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getAllTestimonials } from "../api";
 
 const SWIPER_THRESHOLD = 5;
-const VISIBLE_COUNT = 3;
 
 function StarRating({ count, size = "text-sm" }) {
   return (
@@ -17,7 +16,7 @@ function StarRating({ count, size = "text-sm" }) {
 function TestimonialCard({ full_name, testimony, stars }) {
   const initials = full_name.split(" ").slice(0, 2).map((n) => n[0]).join("").toUpperCase();
   return (
-    <div className="bg-white border-2 border-[#d4dbb8] rounded-2xl p-5 flex flex-col gap-3 hover:-translate-y-1 transition-transform duration-200">
+    <div className="bg-white border-2 border-[#d4dbb8] rounded-2xl p-5 flex flex-col gap-3 hover:-translate-y-1 transition-transform duration-200 h-full">
       <span className="text-5xl leading-none text-[#d4dbb8] font-serif select-none -mb-2">"</span>
       <p className="text-sm text-[#4a5a3a] leading-loose italic flex-1 font-serif">"{testimony}"</p>
       <div className="flex items-center justify-between pt-3 border-t border-[#e8e4d8]">
@@ -45,35 +44,58 @@ function GridLayout({ testimonials }) {
 
 function SwiperLayout({ testimonials }) {
   const [current, setCurrent] = useState(0);
-  const maxIndex = testimonials.length - VISIBLE_COUNT;
+  const [visibleCount, setVisibleCount] = useState(1);
+  const wrapRef = useRef(null);
+
+  useEffect(() => {
+    const update = () => {
+      const w = wrapRef.current?.offsetWidth || window.innerWidth;
+      if (w >= 1024) setVisibleCount(3);
+      else if (w >= 640) setVisibleCount(2);
+      else setVisibleCount(1);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const maxIndex = Math.max(0, testimonials.length - visibleCount);
+  const safeCurrent = Math.min(current, maxIndex);
+
   const go = (dir) => setCurrent((prev) => Math.max(0, Math.min(prev + dir, maxIndex)));
 
+  const gap = 16;
+  const cardWidth = `calc((100% - ${(visibleCount - 1) * gap}px) / ${visibleCount})`;
+
   return (
-    <div>
+    <div ref={wrapRef}>
       <div className="overflow-hidden">
         <div
-          className="flex gap-4 transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
-          style={{ transform: `translateX(calc(-${current} * (100% / ${VISIBLE_COUNT} + ${16 / VISIBLE_COUNT}px)))` }}
+          className="flex transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
+          style={{
+            gap: `${gap}px`,
+            transform: `translateX(calc(-${safeCurrent} * (100% / ${visibleCount} + ${gap / visibleCount}px)))`,
+          }}
         >
           {testimonials.map((t, i) => (
-            <div key={t.id || i} className="flex-shrink-0"
-              style={{ width: `calc((100% - ${(VISIBLE_COUNT - 1) * 16}px) / ${VISIBLE_COUNT})` }}>
+            <div key={t.id || i} className="flex-shrink-0" style={{ width: cardWidth }}>
               <TestimonialCard {...t} />
             </div>
           ))}
         </div>
       </div>
+
       <div className="flex items-center justify-between mt-6">
         <div className="flex gap-1.5">
           {Array.from({ length: maxIndex + 1 }).map((_, i) => (
             <button key={i} onClick={() => setCurrent(i)}
-              className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? "w-5 bg-green-900" : "w-1.5 bg-[#aab890]"}`} />
+              className={`h-1.5 rounded-full transition-all duration-300 ${i === safeCurrent ? "w-5 bg-green-900" : "w-1.5 bg-[#aab890]"}`} />
           ))}
         </div>
         <div className="flex gap-2">
-          <button onClick={() => go(-1)} disabled={current === 0}
+          <button onClick={() => go(-1)} disabled={safeCurrent === 0}
             className="w-9 h-9 rounded-full border border-[#b0ba90] text-[#4a5a3a] flex items-center justify-center hover:bg-green-900 hover:text-white hover:border-green-900 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed">←</button>
-          <button onClick={() => go(1)} disabled={current === maxIndex}
+          <button onClick={() => go(1)} disabled={safeCurrent === maxIndex}
             className="w-9 h-9 rounded-full border border-[#b0ba90] text-[#4a5a3a] flex items-center justify-center hover:bg-green-900 hover:text-white hover:border-green-900 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed">→</button>
         </div>
       </div>
