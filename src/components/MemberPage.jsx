@@ -29,7 +29,7 @@ const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 
     card?.used
       ? "bg-gray-400"
       : card?.completed
-      ? "bg-blue-400"
+      ? "bg-blue-700"
       : "bg-[#5c3317]"
   }`}>
     <div className="flex items-center justify-between mb-2">
@@ -89,7 +89,7 @@ const STRIP_GAP = 6;  // gap between each strip (px)
 const cardBg = (card) => {
   if (!card || card.__type === "active") return "#5c3317";
   if (card.used)      return "#9ca3af";
-  if (card.completed) return "#fb923c";
+  if (card.completed) return "#0300c2";
   return "#5c3317";
 };
 
