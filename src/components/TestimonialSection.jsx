@@ -186,9 +186,6 @@
             <p className="mt-3 text-sm text-[#4a5a3a] max-w-sm mx-auto leading-loose font-body">
               Every sip leaves a story. Here's what our readers have to say.
             </p>
-            <p className="mt-3 text-sm text-[#4a5a3a] max-w-sm mx-auto leading-loose font-body">
-              Be part of Namidori family, and share your story with us.
-            </p>
           </div>
 
           {loading && (
