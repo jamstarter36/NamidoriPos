@@ -89,7 +89,7 @@ const STRIP_GAP = 6;  // gap between each strip (px)
 const cardBg = (card) => {
   if (!card || card.__type === "active") return "#5c3317";
   if (card.used)      return "#9ca3af";
-  if (card.completed) return "#0300c2";
+  if (card.completed) return "#0084ff";
   return "#5c3317";
 };
 
