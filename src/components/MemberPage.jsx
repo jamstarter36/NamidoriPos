@@ -404,7 +404,7 @@ export const MemberPage = ({ member, onLogout }) => {
                 disabled={loading}
                 className="w-full py-2.5 bg-[#5c3317] text-white rounded-xl text-[11px] font-bold tracking-widest uppercase hover:bg-[#4a2810] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {loading ? "Submitting..." : testimony ? "Update Memories" : "Submit Memories"}
+                {loading ? "Submitting..." : testimony ? "Update" : "Submit"}
               </button>
             </div>
           </div>
