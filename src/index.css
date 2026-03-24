@@ -42,7 +42,7 @@
 
 .steam-particle {
   position: absolute;
-  width: 6px; height: 6px;
+  width: 15px; height: 15px;
   border-radius: 50%;
   background: #7a9a6a;
   animation: steamRise linear infinite;
