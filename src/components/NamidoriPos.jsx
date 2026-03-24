@@ -13,6 +13,7 @@ export const NamidoriPos = ({ onLogout }) => {
   const [payAnim, setPayAnim] = useState(false);
   const [checkoutKey, setCheckoutKey] = useState(0);
   const [loading, setLoading]         = useState(true);
+  const [user, setUser] = useState(JSON.parse(sessionStorage.getItem("user")) || null);
 
   useEffect(() => {
     getProducts()

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import NamiLogo from "../images/NamiLogo.png"
 
-export const Header = ({ view, setView, onLogout }) => {
+export const Header = ({ view, setView, onLogout, isCashier }) => {
   const [menuOpen, setMenuOpen]     = useState(false);
   const [serverStatus, setServerStatus] = useState("checking"); // "online" | "offline" | "checking"
 
@@ -26,8 +26,10 @@ export const Header = ({ view, setView, onLogout }) => {
 
   const tabs = [
     { key: "pos",   label: "⚡ Order" },
+    ...(!isCashier ? [
     { key: "sales", label: "📊 Sales" },
     { key: "stock", label: "📦 Stock" },
+    ] : []),
   ];
 
   return (

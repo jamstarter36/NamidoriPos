@@ -24,17 +24,19 @@ export default function App() {
   }, []);
 
   const handleLoginSuccess = (data) => {
-    if (data.role === "admin") {
-      sessionStorage.setItem("page", "pos");
-      sessionStorage.removeItem("member");
-      setPage("pos");
-    } else {
-      sessionStorage.setItem("page", "member");
-      sessionStorage.setItem("member", JSON.stringify(data.member));
-      setMember(data.member);
-      setPage("member");
-    }
-  };
+  if (data.role === "admin" || data.role === "cashier") {
+    sessionStorage.setItem("page", "pos");
+    sessionStorage.setItem("user", JSON.stringify(data)); // ← store full user
+    sessionStorage.removeItem("member");
+    setUser(data);
+    setPage("pos");
+  } else {
+    sessionStorage.setItem("page", "member");
+    sessionStorage.setItem("member", JSON.stringify(data.member));
+    setMember(data.member);
+    setPage("member");
+  }
+};
 
   const handleSignupSuccess = (data) => {
     sessionStorage.setItem("page", "member");
@@ -44,10 +46,11 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    sessionStorage.clear();
-    setMember(null);
-    setPage("landing");
-  };
+  sessionStorage.clear();
+  setMember(null);
+  setUser(null);   // ← add this
+  setPage("landing");
+};
 
   if (page === "landing") return (
     <LandingPage
@@ -61,5 +64,5 @@ export default function App() {
     <MemberPage member={member} onLogout={handleLogout} />
   );
 
-  return <NamidoriPos onLogout={handleLogout} />;
+  return <NamidoriPos onLogout={handleLogout} user={user} />;
 }
