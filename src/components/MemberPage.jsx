@@ -29,7 +29,7 @@ const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 
     card?.used
       ? "bg-gray-400"
       : card?.completed
-      ? "bg-blue-700"
+      ? "bg-[#5c3317]"
       : "bg-[#5c3317]"
   }`}>
     <div className="flex items-center justify-between mb-2">
@@ -83,8 +83,8 @@ const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 
 
 // ── Cycling Deck ─────────────────────────────────────────────────────────────
 const MAX_PEEK  = 4;
-const STRIP_H   = 14; // visible strip height below card (px)
-const STRIP_GAP = 6;  // gap between each strip (px)
+const STRIP_H   = 5; // visible strip height below card (px)
+const STRIP_GAP = 1;  // gap between each strip (px)
 
 const cardBg = (card) => {
   if (!card || card.__type === "active") return "#5c3317";
