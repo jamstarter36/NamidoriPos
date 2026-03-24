@@ -29,7 +29,7 @@ const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 
     card?.used
       ? "bg-gray-400"
       : card?.completed
-      ? "bg-orange-400"
+      ? "bg-blue-400"
       : "bg-[#5c3317]"
   }`}>
     <div className="flex items-center justify-between mb-2">
