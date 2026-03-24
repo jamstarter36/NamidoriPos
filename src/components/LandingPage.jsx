@@ -138,7 +138,7 @@ export const LandingPage = ({ onLoginSuccess, onSignupSuccess, autoSignup }) => 
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-semibold text-green-950 font-display">
-              Matcha <span className="italic text-[#5c3317] font-normal">Diaries</span>
+              Matcha <span className="italic text-[#5c3317] font-normal">Diaries' Bestseller</span>
             </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto">

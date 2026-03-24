@@ -26,3 +26,33 @@
   z-index: 0;
   opacity: 0;          /* safe default before animation kicks in */
 }
+
+
+@keyframes steamRise {
+  0%   { transform: translateY(0) translateX(0);    opacity: 0;    }
+  10%  { opacity: 0.35; }
+  85%  { opacity: 0.15; }
+  100% { transform: translateY(-180px) translateX(var(--sway)); opacity: 0; }
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.steam-particle {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #7a9a6a;
+  animation: steamRise linear infinite;
+  pointer-events: none;
+  opacity: 0;
+  animation-fill-mode: backwards;
+}
+
+.mem-card-animate {
+  opacity: 0;
+  animation: cardFadeIn 0.7s ease forwards;
+  animation-play-state: paused;
+}
