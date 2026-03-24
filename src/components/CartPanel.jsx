@@ -81,6 +81,7 @@
 
     const handleCheckout = () => {
       onCheckout(subtotal, vatEnabled ? vatRate : 0, vatAmount, total, selectedMember, useDiscount && hasDiscount ? discount : 0, totalItems);
+      setTendered("");
     };
 
     return (
@@ -288,13 +289,16 @@
 
             <button
               onClick={handleCheckout}
-              disabled={tendered !== "" && Number(tendered) < total}
+              disabled={payAnim || tendered === "" || Number(tendered) < total}
               className={`w-full py-3 rounded-xl text-sm font-bold text-white transition-all shadow-md
                 ${payAnim ? "bg-green-600 scale-95"
-                : tendered !== "" && Number(tendered) < total ? "bg-stone-300 cursor-not-allowed"
+                : tendered === "" || Number(tendered) < total ? "bg-stone-300 cursor-not-allowed"
                 : "bg-green-700 hover:bg-green-800 active:scale-95"}`}
             >
-              {payAnim ? "⏳ Processing…" : `💳 Checkout — ₱${total}`}
+              {payAnim ? "⏳ Processing…"
+              : tendered === "" ? "Enter Amount Tendered"
+              : Number(tendered) < total ? `Short by ₱${total - Number(tendered)}`
+              : `💳 Checkout — ₱${total}`}
             </button>
             <button
               onClick={() => { onClear(); setSearch(""); setSelectedMember(null); setLoyaltyCards([]); setUseDiscount(false); setTendered(""); }}
