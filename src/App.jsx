@@ -24,6 +24,7 @@ export default function App() {
   }, []);
 
   const handleLoginSuccess = (data) => {
+    console.log("Login data:", data);
   if (data.role === "admin" || data.role === "cashier") {
     sessionStorage.setItem("page", "pos");
     sessionStorage.setItem("user", JSON.stringify(data)); // ← store full user
