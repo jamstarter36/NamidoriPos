@@ -354,7 +354,7 @@ export const MemberPage = ({ member, onLogout }) => {
                   {initials}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-green-800 font-display">Your Submitted Testimony</p>
+                  <p className="text-sm font-bold text-green-800 font-display">Your Submitted Memories</p>
                   <p className="text-[10px] text-stone-400">Visible on the Namidori website</p>
                 </div>
               </div>
@@ -377,7 +377,7 @@ export const MemberPage = ({ member, onLogout }) => {
               <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-lg">✏️</div>
               <div>
                 <p className="text-sm font-bold text-green-800 font-display">
-                  {testimony ? "Update Testimony" : "Write your memories with us"}
+                  {testimony ? "Update Memories" : "Write your memories with us"}
                 </p>
                 <p className="text-[10px] text-stone-400">Your feedback helps us grow</p>
               </div>
@@ -404,7 +404,7 @@ export const MemberPage = ({ member, onLogout }) => {
                 disabled={loading}
                 className="w-full py-2.5 bg-[#5c3317] text-white rounded-xl text-[11px] font-bold tracking-widest uppercase hover:bg-[#4a2810] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {loading ? "Submitting..." : testimony ? "Update Testimony" : "Submit Testimony"}
+                {loading ? "Submitting..." : testimony ? "Update Memories" : "Submit Memories"}
               </button>
             </div>
           </div>
