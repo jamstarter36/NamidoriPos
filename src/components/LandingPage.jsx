@@ -137,7 +137,6 @@ export const LandingPage = ({ onLoginSuccess, onSignupSuccess, autoSignup }) => 
       <section className="bg-[#d4dbb8] py-20 px-8">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-[10px] font-bold tracking-[0.22em] text-[#5c3317] uppercase mb-3 font-display">Our Menu</p>
             <h2 className="text-3xl font-semibold text-green-950 font-display">
               Matcha <span className="italic text-[#5c3317] font-normal">Diaries</span>
             </h2>
