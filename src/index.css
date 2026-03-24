@@ -5,7 +5,8 @@
 }
 
 @keyframes fall {
-  0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+  0%   { transform: translateY(-80px) rotate(0deg); opacity: 0; }  /* start invisible */
+  8%   { opacity: 1; }                                              /* fade in quickly */
   100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
 
@@ -16,10 +17,12 @@
 
 .leaf {
   position: absolute;
-  top: -20px;
+  top: -80px;          /* match the translateY start so there's no jump */
   font-size: 20px;
   animation: fall linear infinite, sway ease-in-out infinite;
+  animation-fill-mode: backwards;   /* ← holds leaves at frame 0 during their delay */
   pointer-events: none;
   user-select: none;
   z-index: 0;
+  opacity: 0;          /* safe default before animation kicks in */
 }
