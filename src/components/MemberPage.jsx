@@ -73,9 +73,9 @@ const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 
             : ` — ${stampsLeft} more to go!`}
         </span>
       ) : card?.used ? (
-        <span className="text-white/40">✅ Discount used</span>
+        <span className="text-white/40">✅ DISCOUNT USED</span>
       ) : (
-        <span className="text-amber-300 font-bold">🏆 Ready to redeem!</span>
+        <span className="text-amber-300 font-bold">🏆 READY TO REDEEM!</span>
       )}
     </p>
   </div>
@@ -232,7 +232,7 @@ export const MemberPage = ({ member, onLogout }) => {
   const stackCount           = completedUnusedCards.length + usedCards.length;
 
   const handleSubmitTestimony = async () => {
-    if (!text.trim()) return setError("Please write your testimony.");
+    if (!text.trim()) return setError("Please write your memories.");
     if (stars === 0)  return setError("Please select a star rating.");
     setError("");
     setLoading(true);
@@ -377,7 +377,7 @@ export const MemberPage = ({ member, onLogout }) => {
               <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-lg">✏️</div>
               <div>
                 <p className="text-sm font-bold text-green-800 font-display">
-                  {testimony ? "Update Testimony" : "Write a Testimony"}
+                  {testimony ? "Update Testimony" : "Write your memories with us"}
                 </p>
                 <p className="text-[10px] text-stone-400">Your feedback helps us grow</p>
               </div>
