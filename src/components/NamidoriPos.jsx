@@ -5,7 +5,8 @@ import { SalesView } from "./SalesView";
 import { StockView } from "./StockView";
 import { getProducts, updateStock, saveOrder, addStamps } from "../api";
 
-export const NamidoriPos = ({ onLogout }) => {
+export const NamidoriPos = ({ onLogout, user }) => {
+  const isCashier = user?.role === "cashier";
   const [view, setView]       = useState("pos");
   const [items, setItems]     = useState([]);
   const [cart, setCart]       = useState([]);
@@ -13,6 +14,7 @@ export const NamidoriPos = ({ onLogout }) => {
   const [payAnim, setPayAnim] = useState(false);
   const [checkoutKey, setCheckoutKey] = useState(0);
   const [loading, setLoading]         = useState(true);
+  
 
   useEffect(() => {
     getProducts()
@@ -87,7 +89,7 @@ export const NamidoriPos = ({ onLogout }) => {
 
   return (
     <div className="flex flex-col h-screen text-stone-800 font-sans overflow-hidden" style={{ backgroundColor: "#d4dbb8" }}>
-      <Header view={view} setView={setView} onLogout={onLogout} />
+      <Header view={view} setView={setView} onLogout={onLogout} isCashier={isCashier} />
 
       {view === "pos" && (
         <PosView
@@ -104,9 +106,9 @@ export const NamidoriPos = ({ onLogout }) => {
         />
       )}
 
-      {view === "sales" && <SalesView />}
+      {view === "sales" && !isCashier && <SalesView />}
 
-      {view === "stock" && (
+      {view === "stock" && !isCashier && (
         <StockView items={items} setItems={setItems} />
       )}
     </div>
