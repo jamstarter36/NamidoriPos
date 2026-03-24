@@ -6,6 +6,7 @@ import { MemberPage } from "./components/MemberPage";
 export default function App() {
   const [page, setPage]     = useState(sessionStorage.getItem("page") || "landing");
   const [member, setMember] = useState(JSON.parse(sessionStorage.getItem("member")) || null);
+  const [user, setUser]     = useState(JSON.parse(sessionStorage.getItem("user")) || null);
 
   // Check if URL has ?signup=true
   const params = new URLSearchParams(window.location.search);
