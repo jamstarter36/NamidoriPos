@@ -137,7 +137,7 @@
                       <p className="text-[10px] text-stone-400">{activeStamps} stamps · {completedUnusedCards.length} reward{completedUnusedCards.length !== 1 ? "s" : ""} available</p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                  <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1 py-0.5 rounded-full border border-amber-200">
                     +{totalItems} new
                   </span>
                 </div>
