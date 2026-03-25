@@ -51,7 +51,7 @@
       setSelectedMember(member);
       setSearch(member.full_name);
       setShowDropdown(false);
-      setUseDiscount(false);
+      setDiscountsToUse(0);
       fetchLoyaltyCards(member.id);
     };
 
@@ -60,7 +60,7 @@
       setLoyaltyCards([]);
       setSearch("");
       setShowDropdown(false);
-      setUseDiscount(false);
+      setDiscountsToUse(0);
     };
 
     const subtotal   = cart.reduce((s, c) => s + c.price * c.qty, 0);
