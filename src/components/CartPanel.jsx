@@ -82,10 +82,10 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
   };
 
   return (
-    <div className="w-full md:w-72 bg-white flex flex-col h-full">
+    <div className="w-full md:w-72 bg-white flex flex-col h-full overflow-hidden border-l-4 border-[#a8b48a]">
 
       {/* Scrollable area */}
-      <div className="flex-1 overflow-y-auto flex flex-col min-h-0 border-l-4 border-[#a8b48a]">
+      <div className="flex-1 overflow-y-auto flex flex-col min-h-0">
 
         {/* Header */}
         <div className="px-4 md:px-5 py-3 md:py-3.5 border-b border-stone-100">
