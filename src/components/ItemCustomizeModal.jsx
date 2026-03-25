@@ -20,7 +20,7 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
         // Build SIZES dynamically
         setSizes([
           { label: "12 oz", extraPrice: 0, id: null },
-          ...(sizeItem ? [{ label: "16 oz", extraPrice: sizeItem.price, id: sizeItem.id }] : []),
+          ...(sizeItem ? [{ label: item.name, extraPrice: sizeItem.price, id: sizeItem.id }] : []),
         ]);
         setSize({ label: "12 oz", extraPrice: 0, id: null }); // default
       })

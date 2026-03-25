@@ -72,22 +72,22 @@
         return res.status(404).json({ error: "Product not found" });
       }
       const sheetRow = rowIndex + 1;
-        if (stock !== undefined) {
+      if (stock !== undefined) {
       await sheets.spreadsheets.values.update({
         spreadsheetId: SPREADSHEET_ID,
         range: `${SHEET_NAME}!F${sheetRow}`,
         valueInputOption: "RAW",
         requestBody: { values: [[stock]] },
       });
-    }
-    if (price !== undefined) {
-      await sheets.spreadsheets.values.update({
-        spreadsheetId: SPREADSHEET_ID,
-        range: `${SHEET_NAME}!D${sheetRow}`,
-        valueInputOption: "RAW",
-        requestBody: { values: [[price]] },
-      });
-    }
+      }
+      if (price !== undefined) {
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: SPREADSHEET_ID,
+          range: `${SHEET_NAME}!D${sheetRow}`,
+          valueInputOption: "RAW",
+          requestBody: { values: [[price]] },
+        });
+      }
       res.json({ id, stock, price });
     } catch (error) {
       console.error("PATCH /products/:id error:", error);
