@@ -7,7 +7,9 @@ export const MenuPanel = ({ items, cart, onAdd }) => {
   const [filter, setFilter]           = useState("All");
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const filtered = filter === "All" ? items : items.filter((i) => i.category === filter);
+  const filtered = filter === "All"
+  ? items.filter((i) => i.category && i.category.trim() !== "")
+  : items.filter((i) => i.category === filter);
 
   return (
     <div className="flex-1 flex flex-col p-3 md:p-4 overflow-hidden">
