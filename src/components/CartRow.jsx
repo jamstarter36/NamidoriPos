@@ -13,7 +13,7 @@ export const CartRow = ({ item, onAdd, onRemove }) => {
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-stone-700 truncate">{item.name}</p>
+        <p className="text-xs font-medium text-stone-700 break-words">{item.name}</p>
 
         {/* Size + addons tags */}
         <div className="flex flex-wrap gap-1 mt-0.5">
