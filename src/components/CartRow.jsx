@@ -33,7 +33,7 @@ export const CartRow = ({ item, onAdd, onRemove }) => {
       </div>
 
       {/* Qty controls */}
-      <div className="flex items-end gap-1 md:gap-1.5 flex-shrink-0">
+      <div className="flex items-end h-full gap-1 md:gap-1.5 flex-shrink-0">
         <button
           onClick={onRemove}
           className="w-5 h-5 rounded-md border border-stone-200 bg-stone-50 text-stone-600 text-xs font-bold hover:bg-red-50 hover:border-red-300 hover:text-red-500 transition-all"
