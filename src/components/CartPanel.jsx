@@ -292,7 +292,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
 
       {/* Pinned buttons — always visible */}
       {cart.length > 0 && (
-        <div className="px-4 md:px-5 pb-4 pt-2 bg-stone-50 border-t border-stone-100 flex-shrink-0">
+        <div className="px-4 md:px-5 pb-4 pt-2 bg-stone-50 border-t border-stone-100 flex-shrink-0 border-l-4 border-[#a8b48a]">
           <button
             onClick={handleCheckout}
             disabled={payAnim || tendered === "" || Number(tendered) < total}
