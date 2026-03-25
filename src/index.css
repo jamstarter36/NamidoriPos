@@ -56,9 +56,3 @@
   animation: cardFadeIn 0.7s ease forwards;
   animation-play-state: paused;
 }
-
-html, body, #root {
-  background-color: #d4dbb8;
-  margin: 0;
-  padding: 0;
-}

@@ -85,7 +85,7 @@
     };
 
     return (
-      <div className="w-full md:w-72 bg-white border-l-0 md:border-l-2 border-[#d4dbb8] flex flex-col h-full shadow-lg">
+      <div className="w-full md:w-72 bg-white border-l-0 md:border-l-2 border-[#a8b48a] flex flex-col h-full shadow-lg">
 
         {/* Header */}
         <div className="px-4 md:px-5 py-3 md:py-3.5 border-b border-stone-100">
