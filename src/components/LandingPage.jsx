@@ -143,9 +143,9 @@ export const LandingPage = ({ onLoginSuccess, onSignupSuccess, autoSignup }) => 
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
             {[
-              { image: Naturals, name: "The Naturals",     price: "₱135", tag: "Bestseller" },
-              { image: Thorns,   name: "Thorns and Roses", price: "₱145", tag: "Bestseller" },
-              { image: Lucid,    name: "Lucid Dream",      price: "₱155", tag: "Bestseller" },
+              { image: Naturals, name: "The Naturals",     price: "₱155", tag: "Bestseller" },
+              { image: Thorns,   name: "Thorns and Roses", price: "₱170", tag: "Bestseller" },
+              { image: Lucid,    name: "Lucid Dream",      price: "₱175", tag: "Bestseller" },
             ].map(({ image, name, price, tag }) => (
               <div key={name} className="bg-white border-2 border-[#a8b48a] rounded-2xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all">
                 <div className="overflow-hidden">
