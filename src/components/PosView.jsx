@@ -9,13 +9,13 @@ export const PosView = ({ items, setItems, cart, onAdd, onRemove, onClear, payAn
   return (
     <div className="flex flex-1 overflow-hidden relative">
 
-      {/* Menu panel — full width on mobile, flex-1 on desktop */}
+      {/* Menu panel */}
       <div className={`${showCart ? "hidden" : "flex"} md:flex flex-1 flex-col overflow-hidden`}>
         <MenuPanel items={items} cart={cart} onAdd={onAdd} />
       </div>
 
-      {/* Cart panel — slide in on mobile, fixed sidebar on desktop */}
-      <div className={`${showCart ? "flex" : "hidden"} md:flex w-full md:w-72 bg-white border-l-0 md:border-l-2 border-[#a8b48a] flex-col flex-shrink-0 shadow-lg`}>
+      {/* Cart panel */}
+      <div className={`${showCart ? "flex" : "hidden"} md:flex w-full md:w-72 flex-col flex-shrink-0`}>
         <CartPanel
           cart={cart}
           onAdd={onAdd}
