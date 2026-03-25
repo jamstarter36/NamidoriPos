@@ -88,7 +88,7 @@ export const NamidoriPos = ({ onLogout, user }) => {
   );
 
   return (
-    <div className="flex flex-col min-h-screen text-stone-800 font-sans overflow-hidden" style={{ backgroundColor: "#d4dbb8" }}>
+    <div className="flex flex-col m-h-screen text-stone-800 font-sans overflow-hidden" style={{ backgroundColor: "#d4dbb8" }}>
       <Header view={view} setView={setView} onLogout={onLogout} isCashier={isCashier} />
 
       {view === "pos" && (
