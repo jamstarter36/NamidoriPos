@@ -191,7 +191,7 @@
 
         {/* Totals + Checkout */}
         {cart.length > 0 && (
-          <div className="px-4 md:px-5 py-4 border-t border-stone-100 bg-stone-50">
+          <div className="px-4 md:px-5 py-4 border-t border-stone-100 bg-stone-50 overflow-y-auto flex-shrink-0 max-h-[55%]">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <button onClick={() => setVatEnabled((v) => !v)} className={`relative w-9 h-5 rounded-full transition-all flex-shrink-0 ${vatEnabled ? "bg-green-600" : "bg-stone-300"}`}>
