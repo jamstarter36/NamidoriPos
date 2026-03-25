@@ -14,20 +14,7 @@ export const NamidoriPos = ({ onLogout, user }) => {
   const [payAnim, setPayAnim] = useState(false);
   const [checkoutKey, setCheckoutKey] = useState(0);
   const [loading, setLoading]         = useState(true);
-  const [vh, setVh]                   = useState(window.innerHeight);
-
-  useEffect(() => {
-    document.body.style.backgroundColor = "#d4dbb8";
-    document.body.style.margin = "0";
-    document.body.style.padding = "0";
-    return () => { document.body.style.backgroundColor = ""; };
-  }, []);
-
-  useEffect(() => {
-    const update = () => setVh(window.innerHeight);
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
+  
 
   useEffect(() => {
     getProducts()
@@ -75,6 +62,8 @@ export const NamidoriPos = ({ onLogout, user }) => {
 
         await Promise.all([...stockUpdates, saveOrder(order)]);
 
+        console.log("Checkout params:", { member, discount, stampsToAdd });
+        // Update loyalty cards if member attached
         if (member && stampsToAdd > 0) {
           await addStamps(member.id, stampsToAdd, discount > 0);
         }
@@ -93,16 +82,13 @@ export const NamidoriPos = ({ onLogout, user }) => {
   };
 
   if (loading) return (
-    <div className="flex items-center justify-center" style={{ backgroundColor: "#d4dbb8", height: `${vh}px` }}>
+    <div className="flex h-screen items-center justify-center" style={{ backgroundColor: "#d4dbb8" }}>
       <p className="text-green-800 font-bold text-lg">Loading menu... 🍵</p>
     </div>
   );
 
   return (
-    <div
-      className="flex flex-col text-stone-800 font-sans overflow-hidden"
-      style={{ backgroundColor: "#d4dbb8", height: `${vh}px` }}
-    >
+    <div className="flex flex-col h-screen text-stone-800 font-sans overflow-hidden" style={{ backgroundColor: "#d4dbb8" }}>
       <Header view={view} setView={setView} onLogout={onLogout} isCashier={isCashier} />
 
       {view === "pos" && (
