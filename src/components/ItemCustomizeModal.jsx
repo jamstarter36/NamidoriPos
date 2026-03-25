@@ -159,32 +159,38 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
                         <p className="text-xs font-semibold">{addon.name}</p>
                       </div>
 
-                      <div className="flex items-center gap-1">
-                        {selected && (
-                          <>
-                            <button
-                              onClick={() => removeAddon(addon)}
-                              className="w-5 h-5 text-xs font-bold bg-stone-200 rounded"
-                            >
-                              −
-                            </button>
-                            <span className="text-xs font-bold w-4 text-center">
-                              {selected.qty}
-                            </span>
-                          </>
-                        )}
+                      <div className="flex items-center gap-2">
+  {/* MINUS */}
+  <button
+    onClick={() => removeAddon(addon)}
+    disabled={!selected}
+    className={`w-7 h-7 text-sm font-bold rounded flex items-center justify-center ${
+      selected
+        ? "bg-red-500 text-white"
+        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+    }`}
+  >
+    −
+  </button>
 
-                        <button
-                          onClick={() => addAddon(addon)}
-                          className="w-5 h-5 text-xs font-bold bg-green-700 text-white rounded"
-                        >
-                          +
-                        </button>
+  {/* QTY */}
+  <span className="text-sm font-bold w-5 text-center">
+    {selected?.qty || 0}
+  </span>
 
-                        <span className="text-xs font-bold text-stone-500 ml-1">
-                          ₱{addon.price}
-                        </span>
-                      </div>
+  {/* PLUS */}
+  <button
+    onClick={() => addAddon(addon)}
+    className="w-7 h-7 text-sm font-bold bg-green-700 text-white rounded flex items-center justify-center"
+  >
+    +
+  </button>
+
+  {/* PRICE */}
+  <span className="text-xs font-bold text-stone-500 ml-2">
+    ₱{addon.price}
+  </span>
+</div>
                     </div>
                   );
                 })}
