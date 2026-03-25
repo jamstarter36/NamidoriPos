@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import { getProducts } from "../api";
 
 export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
-  const [size, setSize]     = useState(null);
+  const [size, setSize] = useState(null);
   const [addons, setAddons] = useState([]);
   const [allAddons, setAllAddons] = useState([]);
   const [selectedAddons, setSelectedAddons] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [sizes, setSizes] = useState([]);
 
   // Fetch add-ons
@@ -15,8 +14,7 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
     getProducts()
       .then((res) => {
         const addonItems = res.data.filter((p) => !p.category || p.category.trim() === "");
-
-        const sizeItem  = addonItems.find((p) => p.name.toLowerCase().includes("oz cup"));
+        const sizeItem = addonItems.find((p) => p.name.toLowerCase().includes("oz cup"));
         const addonOnly = addonItems.filter((p) => !p.name.toLowerCase().includes("oz cup"));
 
         setAllAddons(addonOnly);
@@ -35,13 +33,11 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
   const addAddon = (addon) => {
     setSelectedAddons((prev) => {
       const existing = prev.find((a) => a.id === addon.id);
-
       if (existing) {
         return prev.map((a) =>
           a.id === addon.id ? { ...a, qty: a.qty + 1 } : a
         );
       }
-
       return [...prev, { ...addon, qty: 1 }];
     });
   };
@@ -51,11 +47,9 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
     setSelectedAddons((prev) => {
       const existing = prev.find((a) => a.id === addon.id);
       if (!existing) return prev;
-
       if (existing.qty === 1) {
         return prev.filter((a) => a.id !== addon.id);
       }
-
       return prev.map((a) =>
         a.id === addon.id ? { ...a, qty: a.qty - 1 } : a
       );
@@ -88,24 +82,35 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
 
   const isUrl = item.icon && item.icon.startsWith("http");
 
-  if (loading) return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <p className="text-white font-bold">Loading...</p>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <p className="text-white font-bold">Loading...</p>
+      </div>
+    );
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 sm:p-4">
       <div className="bg-white border-2 border-[#a8b48a] rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm shadow-2xl flex flex-col max-h-[92vh]">
-
         {/* Header */}
         <div className="relative flex-shrink-0 rounded-t-3xl overflow-hidden">
           {isUrl ? (
-            <img src={item.icon} alt={item.name} className="w-full h-28 object-contain bg-white" />
+            <img
+              src={item.icon}
+              alt={item.name}
+              className="w-full h-28 object-contain bg-white"
+            />
           ) : (
-            <div className="w-full h-28 bg-green-50 flex items-center justify-center text-5xl">{item.icon}</div>
+            <div className="w-full h-28 bg-green-50 flex items-center justify-center text-5xl">
+              {item.icon}
+            </div>
           )}
-          <button onClick={onClose} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/30 text-white flex items-center justify-center text-xs font-bold hover:bg-black/50 transition-all">✕</button>
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/30 text-white flex items-center justify-center text-xs font-bold hover:bg-black/50 transition-all"
+          >
+            ✕
+          </button>
         </div>
 
         {/* Content */}
@@ -121,10 +126,14 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
           {/* Sizes */}
           {sizes.length > 0 && (
             <div className="mb-3">
-              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Size</p>
+              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">
+                Size
+              </p>
               <div className="flex gap-2">
                 {sizes.map((s) => (
-                  <button key={s.label} onClick={() => setSize(s)}
+                  <button
+                    key={s.label}
+                    onClick={() => setSize(s)}
                     className={`flex-1 py-2 rounded-xl border-2 transition-all ${
                       size?.label === s.label
                         ? "border-green-600 bg-green-50 text-green-800"
@@ -144,13 +153,16 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
           {/* Add-ons with qty */}
           {allAddons.length > 0 && (
             <div className="mb-3">
-              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Add-ons</p>
+              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">
+                Add-ons
+              </p>
               <div className="flex flex-col gap-1.5">
                 {allAddons.map((addon) => {
                   const selected = selectedAddons.find((a) => a.id === addon.id);
 
                   return (
-                    <div key={addon.id}
+                    <div
+                      key={addon.id}
                       className={`flex items-center justify-between px-3 py-2 rounded-xl border-2 transition-all ${
                         selected ? "border-green-600 bg-green-50" : "border-stone-200 bg-stone-50"
                       }`}
@@ -159,38 +171,32 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
                         <p className="text-xs font-semibold">{addon.name}</p>
                       </div>
 
- <div
-  key={addon.id}
-  className="flex items-center justify-between px-3 py-2 rounded-xl border border-gray-300"
->
-  {/* LEFT: NAME */}
-  <span className="text-sm font-medium">{addon.name}</span>
+                      <div className="flex items-center gap-1">
+                        {selected && (
+                          <>
+                            <button
+                              onClick={() => removeAddon(addon)}
+                              className="w-5 h-5 text-xs font-bold bg-stone-200 rounded"
+                            >
+                              −
+                            </button>
+                            <span className="text-xs font-bold w-4 text-center">
+                              {selected.qty}
+                            </span>
+                          </>
+                        )}
 
-  {/* RIGHT: CONTROLS */}
-  <div className="flex items-center gap-2">
-    <button
-      onClick={() => removeAddon(addon)}
-      className="w-8 h-8 bg-red-500 text-white rounded flex items-center justify-center"
-    >
-      −
-    </button>
+                        <button
+                          onClick={() => addAddon(addon)}
+                          className="w-5 h-5 text-xs font-bold bg-green-700 text-white rounded"
+                        >
+                          +
+                        </button>
 
-    <span className="w-6 text-center font-bold">
-      {selectedAddons.find(a => a.id === addon.id)?.qty || 0}
-    </span>
-
-    <button
-      onClick={() => addAddon(addon)}
-      className="w-8 h-8 bg-green-600 text-white rounded flex items-center justify-center"
-    >
-      +
-    </button>
-
-    <span className="ml-2 text-sm text-gray-600">
-      ₱{addon.price}
-    </span>
-  </div>
-</div>
+                        <span className="text-xs font-bold text-stone-500 ml-1">
+                          ₱{addon.price}
+                        </span>
+                      </div>
                     </div>
                   );
                 })}
@@ -206,8 +212,13 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
             </div>
 
             {selectedAddons.map((a) => (
-              <div key={a.id} className="flex justify-between text-xs text-stone-400 mb-1">
-                <span>{a.name} x{a.qty}</span>
+              <div
+                key={a.id}
+                className="flex justify-between text-xs text-stone-400 mb-1"
+              >
+                <span>
+                  {a.name} x{a.qty}
+                </span>
                 <span>+₱{a.price * a.qty}</span>
               </div>
             ))}
@@ -221,8 +232,10 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
 
         {/* Bottom */}
         <div className="p-4 flex-shrink-0 border-t border-stone-100">
-          <button onClick={handleAdd}
-            className="w-full py-3 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold transition-all shadow-md active:scale-95">
+          <button
+            onClick={handleAdd}
+            className="w-full py-3 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold transition-all shadow-md active:scale-95"
+          >
             Add to Cart — ₱{totalPrice}
           </button>
         </div>
