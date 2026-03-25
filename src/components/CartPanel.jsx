@@ -191,122 +191,130 @@
 
         {/* Totals + Checkout */}
         {cart.length > 0 && (
-          <div className="px-4 md:px-5 py-4 border-t border-stone-100 bg-stone-50">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <button onClick={() => setVatEnabled((v) => !v)} className={`relative w-9 h-5 rounded-full transition-all flex-shrink-0 ${vatEnabled ? "bg-green-600" : "bg-stone-300"}`}>
-                  <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${vatEnabled ? "left-4" : "left-0.5"}`} />
-                </button>
-                <span className="text-xs text-stone-500 font-medium">VAT</span>
+          <>
+            {/* Scrollable totals + inputs */}
+            <div className="px-4 md:px-5 pt-4 pb-2 border-t border-stone-100 bg-stone-50 overflow-y-auto flex-shrink-0 max-h-[52%]">
+              
+              {/* VAT Toggle */}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setVatEnabled((v) => !v)} className={`relative w-9 h-5 rounded-full transition-all flex-shrink-0 ${vatEnabled ? "bg-green-600" : "bg-stone-300"}`}>
+                    <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${vatEnabled ? "left-4" : "left-0.5"}`} />
+                  </button>
+                  <span className="text-xs text-stone-500 font-medium">VAT</span>
+                </div>
+                {vatEnabled && (
+                  <div className="flex items-center gap-1">
+                    {editingVat ? (
+                      <>
+                        <input type="number" value={vatRate} min={0} max={100} autoFocus
+                          onChange={(e) => setVatRate(Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))}
+                          className="w-12 text-center text-xs font-bold border-2 border-green-400 rounded-lg py-0.5 outline-none bg-white text-stone-700"
+                        />
+                        <span className="text-xs text-stone-400">%</span>
+                        <button onClick={() => setEditingVat(false)} className="text-[10px] font-bold text-white bg-green-600 px-2 py-0.5 rounded-lg hover:bg-green-700 transition-all">✓</button>
+                      </>
+                    ) : (
+                      <button onClick={() => setEditingVat(true)} className="text-xs font-bold text-green-700 border-2 border-dashed border-green-300 px-2 py-0.5 rounded-lg hover:bg-green-50 transition-all">
+                        {vatRate}% ✎
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
-              {vatEnabled && (
-                <div className="flex items-center gap-1">
-                  {editingVat ? (
-                    <>
-                      <input type="number" value={vatRate} min={0} max={100} autoFocus
-                        onChange={(e) => setVatRate(Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))}
-                        className="w-12 text-center text-xs font-bold border-2 border-green-400 rounded-lg py-0.5 outline-none bg-white text-stone-700"
-                      />
-                      <span className="text-xs text-stone-400">%</span>
-                      <button onClick={() => setEditingVat(false)} className="text-[10px] font-bold text-white bg-green-600 px-2 py-0.5 rounded-lg hover:bg-green-700 transition-all">✓</button>
-                    </>
-                  ) : (
-                    <button onClick={() => setEditingVat(true)} className="text-xs font-bold text-green-700 border-2 border-dashed border-green-300 px-2 py-0.5 rounded-lg hover:bg-green-50 transition-all">
-                      {vatRate}% ✎
-                    </button>
-                  )}
+
+              {/* Line items */}
+              <div className="flex justify-between text-xs text-stone-400 mb-1"><span>Subtotal</span><span>₱{subtotal}</span></div>
+              <div className={`flex justify-between text-xs mb-1 ${vatEnabled ? "text-stone-400" : "text-stone-300 line-through"}`}>
+                <span>VAT ({vatRate}%)</span><span>₱{vatAmount}</span>
+              </div>
+              {useDiscount && hasDiscount && (
+                <div className="flex justify-between text-xs text-green-600 font-semibold mb-1">
+                  <span>🎉 Loyalty Discount</span>
+                  <span>-₱{discount}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-base font-bold border-t border-stone-200 pt-2 mt-1 mb-3">
+                <span className="text-stone-700">Total</span>
+                <span className="text-amber-700">₱{total}</span>
+              </div>
+
+              {/* Amount Tendered */}
+              <div className="mb-3">
+                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Amount Tendered</p>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">₱</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={tendered}
+                    onChange={(e) => setTendered(e.target.value)}
+                    placeholder={total}
+                    className="w-full pl-7 pr-3 py-2.5 rounded-xl border-2 border-[#a8b48a] bg-white text-stone-700 text-sm font-bold outline-none focus:border-green-500 transition-all"
+                  />
+                </div>
+
+                {/* Quick cash buttons */}
+                <div className="flex gap-1.5 mt-2 flex-wrap">
+                  {[20, 50, 100, 200, 500, 1000]
+                    .filter((bill) => bill >= total)
+                    .slice(0, 4)
+                    .map((bill) => (
+                      <button
+                        key={bill}
+                        onClick={() => setTendered(String(bill))}
+                        className="px-2.5 py-1 rounded-lg border border-[#a8b48a] text-[10px] font-bold text-green-800 bg-white hover:bg-green-50 hover:border-green-500 transition-all"
+                      >
+                        ₱{bill}
+                      </button>
+                    ))}
+                  <button
+                    onClick={() => setTendered(String(total))}
+                    className="px-2.5 py-1 rounded-lg border border-amber-300 text-[10px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 transition-all"
+                  >
+                    Exact
+                  </button>
+                </div>
+              </div>
+
+              {/* Change */}
+              {tendered !== "" && Number(tendered) >= total && (
+                <div className="flex justify-between items-center bg-green-50 border-2 border-green-300 rounded-xl px-3 py-2.5 mb-1">
+                  <span className="text-xs font-bold text-green-700">Change</span>
+                  <span className="text-lg font-bold text-green-700">₱{Number(tendered) - total}</span>
+                </div>
+              )}
+              {tendered !== "" && Number(tendered) < total && (
+                <div className="flex justify-between items-center bg-red-50 border-2 border-red-200 rounded-xl px-3 py-2.5 mb-1">
+                  <span className="text-xs font-bold text-red-500">Short by</span>
+                  <span className="text-lg font-bold text-red-500">₱{total - Number(tendered)}</span>
                 </div>
               )}
             </div>
 
-            {/* Line items */}
-            <div className="flex justify-between text-xs text-stone-400 mb-1"><span>Subtotal</span><span>₱{subtotal}</span></div>
-            <div className={`flex justify-between text-xs mb-1 ${vatEnabled ? "text-stone-400" : "text-stone-300 line-through"}`}>
-              <span>VAT ({vatRate}%)</span><span>₱{vatAmount}</span>
+            {/* Pinned button footer — always visible */}
+            <div className="px-4 md:px-5 pb-4 pt-2 bg-stone-50 flex-shrink-0 border-t border-stone-100">
+              <button
+                onClick={handleCheckout}
+                disabled={payAnim || tendered === "" || Number(tendered) < total}
+                className={`w-full py-3 rounded-xl text-sm font-bold text-white transition-all shadow-md
+                  ${payAnim ? "bg-green-600 scale-95"
+                  : tendered === "" || Number(tendered) < total ? "bg-stone-300 cursor-not-allowed"
+                  : "bg-green-700 hover:bg-green-800 active:scale-95"}`}
+              >
+                {payAnim ? "⏳ Processing…"
+                : tendered === "" ? "Enter Amount Tendered"
+                : Number(tendered) < total ? `Short by ₱${total - Number(tendered)}`
+                : `💳 Checkout — ₱${total}`}
+              </button>
+              <button
+                onClick={() => { onClear(); setSearch(""); setSelectedMember(null); setLoyaltyCards([]); setUseDiscount(false); setTendered(""); }}
+                className="w-full mt-2 py-2 rounded-lg text-xs text-stone-400 border border-stone-200 hover:border-red-300 hover:text-red-400 transition-all bg-white"
+              >
+                Clear Order
+              </button>
             </div>
-            {useDiscount && hasDiscount && (
-              <div className="flex justify-between text-xs text-green-600 font-semibold mb-1">
-                <span>🎉 Loyalty Discount</span>
-                <span>-₱{discount}</span>
-              </div>
-            )}
-            <div className="flex justify-between text-base font-bold border-t border-stone-200 pt-2 mt-1 mb-3">
-              <span className="text-stone-700">Total</span>
-              <span className="text-amber-700">₱{total}</span>
-            </div>
-
-            {/* Amount Tendered */}
-            <div className="mb-3">
-              <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Amount Tendered</p>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">₱</span>
-                <input
-                  type="number"
-                  min={0}
-                  value={tendered}
-                  onChange={(e) => setTendered(e.target.value)}
-                  placeholder={total}
-                  className="w-full pl-7 pr-3 py-2.5 rounded-xl border-2 border-[#a8b48a] bg-white text-stone-700 text-sm font-bold outline-none focus:border-green-500 transition-all"
-                />
-              </div>
-
-              {/* Quick cash buttons */}
-              <div className="flex gap-1.5 mt-2 flex-wrap">
-                {[20, 50, 100, 200, 500, 1000]
-                  .filter((bill) => bill >= total)
-                  .slice(0, 4)
-                  .map((bill) => (
-                    <button
-                      key={bill}
-                      onClick={() => setTendered(String(bill))}
-                      className="px-2.5 py-1 rounded-lg border border-[#a8b48a] text-[10px] font-bold text-green-800 bg-white hover:bg-green-50 hover:border-green-500 transition-all"
-                    >
-                      ₱{bill}
-                    </button>
-                  ))}
-                <button
-                  onClick={() => setTendered(String(total))}
-                  className="px-2.5 py-1 rounded-lg border border-amber-300 text-[10px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 transition-all"
-                >
-                  Exact
-                </button>
-              </div>
-            </div>
-
-            {/* Change */}
-            {tendered !== "" && Number(tendered) >= total && (
-              <div className="flex justify-between items-center bg-green-50 border-2 border-green-300 rounded-xl px-3 py-2.5 mb-3">
-                <span className="text-xs font-bold text-green-700">Change</span>
-                <span className="text-lg font-bold text-green-700">₱{Number(tendered) - total}</span>
-              </div>
-            )}
-            {tendered !== "" && Number(tendered) < total && (
-              <div className="flex justify-between items-center bg-red-50 border-2 border-red-200 rounded-xl px-3 py-2.5 mb-3">
-                <span className="text-xs font-bold text-red-500">Short by</span>
-                <span className="text-lg font-bold text-red-500">₱{total - Number(tendered)}</span>
-              </div>
-            )}
-
-            <button
-              onClick={handleCheckout}
-              disabled={payAnim || tendered === "" || Number(tendered) < total}
-              className={`w-full py-3 rounded-xl text-sm font-bold text-white transition-all shadow-md
-                ${payAnim ? "bg-green-600 scale-95"
-                : tendered === "" || Number(tendered) < total ? "bg-stone-300 cursor-not-allowed"
-                : "bg-green-700 hover:bg-green-800 active:scale-95"}`}
-            >
-              {payAnim ? "⏳ Processing…"
-              : tendered === "" ? "Enter Amount Tendered"
-              : Number(tendered) < total ? `Short by ₱${total - Number(tendered)}`
-              : `💳 Checkout — ₱${total}`}
-            </button>
-            <button
-              onClick={() => { onClear(); setSearch(""); setSelectedMember(null); setLoyaltyCards([]); setUseDiscount(false); setTendered(""); }}
-              className="w-full mt-2 py-2 rounded-lg text-xs text-stone-400 border border-stone-200 hover:border-red-300 hover:text-red-400 transition-all bg-white"
-            >
-              Clear Order
-            </button>
-          </div>
+          </>
         )}
       </div>
     );
