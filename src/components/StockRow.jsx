@@ -1,4 +1,4 @@
-export const StockRow = ({ item, onUpdateStock, onDelete }) => {
+export const StockRow = ({ item, onUpdateStock, onUpdatePrice, onDelete }) => {
   const isOut = item.stock === 0;
   const isLow = item.stock > 0 && item.stock < 10;
   const isUrl = item.icon && item.icon.startsWith("http");
@@ -15,7 +15,17 @@ export const StockRow = ({ item, onUpdateStock, onDelete }) => {
         <p className="text-xs md:text-sm font-semibold text-stone-800 truncate">{item.name}</p>
         <div className="flex gap-2 mt-1">
           <span className="text-[10px] bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium">{item.category}</span>
-          <span className="text-[10px] text-amber-700 font-semibold">₱{item.price}</span>
+          {/* ← editable price input */}
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-amber-700 font-semibold">₱</span>
+            <input
+              type="number"
+              value={item.price}
+              onChange={(e) => onUpdatePrice(parseInt(e.target.value) || 0)}
+              onFocus={(e) => e.target.select()}
+              className="w-14 text-center text-[10px] font-bold rounded-lg border border-amber-200 bg-amber-50 text-amber-700 py-0.5 outline-none focus:border-amber-400 transition-all"
+            />
+          </div>
         </div>
       </div>
 

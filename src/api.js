@@ -11,6 +11,8 @@ export const updateStock   = (id, stock) => api.patch(`/products/${id}`, { stock
 export const deleteProduct = (id)        => api.delete(`/products/${id}`);
 export const getAddons = () => api.get("/products");
 
+export const updatePrice = (id, price) => api.patch(`/products/${id}`, { price });
+
 // ── Orders ────────────────────────────────────────────────────────────────────
 export const getOrders = ()     => api.get("/orders");
 export const saveOrder = (data) => api.post("/orders", data);
