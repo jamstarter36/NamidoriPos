@@ -82,7 +82,7 @@ export const NamidoriPos = ({ onLogout, user }) => {
   };
 
   if (loading) return (
-    <div className="flex h-screen items-center justify-center" style={{ backgroundColor: "#d4dbb8" }}>
+    <div className="flex m-h-screen items-center justify-center" style={{ backgroundColor: "#d4dbb8" }}>
       <p className="text-green-800 font-bold text-lg">Loading menu... 🍵</p>
     </div>
   );
