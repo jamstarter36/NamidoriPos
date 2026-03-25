@@ -151,8 +151,6 @@
                 <p className="text-[10px] text-stone-400 mt-1 text-right">{activeStamps}/8</p>
               </div>
             )}
-
-            // Replace the hasDiscount block with:
             {hasDiscount && (
               <div className="mt-2 bg-amber-50 border-2 border-amber-200 rounded-xl p-3">
                 <div className="flex items-center justify-between mb-2">
