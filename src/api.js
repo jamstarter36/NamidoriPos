@@ -9,6 +9,7 @@ export const getProducts   = ()          => api.get("/products");
 export const addProduct    = (data)      => api.post("/products", data);
 export const updateStock   = (id, stock) => api.patch(`/products/${id}`, { stock });
 export const deleteProduct = (id)        => api.delete(`/products/${id}`);
+export const getAddons = () => api.get("/products");
 
 // ── Orders ────────────────────────────────────────────────────────────────────
 export const getOrders = ()     => api.get("/orders");
