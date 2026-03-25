@@ -3,7 +3,7 @@ export const CartRow = ({ item, onAdd, onRemove }) => {
   const reachedLimit = item.qty >= item.stock;
 
   return (
-    <div className="flex items-start gap-2 py-2.5 border-b border-stone-100 last:border-0">
+    <div className="flex items-stretch gap-2 py-2.5 border-b border-stone-100 last:border-0">
       {/* Icon */}
       {isUrl ? (
         <img src={item.icon} alt={item.name} className="w-8 h-8 rounded-lg object-cover border border-[#a8b48a] flex-shrink-0 mt-0.5" />
