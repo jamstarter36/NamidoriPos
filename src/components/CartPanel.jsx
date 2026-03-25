@@ -72,7 +72,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
   const completedUnusedCards = loyaltyCards.filter((c) => c.completed && !c.used);
   const hasDiscount          = completedUnusedCards.length > 0;
 
-  const DISCOUNT_AMOUNT = 145;
+  const DISCOUNT_AMOUNT = 165;
   const discount        = hasDiscount && useDiscount ? Math.min(DISCOUNT_AMOUNT, subtotal + vatAmount) : 0;
   const total           = Math.max(0, subtotal + vatAmount - discount);
 
@@ -156,7 +156,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
             <div className="mt-2 bg-amber-50 border-2 border-amber-200 rounded-xl p-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-amber-700">🎉 ₱145 Reward Available!</p>
+                  <p className="text-xs font-bold text-amber-700">🎉 ₱165 Reward Available!</p>
                   <p className="text-[10px] text-amber-600 mt-0.5">{completedUnusedCards.length} completed card{completedUnusedCards.length !== 1 ? "s" : ""}</p>
                 </div>
                 <button
@@ -167,7 +167,7 @@ export const CartPanel = ({ cart, onAdd, onRemove, onClear, onCheckout, payAnim,
                 </button>
               </div>
               {useDiscount && (
-                <p className="text-[10px] text-green-700 font-semibold mt-2 text-center">✅ ₱145 discount will be applied!</p>
+                <p className="text-[10px] text-green-700 font-semibold mt-2 text-center">✅ ₱165 discount will be applied!</p>
               )}
             </div>
           )}

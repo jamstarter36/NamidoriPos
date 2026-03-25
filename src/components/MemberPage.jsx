@@ -43,10 +43,10 @@ const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 
     </div>
     <p className="text-xs text-white/60 mb-4">
       {isActive
-        ? "Collect 8 stamps to get a ₱145 discount!"
+        ? "Collect 8 stamps to get a ₱165 discount!"
         : card?.used
         ? `Redeemed on ${card.used_date}`
-        : `Completed on ${card?.completed_date} · ₱145 discount ready!`}
+        : `Completed on ${card?.completed_date} · ₱165 discount ready!`}
     </p>
     <div className="flex gap-1.5 md:gap-2 flex-wrap mb-3">
       {Array.from({ length: 8 }).map((_, i) => {
