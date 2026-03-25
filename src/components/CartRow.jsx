@@ -33,7 +33,7 @@ export const CartRow = ({ item, onAdd, onRemove }) => {
       </div>
 
       {/* Qty controls */}
-      <div className="flex items-end h-full gap-1 md:gap-1.5 flex-shrink-0">
+      <div className="flex items-center gap-1 md:gap-1.5 flex-shrink-0 self-end">
         <button
           onClick={onRemove}
           className="w-5 h-5 rounded-md border border-stone-200 bg-stone-50 text-stone-600 text-xs font-bold hover:bg-red-50 hover:border-red-300 hover:text-red-500 transition-all"
@@ -51,7 +51,7 @@ export const CartRow = ({ item, onAdd, onRemove }) => {
         </button>
       </div>
 
-      <span className="text-xs font-bold text-amber-700 w-10 text-right flex-shrink-0">
+      <span className="text-xs font-bold text-amber-700 w-10 text-right flex-shrink-0 self-end">
         ₱{item.price * item.qty}
       </span>
     </div>
