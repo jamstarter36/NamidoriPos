@@ -159,37 +159,37 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
                         <p className="text-xs font-semibold">{addon.name}</p>
                       </div>
 
-                      <div className="flex items-center gap-2">
-  {/* MINUS */}
-  <button
-    onClick={() => removeAddon(addon)}
-    disabled={!selected}
-    className={`w-7 h-7 text-sm font-bold rounded flex items-center justify-center ${
-      selected
-        ? "bg-red-500 text-white"
-        : "bg-gray-200 text-gray-400 cursor-not-allowed"
-    }`}
-  >
-    −
-  </button>
+ <div
+  key={addon.id}
+  className="flex items-center justify-between px-3 py-2 rounded-xl border border-gray-300"
+>
+  {/* LEFT: NAME */}
+  <span className="text-sm font-medium">{addon.name}</span>
 
-  {/* QTY */}
-  <span className="text-sm font-bold w-5 text-center">
-    {selected?.qty || 0}
-  </span>
+  {/* RIGHT: CONTROLS */}
+  <div className="flex items-center gap-2">
+    <button
+      onClick={() => removeAddon(addon)}
+      className="w-8 h-8 bg-red-500 text-white rounded flex items-center justify-center"
+    >
+      −
+    </button>
 
-  {/* PLUS */}
-  <button
-    onClick={() => addAddon(addon)}
-    className="w-7 h-7 text-sm font-bold bg-green-700 text-white rounded flex items-center justify-center"
-  >
-    +
-  </button>
+    <span className="w-6 text-center font-bold">
+      {selectedAddons.find(a => a.id === addon.id)?.qty || 0}
+    </span>
 
-  {/* PRICE */}
-  <span className="text-xs font-bold text-stone-500 ml-2">
-    ₱{addon.price}
-  </span>
+    <button
+      onClick={() => addAddon(addon)}
+      className="w-8 h-8 bg-green-600 text-white rounded flex items-center justify-center"
+    >
+      +
+    </button>
+
+    <span className="ml-2 text-sm text-gray-600">
+      ₱{addon.price}
+    </span>
+  </div>
 </div>
                     </div>
                   );
