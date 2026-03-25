@@ -6,10 +6,10 @@ const SIZES = [
 ];
 
 const ADDONS = [
-  { key: "matcha",      label: "Extra Matcha",    desc: "2g matcha powder",      price: 30 },
-  { key: "seasalt",     label: "Sea Salt Cream",   desc: "10ml sea salt cream",   price: 15 },
-  { key: "strawberry",  label: "Strawberry Purée", desc: "10ml strawberry purée", price: 15 },
-  { key: "mango",       label: "Mango Purée",      desc: "10ml mango purée",      price: 15 },
+  { key: "matcha",      label: "Extra Matcha",    desc: "2g matcha powder",      price: 35 },
+  { key: "seasalt",     label: "Sea Salt Cream",   desc: "10ml sea salt cream",   price: 25 },
+  { key: "strawberry",  label: "Strawberry Purée", desc: "10ml strawberry purée", price: 25 },
+  { key: "mango",       label: "Mango Purée",      desc: "10ml mango purée",      price: 25 },
 ];
 
 export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
