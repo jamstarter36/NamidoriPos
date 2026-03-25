@@ -3,7 +3,7 @@ export const CartRow = ({ item, onAdd, onRemove }) => {
   const reachedLimit = item.qty >= item.stock;
 
   return (
-    <div className="flex items-stretch gap-2 py-2.5 border-b border-stone-100 last:border-0">
+    <div className="flex items-start gap-2 py-2.5 border-b border-stone-100 last:border-0">
       {/* Icon */}
       {isUrl ? (
         <img src={item.icon} alt={item.name} className="w-8 h-8 rounded-lg object-cover border border-[#a8b48a] flex-shrink-0 mt-0.5" />
@@ -13,7 +13,7 @@ export const CartRow = ({ item, onAdd, onRemove }) => {
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-stone-700 break-words">{item.name}</p>
+        <p className="text-xs font-medium text-stone-700 truncate">{item.name}</p>
 
         {/* Size + addons tags */}
         <div className="flex flex-wrap gap-1 mt-0.5">
@@ -33,7 +33,7 @@ export const CartRow = ({ item, onAdd, onRemove }) => {
       </div>
 
       {/* Qty controls */}
-      <div className="flex items-center gap-1 md:gap-1.5 flex-shrink-0 self-end">
+      <div className="flex items-center gap-1 md:gap-1.5 flex-shrink-0">
         <button
           onClick={onRemove}
           className="w-5 h-5 rounded-md border border-stone-200 bg-stone-50 text-stone-600 text-xs font-bold hover:bg-red-50 hover:border-red-300 hover:text-red-500 transition-all"
@@ -51,7 +51,7 @@ export const CartRow = ({ item, onAdd, onRemove }) => {
         </button>
       </div>
 
-      <span className="text-xs font-bold text-amber-700 w-10 text-right flex-shrink-0 self-end">
+      <span className="text-xs font-bold text-amber-700 w-10 text-right flex-shrink-0">
         ₱{item.price * item.qty}
       </span>
     </div>
