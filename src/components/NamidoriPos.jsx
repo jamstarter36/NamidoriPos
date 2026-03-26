@@ -51,10 +51,13 @@ export const NamidoriPos = ({ onLogout, user }) => {
 
         const order = {
           items: cart
-            .filter((c) => !c.isFree)
-            .map((c) =>
-              `${c.qty > 1 ? `x${c.qty} ` : ""}${c.name}|${c.size || "12 oz"}|${c.addons ? c.addons.join(", ") : ""}`
-            ).join("||"),
+          .filter((c) => !c.isFree)
+          .map((c) => {
+            const name = `${c.qty > 1 ? `x${c.qty} ` : ""}${c.name}`;
+            const size = c.size || "12 oz";
+            const addons = c.addons && c.addons.length > 0 ? c.addons.join(", ") : "";
+            return addons ? `${name}|${size}|${addons}` : `${name}|${size}`;
+          }).join("||"),
           item_details: "",
           subtotal,
           vat_rate: vatRate,
