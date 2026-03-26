@@ -7,13 +7,13 @@ const ORDER_SHEET = "Orders";
 router.post("/", async (req, res) => {
   try {
     console.log("ORDER BODY:", JSON.stringify(req.body));
-    const { items, subtotal, vat_rate, vat_amount, total, member_id, discount } = req.body;
+    const { items, item_details, subtotal, vat_rate, vat_amount, total, member_id, member_name, discount } = req.body;
     const sheets = await getSheets();
 
     // Generate order ID
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${ORDER_SHEET}!A1:H1000`,
+      range: `${ORDER_SHEET}!A1:J1000`,
     });
     const rows = response.data.values || [];
     const nextOrderId = rows.length;
@@ -21,18 +21,31 @@ router.post("/", async (req, res) => {
     const now  = new Date();
     const date = now.toLocaleDateString("en-PH");
     const time = now.toLocaleTimeString("en-PH");
-    const itemsString = items.map((i) => `${i.name} x${i.qty}`).join(", ");
+
+    // items is now a string from the frontend
+    const itemsString = typeof items === "string"
+      ? items
+      : items.map((i) => `${i.name} x${i.qty}`).join(", ");
+
+    const detailsString = item_details || "";
+    const discountValue = discount || 0;
+    const memberName    = member_name || "Walk-in";
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
       range: `${ORDER_SHEET}!A1`,
       valueInputOption: "RAW",
       requestBody: {
-        values: [[nextOrderId, date, time, itemsString, subtotal, vat_rate, vat_amount, total]],
+        values: [[
+          nextOrderId, date, time,
+          itemsString, detailsString,
+          subtotal, vat_rate, vat_amount,
+          discountValue, total, memberName
+        ]],
       },
     });
 
-    res.json({ order_id: nextOrderId, date, time, itemsString, subtotal, vat_rate, vat_amount, total });
+    res.json({ order_id: nextOrderId, date, time, itemsString, subtotal, vat_rate, vat_amount, total, discount: discountValue });
   } catch (error) {
     console.error("POST /orders error:", error);
     res.status(500).json({ error: "Failed to save order" });
