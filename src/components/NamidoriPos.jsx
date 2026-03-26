@@ -50,9 +50,11 @@ export const NamidoriPos = ({ onLogout, user }) => {
           .map((c) => updateStock(c.originalId || c.id, Math.max(0, c.stock - c.qty)));
 
         const order = {
-          items: cart.map((c) =>
-            `${c.qty > 1 ? `x${c.qty} ` : ""}${c.name}|${c.size || "12 oz"}|${c.addons ? c.addons.join(", ") : ""}`
-          ).join("||"),
+          items: cart
+            .filter((c) => !c.isFree)
+            .map((c) =>
+              `${c.qty > 1 ? `x${c.qty} ` : ""}${c.name}|${c.size || "12 oz"}|${c.addons ? c.addons.join(", ") : ""}`
+            ).join("||"),
           item_details: "",
           subtotal,
           vat_rate: vatRate,
