@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
       range: `${ORDER_SHEET}!A1:K1000`,
     });
     const rows = response.data.values || [];
-    const nextOrderId = rows.length;
+    const nextOrderId = String(rows.length).padStart(4, "0");
 
     const now  = new Date();
     const date = now.toLocaleDateString("en-PH");
