@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
-import { getOrders } from "../api";
+import { getOrders, deleteOrder } from "../api";
 
 export const SalesView = () => {
   const [orders, setOrders]   = useState([]);
   const [loading, setLoading] = useState(true);
-  const [voided, setVoided]   = useState([]);
+  
+  const handleVoid = (order_id) => {
+    const oldOrders = orders;
+    setOrders((prev) => prev.filter((o) => o.order_id !== order_id));
+    deleteOrder(order_id).catch((err) => {
+      console.error("Failed to void order:", err);
+      setOrders(oldOrders);
+    });
+  };
 
   useEffect(() => {
     getOrders()
@@ -13,10 +21,10 @@ export const SalesView = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const visibleOrders = orders.filter((o) => !voided.includes(o.order_id));
-  const totalSales   = visibleOrders.reduce((s, o) => s + o.total, 0);
-  const totalOrders  = visibleOrders.length;
-  const totalVat     = visibleOrders.reduce((s, o) => s + o.vat_amount, 0);
+  
+  const totalSales  = orders.reduce((s, o) => s + o.total, 0);
+  const totalOrders = orders.length;
+  const totalVat    = orders.reduce((s, o) => s + o.vat_amount, 0);
   const averageOrder = totalOrders > 0 ? Math.round(totalSales / totalOrders) : 0;
 
   if (loading) return (
@@ -74,13 +82,13 @@ export const SalesView = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {[...visibleOrders].reverse().map((order, index) => (
+                    {[...orders].reverse().map((order, index) => (
                       <tr key={index} className="border-b border-stone-50 hover:bg-stone-50 transition-all">
                         <td className="px-5 py-3 text-xs font-bold text-green-700">
                           <div className="flex items-center gap-2">
                             <span>#{order.order_id}</span>
                             <button
-                              onClick={() => setVoided((v) => [...v, order.order_id])}
+                              onClick={() => handleVoid(order.order_id)}
                               className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
                             >✕</button>
                           </div>
@@ -121,13 +129,13 @@ export const SalesView = () => {
 
               {/* Mobile cards */}
               <div className="md:hidden flex flex-col divide-y divide-stone-100">
-                {[...visibleOrders].reverse().map((order, index) => (
+                {[...orders].reverse().map((order, index) => (
                   <div key={index} className="p-4 hover:bg-stone-50 transition-all">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-green-700">#{order.order_id}</span>
                         <button
-                          onClick={() => setVoided((v) => [...v, order.order_id])}
+                          onClick={() => handleVoid(order.order_id)}
                           className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
                         >✕</button>
                       </div>

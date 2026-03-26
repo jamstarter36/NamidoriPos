@@ -4,16 +4,14 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000/api",
 });
 
-// ── Products ──────────────────────────────────────────────────────────────────
-export const getProducts   = ()          => api.get("/products");
-export const addProduct    = (data)      => api.post("/products", data);
-export const updateStock   = (id, stock) => api.patch(`/products/${id}`, { stock });
-export const deleteProduct = (id)        => api.delete(`/products/${id}`);
-export const getAddons = () => api.get("/products");
-
-export const updatePrice = (id, price) => api.patch(`/products/${id}`, { price });
-
-export const updateSizePrice = (id, size_price) => api.patch(`/products/${id}`, { size_price });
+// Mga PRODUCTS yawa
+export const getProducts =()=> api.get("/products");
+export const addProduct =(data)=> api.post("/products", data);
+export const updateStock  =(id, stock)=> api.patch(`/products/${id}`, { stock });
+export const deleteProduct =(id)=> api.delete(`/products/${id}`);
+export const getAddons =()=> api.get("/products");
+export const updatePrice =(id, price)=> api.patch(`/products/${id}`, { price });
+export const updateSizePrice =(id, size_price)=> api.patch(`/products/${id}`, { size_price });
 
 // ── Orders ────────────────────────────────────────────────────────────────────
 export const getOrders = ()     => api.get("/orders");
@@ -33,3 +31,6 @@ export const createCard      = (member_id)                    => api.post("/loya
 export const getTestimony    = (member_id) => api.get(`/testimony/${member_id}`);
 export const submitTestimony = (data)      => api.post("/testimony", data);
 export const getAllTestimonials = () => api.get("/testimony");
+
+// Delete
+export const deleteOrder = (order_id) => api.delete(`/orders/${order_id}`);

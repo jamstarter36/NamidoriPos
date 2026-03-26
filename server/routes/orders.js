@@ -81,4 +81,47 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.delete("/:order_id", async (req, res) => {
+  try {
+    const { order_id } = req.params;
+    const sheets = await getSheets();
+
+    // Get sheet ID
+    const meta = await sheets.spreadsheets.get({ spreadsheetId: SPREADSHEET_ID });
+    const sheet = meta.data.sheets.find((s) => s.properties.title === ORDER_SHEET);
+    const sheetId = sheet.properties.sheetId;
+
+    // Find the row
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${ORDER_SHEET}!A1:K1000`,
+    });
+    const rows = response.data.values || [];
+    const rowIndex = rows.findIndex((row, i) => i > 0 && row[0] === order_id);
+    if (rowIndex === -1) return res.status(404).json({ error: "Order not found" });
+
+    // Delete the row
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: SPREADSHEET_ID,
+      requestBody: {
+        requests: [{
+          deleteDimension: {
+            range: {
+              sheetId,
+              dimension: "ROWS",
+              startIndex: rowIndex,
+              endIndex: rowIndex + 1,
+            },
+          },
+        }],
+      },
+    });
+
+    res.json({ message: `Order ${order_id} deleted` });
+  } catch (error) {
+    console.error("DELETE /orders/:order_id error:", error);
+    res.status(500).json({ error: "Failed to delete order" });
+  }
+});
+
 module.exports = router;
