@@ -13,6 +13,7 @@
       product.price = parseInt(product.price) || 0;
       product.stock = parseInt(product.stock) || 0;
       product.id    = parseInt(product.id) || 0;
+      product.size_price = parseInt(product.size_price) || 0;
       return product;
     });
   };
@@ -22,7 +23,7 @@
       const sheets = await getSheets();
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID,
-        range: `${SHEET_NAME}!A1:F1000`,
+        range: `${SHEET_NAME}!A1:G1000`,
       });
       const products = rowsToProducts(response.data.values);
       res.json(products);
@@ -34,11 +35,11 @@
 
   router.post("/", async (req, res) => {
     try {
-      const { name, category, price, icon, stock } = req.body;
+      const { name, category, price, icon, stock, size_price } = req.body;
       const sheets = await getSheets();
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID,
-        range: `${SHEET_NAME}!A1:F1000`,
+        range: `${SHEET_NAME}!A1:G1000`,
       });
       const products = rowsToProducts(response.data.values);
       const nextId = products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
@@ -47,7 +48,7 @@
         range: `${SHEET_NAME}!A1`,
         valueInputOption: "RAW",
         requestBody: {
-          values: [[nextId, name, category, price, icon, stock]],
+          values: [[nextId, name, category, price, icon, stock, size_price || ""]],
         },
       });
       res.json({ id: nextId, name, category, price, icon, stock });
@@ -64,7 +65,7 @@
       const sheets = await getSheets();
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID,
-        range: `${SHEET_NAME}!A1:F1000`,
+        range: `${SHEET_NAME}!A1:G1000`,
       });
       const rows = response.data.values;
       const rowIndex = rows.findIndex((row, i) => i > 0 && row[0] == id);

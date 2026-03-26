@@ -19,9 +19,14 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
 
         setAllAddons(addonOnly);
 
+        // Use item's own size_price if available, fallback to default 16oz cup price
+        const sixteenOzPrice = item.size_price
+          ? item.size_price
+          : sizeItem ? sizeItem.price : 45;
+
         setSizes([
           { label: "12 oz", extraPrice: 0, id: null },
-          ...(sizeItem ? [{ label: "16 oz", extraPrice: sizeItem.price, id: sizeItem.id }] : []),
+          ...(sizeItem ? [{ label: "16 oz", extraPrice: sixteenOzPrice, id: sizeItem.id }] : []),
         ]);
 
         setSize({ label: "12 oz", extraPrice: 0, id: null });
