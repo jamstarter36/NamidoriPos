@@ -13,6 +13,8 @@ export const getAddons = () => api.get("/products");
 
 export const updatePrice = (id, price) => api.patch(`/products/${id}`, { price });
 
+export const updateSizePrice = (id, size_price) => api.patch(`/products/${id}`, { size_price });
+
 // ── Orders ────────────────────────────────────────────────────────────────────
 export const getOrders = ()     => api.get("/orders");
 export const saveOrder = (data) => api.post("/orders", data);

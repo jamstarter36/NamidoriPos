@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateStock, updatePrice, addProduct, deleteProduct } from "../api";
+import { updateStock, updatePrice, updateSizePrice, addProduct, deleteProduct } from "../api";
 import { StockRow } from "./StockRow";
 import { AddFlavorModal } from "./AddFlavorModal";
 
@@ -13,11 +13,11 @@ export const StockView = ({ items, setItems }) => {
     updateStock(id, newStock).catch((err) => { console.error(err); setItems(oldItems); });
   };
 
-    const handleUpdatePrice = (id, val) => {
-    const newPrice = Math.max(0, parseInt(val) || 0);
+  const handleUpdateSizePrice = (id, val) => {
+    const newSizePrice = Math.max(0, parseInt(val) || 0);
     const oldItems = items;
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, price: newPrice } : i)));
-    updatePrice(id, newPrice).catch((err) => { console.error(err); setItems(oldItems); });
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, size_price: newSizePrice } : i)));
+    updateSizePrice(id, newSizePrice).catch((err) => { console.error(err); setItems(oldItems); });
   };
 
   const handleDelete = (id) => {
@@ -60,7 +60,8 @@ export const StockView = ({ items, setItems }) => {
               key={item.id}
               item={item}
               onUpdateStock={(val) => handleUpdateStock(item.id, val)}
-              onUpdatePrice={(val) => handleUpdatePrice(item.id, val)}  // ← add this
+              onUpdatePrice={(val) => handleUpdatePrice(item.id, val)}
+              onUpdateSizePrice={(val) => handleUpdateSizePrice(item.id, val)}
               onDelete={() => handleDelete(item.id)}
             />
           ))}

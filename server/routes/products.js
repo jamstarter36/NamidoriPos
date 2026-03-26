@@ -61,7 +61,7 @@
   router.patch("/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const { stock, price } = req.body;
+      const { stock, price, size_price } = req.body;
       const sheets = await getSheets();
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID,
@@ -89,7 +89,15 @@
           requestBody: { values: [[price]] },
         });
       }
-      res.json({ id, stock, price });
+      if (size_price !== undefined) {
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: SPREADSHEET_ID,
+          range: `${SHEET_NAME}!G${sheetRow}`,
+          valueInputOption: "RAW",
+          requestBody: { values: [[size_price]] },
+        });
+      }
+      res.json({ id, stock, price, size_price });
     } catch (error) {
       console.error("PATCH /products/:id error:", error);
       res.status(500).json({ error: "Failed to update stock" });

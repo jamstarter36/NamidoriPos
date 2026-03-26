@@ -1,4 +1,4 @@
-export const StockRow = ({ item, onUpdateStock, onUpdatePrice, onDelete }) => {
+export const StockRow = ({ item, onUpdateStock, onUpdatePrice, onUpdateSizePrice, onDelete }) => {
   const isOut = item.stock === 0;
   const isLow = item.stock > 0 && item.stock < 10;
   const isUrl = item.icon && item.icon.startsWith("http");
@@ -13,20 +13,34 @@ export const StockRow = ({ item, onUpdateStock, onUpdatePrice, onDelete }) => {
 
       <div className="flex-1 min-w-0">
         <p className="text-xs md:text-sm font-semibold text-stone-800 truncate">{item.name}</p>
-        <div className="flex gap-2 mt-1">
-          <span className="text-[10px] bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium">{item.category}</span>
-          {/* ← editable price input */}
+        <div className="flex gap-2 mt-1 flex-wrap">
+        <span className="text-[10px] bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium">{item.category}</span>
+        {/* Base price */}
+        <div className="flex items-center gap-1">
+          <span className="text-[10px] text-amber-700 font-semibold">₱</span>
+          <input
+            type="number"
+            value={item.price}
+            onChange={(e) => onUpdatePrice(parseInt(e.target.value) || 0)}
+            onFocus={(e) => e.target.select()}
+            className="w-14 text-center text-[10px] font-bold rounded-lg border border-amber-200 bg-amber-50 text-amber-700 py-0.5 outline-none focus:border-amber-400 transition-all"
+          />
+        </div>
+        {/* 16oz size price - only for categorized items */}
+        {item.category && item.category.trim() !== "" && (
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-amber-700 font-semibold">₱</span>
+            <span className="text-[10px] text-blue-600 font-semibold">16oz +₱</span>
             <input
               type="number"
-              value={item.price}
-              onChange={(e) => onUpdatePrice(parseInt(e.target.value) || 0)}
+              value={item.size_price || 0}
+              onChange={(e) => onUpdateSizePrice(parseInt(e.target.value) || 0)}
               onFocus={(e) => e.target.select()}
-              className="w-14 text-center text-[10px] font-bold rounded-lg border border-amber-200 bg-amber-50 text-amber-700 py-0.5 outline-none focus:border-amber-400 transition-all"
+              className="w-14 text-center text-[10px] font-bold rounded-lg border border-blue-200 bg-blue-50 text-blue-700 py-0.5 outline-none focus:border-blue-400 transition-all"
             />
           </div>
-        </div>
+        )}
+      </div>
+
       </div>
 
       <div className="flex items-center gap-2 md:gap-3">
