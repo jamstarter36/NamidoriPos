@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
     // Generate order ID
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${ORDER_SHEET}!A1:J1000`,
+      range: `${ORDER_SHEET}!A1:K1000`,
     });
     const rows = response.data.values || [];
     const nextOrderId = rows.length;
@@ -57,7 +57,7 @@ router.get("/", async (req, res) => {
     const sheets = await getSheets();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${ORDER_SHEET}!A1:H1000`,
+      range: `${ORDER_SHEET}!A1:K1000`,
     });
     const rows = response.data.values || [];
     if (rows.length <= 1) return res.json([]);
@@ -69,6 +69,9 @@ router.get("/", async (req, res) => {
       order.vat_rate   = parseFloat(order.vat_rate) || 0;
       order.vat_amount = parseFloat(order.vat_amount) || 0;
       order.total      = parseFloat(order.total) || 0;
+      order.discount      = parseFloat(order.discount) || 0;
+      order.item_details  = order.item_details || "";
+      order.member_name   = order.member_name || "Walk-in";
       return order;
     });
     res.json(orders);
