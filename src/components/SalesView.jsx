@@ -77,19 +77,20 @@ export const SalesView = () => {
                         <td className="px-5 py-3 text-xs font-bold text-green-700">#{order.order_id}</td>
                         <td className="px-5 py-3 text-xs text-stone-500">{order.date}</td>
                         <td className="px-5 py-3 text-xs text-stone-500">{order.time}</td>
-                        <td className="px-5 py-3 text-xs text-stone-600 max-w-[200px]">
-                          <p className="font-semibold truncate">{order.items}</p>
-                          {order.item_details && JSON.parse(order.item_details).length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {JSON.parse(order.item_details).map((detail, i) => (
-                                <span key={i} className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold">
-                                  +{detail}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                        <td className="px-5 py-3 text-xs text-stone-600 max-w-[220px]">
+                          {order.items.split("||").map((entry, i) => {
+                            const [name, size, addons] = entry.split("|");
+                            return (
+                              <div key={i} className="mb-1.5 last:mb-0">
+                                <p className="font-bold text-stone-700">{name}</p>
+                                <p className="text-[10px] text-stone-400">
+                                  {size}{addons ? ` · ${addons}` : ""}
+                                </p>
+                              </div>
+                            );
+                          })}
                           {order.discount > 0 && (
-                            <p className="text-[10px] text-green-600 font-semibold mt-0.5">🎉 -₱{order.discount} loyalty</p>
+                            <p className="text-[10px] text-green-600 font-semibold mt-1">🎉 -₱{order.discount} loyalty</p>
                           )}
                         </td>
                         <td className="px-5 py-3 text-xs text-stone-500 text-right">₱{order.subtotal}</td>
@@ -110,15 +111,17 @@ export const SalesView = () => {
                       <span className="text-sm font-bold text-amber-700">₱{order.total}</span>
                     </div>
                     <p className="text-xs font-semibold text-stone-600 mb-1">{order.items}</p>
-                    {order.item_details && JSON.parse(order.item_details).length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-1">
-                        {JSON.parse(order.item_details).map((detail, i) => (
-                          <span key={i} className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold">
-                            +{detail}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {order.items.split("||").map((entry, i) => {
+                      const [name, size, addons] = entry.split("|");
+                      return (
+                        <div key={i} className="mb-1.5 last:mb-0">
+                          <p className="text-xs font-bold text-stone-700">{name}</p>
+                          <p className="text-[10px] text-stone-400">
+                            {size}{addons ? ` · ${addons}` : ""}
+                          </p>
+                        </div>
+                      );
+                    })}
                     {order.discount > 0 && (
                       <p className="text-[10px] text-green-600 font-semibold mb-1">🎉 -₱{order.discount} loyalty</p>
                     )}
