@@ -67,3 +67,19 @@
 }
 .animate-fade-in  { animation: fade-in  0.15s ease-out; }
 .animate-scale-in { animation: scale-in 0.2s ease-out; }
+
+
+@keyframes bounce-in {
+  0%   { transform: scale(0.3); opacity: 0; }
+  50%  { transform: scale(1.15); }
+  75%  { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes slide-up {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.animate-bounce-in       { animation: bounce-in 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+.animate-slide-up        { animation: slide-up 0.4s ease-out 0.2s both; }
+.animate-slide-up-delay  { animation: slide-up 0.4s ease-out 0.35s both; }

@@ -48,10 +48,10 @@ export const PosView = ({ items, setItems, cart, onAdd, onRemove, onClear, payAn
 
       {/* Payment success overlay */}
       {paid && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20" style={{ backgroundColor: "#d4dbb8f2" }}>
-          <span className="text-6xl">✅</span>
-          <p className="text-xl font-bold text-green-800">Payment Accepted!</p>
-          <p className="text-sm text-stone-400">Order complete — stock updated</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20 animate-fade-in" style={{ backgroundColor: "#d4dbb8f2" }}>
+          <span className="text-7xl animate-bounce-in">✅</span>
+          <p className="text-xl font-bold text-green-800 animate-slide-up">Payment Accepted!</p>
+          <p className="text-sm text-stone-400 animate-slide-up-delay">Order complete — stock updated</p>
         </div>
       )}
     </div>
