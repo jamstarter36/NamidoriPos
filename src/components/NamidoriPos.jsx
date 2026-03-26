@@ -50,7 +50,7 @@ export const NamidoriPos = ({ onLogout, user }) => {
           .map((c) => updateStock(c.originalId || c.id, Math.max(0, c.stock - c.qty)));
 
         const order = {
-          items: cart.map((c) => c.name).join(", "),
+          items: cart.map((c) => `${c.qty > 1 ? `x${c.qty} ` : ""}${c.name}`).join(", "),
           item_details: JSON.stringify(
             cart.flatMap((c) => {
               const details = [];
