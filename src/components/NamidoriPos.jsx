@@ -50,7 +50,15 @@ export const NamidoriPos = ({ onLogout, user }) => {
           .map((c) => updateStock(c.originalId || c.id, Math.max(0, c.stock - c.qty)));
 
         const order = {
-          items: cart,
+          items: cart.map((c) => c.displayName || c.name).join(", "),
+          item_details: JSON.stringify(
+            cart.flatMap((c) => {
+              const details = [];
+              if (c.size) details.push(c.size);
+              if (c.addons && c.addons.length > 0) details.push(...c.addons);
+              return details;
+            })
+          ),
           subtotal,
           vat_rate: vatRate,
           vat_amount: vatAmount,

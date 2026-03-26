@@ -66,7 +66,7 @@ export const SalesView = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-stone-50 border-b border-stone-100">
-                      {["Order ID", "Date", "Time", "Items", "Subtotal", "VAT", "Total"].map((h) => (
+                      {["Order ID", "Date", "Time", "Items & Details", "Subtotal", "VAT", "Total"].map((h) => (
                         <th key={h} className={`px-5 py-3 text-[10px] font-semibold text-stone-400 uppercase tracking-widest ${h === "Subtotal" || h === "VAT" || h === "Total" ? "text-right" : "text-left"}`}>{h}</th>
                       ))}
                     </tr>
@@ -77,7 +77,21 @@ export const SalesView = () => {
                         <td className="px-5 py-3 text-xs font-bold text-green-700">#{order.order_id}</td>
                         <td className="px-5 py-3 text-xs text-stone-500">{order.date}</td>
                         <td className="px-5 py-3 text-xs text-stone-500">{order.time}</td>
-                        <td className="px-5 py-3 text-xs text-stone-600 max-w-[200px] truncate">{order.items}</td>
+                        <td className="px-5 py-3 text-xs text-stone-600 max-w-[200px]">
+                          <p className="font-semibold truncate">{order.items}</p>
+                          {order.item_details && JSON.parse(order.item_details).length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {JSON.parse(order.item_details).map((detail, i) => (
+                                <span key={i} className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold">
+                                  +{detail}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {order.discount > 0 && (
+                            <p className="text-[10px] text-green-600 font-semibold mt-0.5">🎉 -₱{order.discount} loyalty</p>
+                          )}
+                        </td>
                         <td className="px-5 py-3 text-xs text-stone-500 text-right">₱{order.subtotal}</td>
                         <td className="px-5 py-3 text-xs text-stone-500 text-right">{order.vat_rate > 0 ? `₱${order.vat_amount} (${order.vat_rate}%)` : "—"}</td>
                         <td className="px-5 py-3 text-sm font-bold text-amber-700 text-right">₱{order.total}</td>
@@ -95,7 +109,19 @@ export const SalesView = () => {
                       <span className="text-xs font-bold text-green-700">#{order.order_id}</span>
                       <span className="text-sm font-bold text-amber-700">₱{order.total}</span>
                     </div>
-                    <p className="text-xs text-stone-600 mb-1 truncate">{order.items}</p>
+                    <p className="text-xs font-semibold text-stone-600 mb-1">{order.items}</p>
+                    {order.item_details && JSON.parse(order.item_details).length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-1">
+                        {JSON.parse(order.item_details).map((detail, i) => (
+                          <span key={i} className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold">
+                            +{detail}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {order.discount > 0 && (
+                      <p className="text-[10px] text-green-600 font-semibold mb-1">🎉 -₱{order.discount} loyalty</p>
+                    )}
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] text-stone-400">{order.date} · {order.time}</span>
                       <span className="text-[10px] text-stone-400">
