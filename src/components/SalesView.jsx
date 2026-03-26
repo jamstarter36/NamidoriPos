@@ -83,9 +83,16 @@ export const SalesView = () => {
                             return (
                               <div key={i} className="mb-1.5 last:mb-0">
                                 <p className="font-bold text-stone-700">{name}</p>
-                                <p className="text-[10px] text-stone-400">
-                                  {size || "12 oz"}{addons && addons.trim() ? ` · ${addons}` : ""}
-                                </p>
+                                <div className="flex flex-wrap gap-1 mt-0.5">
+                                  <span className="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-semibold">
+                                    {size || "12 oz"}
+                                  </span>
+                                  {addons && addons.trim() && addons.split(", ").map((a, j) => (
+                                    <span key={j} className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold">
+                                      +{a}
+                                    </span>
+                                  ))}
+                                </div>
                               </div>
                             );
                           })}
@@ -116,9 +123,16 @@ export const SalesView = () => {
                       return (
                         <div key={i} className="mb-1.5 last:mb-0">
                           <p className="font-bold text-stone-700">{name}</p>
-                          <p className="text-[10px] text-stone-400">
-                            {size || "12 oz"}{addons && addons.trim() ? ` · ${addons}` : ""}
-                          </p>
+                          <div className="flex flex-wrap gap-1 mt-0.5">
+                            <span className="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-semibold">
+                              {size || "12 oz"}
+                            </span>
+                            {addons && addons.trim() && addons.split(", ").map((a, j) => (
+                              <span key={j} className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold">
+                                +{a}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       );
                     })}
