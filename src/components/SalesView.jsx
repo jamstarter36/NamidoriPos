@@ -4,6 +4,7 @@ import { getOrders } from "../api";
 export const SalesView = () => {
   const [orders, setOrders]   = useState([]);
   const [loading, setLoading] = useState(true);
+  const [voided, setVoided]   = useState([]);
 
   useEffect(() => {
     getOrders()
@@ -12,9 +13,10 @@ export const SalesView = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const totalSales   = orders.reduce((s, o) => s + o.total, 0);
-  const totalOrders  = orders.length;
-  const totalVat     = orders.reduce((s, o) => s + o.vat_amount, 0);
+  const visibleOrders = orders.filter((o) => !voided.includes(o.order_id));
+  const totalSales   = visibleOrders.reduce((s, o) => s + o.total, 0);
+  const totalOrders  = visibleOrders.length;
+  const totalVat     = visibleOrders.reduce((s, o) => s + o.vat_amount, 0);
   const averageOrder = totalOrders > 0 ? Math.round(totalSales / totalOrders) : 0;
 
   if (loading) return (
@@ -72,9 +74,17 @@ export const SalesView = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {[...orders].reverse().map((order, index) => (
+                    {[...visibleOrders].reverse().map((order, index) => (
                       <tr key={index} className="border-b border-stone-50 hover:bg-stone-50 transition-all">
-                        <td className="px-5 py-3 text-xs font-bold text-green-700">#{order.order_id}</td>
+                        <td className="px-5 py-3 text-xs font-bold text-green-700">
+                          <div className="flex items-center gap-2">
+                            <span>#{order.order_id}</span>
+                            <button
+                              onClick={() => setVoided((v) => [...v, order.order_id])}
+                              className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
+                            >✕</button>
+                          </div>
+                        </td>
                         <td className="px-5 py-3 text-xs text-stone-500">{order.date}</td>
                         <td className="px-5 py-3 text-xs text-stone-500">{order.time}</td>
                         <td className="px-5 py-3 text-xs text-stone-600 max-w-[220px]">
@@ -111,10 +121,16 @@ export const SalesView = () => {
 
               {/* Mobile cards */}
               <div className="md:hidden flex flex-col divide-y divide-stone-100">
-                {[...orders].reverse().map((order, index) => (
+                {[...visibleOrders].reverse().map((order, index) => (
                   <div key={index} className="p-4 hover:bg-stone-50 transition-all">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-green-700">#{order.order_id}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-green-700">#{order.order_id}</span>
+                        <button
+                          onClick={() => setVoided((v) => [...v, order.order_id])}
+                          className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
+                        >✕</button>
+                      </div>
                       <span className="text-sm font-bold text-amber-700">₱{order.total}</span>
                     </div>
                     <p className="text-xs font-semibold text-stone-600 mb-1">{order.items}</p>
