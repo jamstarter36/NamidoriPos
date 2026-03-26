@@ -172,31 +172,31 @@ export const ItemCustomizeModal = ({ item, onClose, onAddToCart }) => {
                       </div>
 
                       <div className="flex items-center gap-1">
-                        {selected && (
-                          <>
-                            <button
-                              onClick={() => removeAddon(addon)}
-                              className="w-5 h-5 text-xs font-bold bg-stone-200 rounded"
-                            >
-                              −
-                            </button>
-                            <span className="text-xs font-bold w-4 text-center">
-                              {selected.qty}
-                            </span>
-                          </>
-                        )}
+  <button
+    onClick={() => removeAddon(addon)}
+    className={`w-5 h-5 text-xs font-bold rounded transition-all ${
+      selected ? "bg-stone-200 text-stone-700 hover:bg-stone-300" : "bg-stone-100 text-stone-300 cursor-not-allowed"
+    }`}
+    disabled={!selected}
+  >
+    −
+  </button>
 
-                        <button
-                          onClick={() => addAddon(addon)}
-                          className="w-5 h-5 text-xs font-bold bg-green-700 text-white rounded"
-                        >
-                          +
-                        </button>
+  <span className="text-xs font-bold w-4 text-center">
+    {selected ? selected.qty : 0}
+  </span>
 
-                        <span className="text-xs font-bold text-stone-500 ml-1">
-                          ₱{addon.price}
-                        </span>
-                      </div>
+  <button
+    onClick={() => addAddon(addon)}
+    className="w-5 h-5 text-xs font-bold bg-green-700 text-white rounded hover:bg-green-800 transition-all"
+  >
+    +
+  </button>
+
+  <span className="text-xs font-bold text-stone-500 ml-1">
+    ₱{addon.price}
+  </span>
+</div>
                     </div>
                   );
                 })}
