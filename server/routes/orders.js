@@ -19,8 +19,8 @@ router.post("/", async (req, res) => {
     const nextOrderId = String(rows.length).padStart(4, "0");
 
     const now  = new Date();
-    const date = now.toLocaleDateString("en-PH");
-    const time = now.toLocaleTimeString("en-PH");
+    const date = now.toLocaleDateString("en-PH", { timeZone: "Asia/Manila" });
+    const time = now.toLocaleTimeString("en-PH", { timeZone: "Asia/Manila" });
 
     // items is now a string from the frontend
     const itemsString = typeof items === "string"
