@@ -4,6 +4,7 @@ import { getOrders, deleteOrder } from "../api";
 export const SalesView = () => {
   const [orders, setOrders]   = useState([]);
   const [loading, setLoading] = useState(true);
+  const [voidTarget, setVoidTarget] = useState(null);
   
   const handleVoid = (order_id) => {
     const oldOrders = orders;
@@ -88,7 +89,7 @@ export const SalesView = () => {
                           <div className="flex items-center gap-2">
                             <span>#{order.order_id}</span>
                             <button
-                              onClick={() => handleVoid(order.order_id)}
+                              onClick={() => setVoidTarget(order.order_id)}
                               className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
                             >✕</button>
                           </div>
@@ -135,7 +136,7 @@ export const SalesView = () => {
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-green-700">#{order.order_id}</span>
                         <button
-                          onClick={() => handleVoid(order.order_id)}
+                          onClick={() => setVoidTarget(order.order_id)}
                           className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
                         >✕</button>
                       </div>
@@ -174,7 +175,39 @@ export const SalesView = () => {
             </>
           )}
         </div>
+
       </div>
+      {/* Void confirmation modal */}
+      {voidTarget && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border-2 border-red-200 animate-scale-in">
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center text-2xl">
+                🗑️
+              </div>
+              <h3 className="text-base font-bold text-stone-800">Void Transaction?</h3>
+              <p className="text-xs text-stone-500 leading-relaxed">
+                Are you sure you want to void transaction <span className="font-bold text-red-600">#{voidTarget}</span>? This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setVoidTarget(null)}
+                className="flex-1 py-2.5 rounded-xl border-2 border-stone-200 text-stone-500 text-sm font-semibold hover:bg-stone-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { handleVoid(voidTarget); setVoidTarget(null); }}
+                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-bold transition-all shadow-md active:scale-95"
+              >
+                Yes, Void It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
