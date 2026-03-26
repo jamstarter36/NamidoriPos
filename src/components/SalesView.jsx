@@ -84,7 +84,7 @@ export const SalesView = () => {
                               <div key={i} className="mb-1.5 last:mb-0">
                                 <p className="font-bold text-stone-700">{name}</p>
                                 <p className="text-[10px] text-stone-400">
-                                  {size}{addons ? ` · ${addons}` : ""}
+                                  {size || "12 oz"}{addons && addons.trim() ? ` · ${addons}` : ""}
                                 </p>
                               </div>
                             );
@@ -115,15 +115,15 @@ export const SalesView = () => {
                       const [name, size, addons] = entry.split("|");
                       return (
                         <div key={i} className="mb-1.5 last:mb-0">
-                          <p className="text-xs font-bold text-stone-700">{name}</p>
+                          <p className="font-bold text-stone-700">{name}</p>
                           <p className="text-[10px] text-stone-400">
-                            {size}{addons ? ` · ${addons}` : ""}
+                            {size || "12 oz"}{addons && addons.trim() ? ` · ${addons}` : ""}
                           </p>
                         </div>
                       );
                     })}
                     {order.discount > 0 && (
-                      <p className="text-[10px] text-green-600 font-semibold mb-1">🎉 -₱{order.discount} loyalty</p>
+                      <p className="text-[10px] text-green-600 font-semibold mt-1">🎉 -₱{order.discount} loyalty</p>
                     )}
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] text-stone-400">{order.date} · {order.time}</span>
