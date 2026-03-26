@@ -78,7 +78,7 @@ export const SalesView = () => {
                         <td className="px-5 py-3 text-xs text-stone-500">{order.date}</td>
                         <td className="px-5 py-3 text-xs text-stone-500">{order.time}</td>
                         <td className="px-5 py-3 text-xs text-stone-600 max-w-[220px]">
-                          {order.items.split("||").map((entry, i) => {
+                          {order.items.split("||").filter(Boolean).map((entry, i) => {
                             const [name, size, addons] = entry.split("|");
                             return (
                               <div key={i} className="mb-1.5 last:mb-0">
@@ -111,7 +111,7 @@ export const SalesView = () => {
                       <span className="text-sm font-bold text-amber-700">₱{order.total}</span>
                     </div>
                     <p className="text-xs font-semibold text-stone-600 mb-1">{order.items}</p>
-                    {order.items.split("||").map((entry, i) => {
+                    {order.items.split("||").filter(Boolean).map((entry, i) => {
                       const [name, size, addons] = entry.split("|");
                       return (
                         <div key={i} className="mb-1.5 last:mb-0">
