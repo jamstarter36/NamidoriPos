@@ -25,13 +25,17 @@ const StarPicker = ({ value, onChange }) => {
 };
 
 const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 0 }) => (
-  <div className={`rounded-2xl p-5 md:p-6 text-white shadow-lg ${
-    card?.used
+  <div
+  className={`rounded-2xl p-5 md:p-6 text-white shadow-lg ${
+    isActive
+      ? "bg-gradient-to-br from-green-700 to-green-900"
+      : card?.used
       ? "bg-gray-400"
       : card?.completed
       ? "bg-[#5c3317]"
       : "bg-[#5c3317]"
-  }`}>
+  }`}
+>
     <div className="flex items-center justify-between mb-2">
       <div>
         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
