@@ -172,20 +172,44 @@ const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
           style={{
             position: "relative",
             zIndex: peekCount + 1,
-            transition:      flipping
-              ? "transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease"
-              : "transform 0.26s cubic-bezier(0.34,1.56,0.64,1), opacity 0.26s ease",
-            transform:       flipping ? "rotateY(-90deg) scale(0.96)" : "rotateY(0deg) scale(1)",
-            opacity:         flipping ? 0.3 : 1,
-            transformOrigin: "left center",
-          }}
-        >
-          {deck[0].__type === "active" ? (
-            <LoyaltyCardUI isActive activeStamps={activeStamps} stampsLeft={stampsLeft} />
-          ) : (
-            <LoyaltyCardUI card={deck[0]} />
-          )}
+            perspective: "1000px",
+          }}>
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              transformStyle: "preserve-3d",
+              transition: "transform 0.5s ease",
+              transform: flipping ? "rotateY(180deg)" : "rotateY(0deg)",
+            }}>
+            {/* FRONT */}
+            <div
+              style={{
+                backfaceVisibility: "hidden",
+              }}>
+              {deck[0].__type === "active" ? (
+                <LoyaltyCardUI isActive activeStamps={activeStamps} stampsLeft={stampsLeft} />
+              ) : (
+                <LoyaltyCardUI card={deck[0]} />
+              )}
+            </div>
+
+            {/* BACK */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                transform: "rotateY(180deg)",
+                backfaceVisibility: "hidden",
+              }}>
+              <div className="rounded-2xl p-5 md:p-6 bg-[#5c3317] h-full w-full" />
+            </div>
+          </div>
         </div>
+
+
 
         {/* Tap hint */}
         {deck.length > 1 && (
