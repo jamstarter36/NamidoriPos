@@ -319,16 +319,17 @@ export const MemberPage = ({ member, onLogout }) => {
         {/* ── Loyalty Cards ── */}
         <div className="mb-6">
           <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
-
-          <CyclingDeck
-            cards={cards}
-            activeCard={activeCard}
-            activeStamps={activeStamps}
-            stampsLeft={stampsLeft}
-          />
+          <div className="bg-gray-500">
+            <CyclingDeck
+              cards={cards}
+              activeCard={activeCard}
+              activeStamps={activeStamps}
+              stampsLeft={stampsLeft}
+            />
+          </div>
 
           {stackCount > 0 && (
-            <div className="mt-3 flex gap-2 flex-wrap bg-gray-600">
+            <div className="mt-3 flex gap-2 flex-wrap">
               {completedUnusedCards.length > 0 && (
                 <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-full">
                   🏆 {completedUnusedCards.length} reward{completedUnusedCards.length !== 1 ? "s" : ""} available
