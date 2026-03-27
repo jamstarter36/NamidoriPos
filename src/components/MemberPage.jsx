@@ -175,7 +175,7 @@ const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
             position: "absolute",
             top: 0, left: 0, right: 0, bottom: 0,
             borderRadius: "1rem", // match LoyaltyCardUI rounded-2xl
-            backgroundColor: "#5c3317", // your card background color
+            backgroundColor: "#646464", // your card background color
             pointerEvents: "none",
             zIndex: 0,
           }}
