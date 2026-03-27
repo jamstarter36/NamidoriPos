@@ -320,13 +320,13 @@ export const MemberPage = ({ member, onLogout }) => {
         <div className="mb-6">
           <p className="text-xs font-bold text-[#5c3317] uppercase tracking-widest mb-3 font-display">🎴 Loyalty Cards</p>
           <div className="bg-gray-500">
-            <CyclingDeck
-              cards={cards}
-              activeCard={activeCard}
-              activeStamps={activeStamps}
-              stampsLeft={stampsLeft}
-            />
-          </div>
+          <CyclingDeck
+            cards={cards}
+            activeCard={activeCard}
+            activeStamps={activeStamps}
+            stampsLeft={stampsLeft}
+          />
+          
 
           {stackCount > 0 && (
             <div className="mt-3 flex gap-2 flex-wrap">
