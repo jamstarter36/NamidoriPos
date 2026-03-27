@@ -26,7 +26,7 @@ const StarPicker = ({ value, onChange }) => {
 
 const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 0 }) => (
   <div
-    className={`rounded-2xl p-5 md:p-6 text-white shadow-lg bg-gray-500 ${
+    className={`rounded-2xl p-5 md:p-6 text-white shadow-lg ${
       isActive
         ? "bg-gray-500"
         : card?.used
