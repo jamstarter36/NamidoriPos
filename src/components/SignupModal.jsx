@@ -51,7 +51,7 @@ export const SignupModal = ({ onClose, onSuccess, onSwitchToLogin }) => {
         <div className="flex gap-3 mt-5">
           <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border-2 border-stone-200 text-stone-400 text-sm font-semibold hover:bg-stone-50 transition-all">Cancel</button>
           <button onClick={handleSignup} disabled={loading} className="flex-[2] py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold transition-all shadow-md active:scale-95 disabled:opacity-60">
-            {loading ? "Creating account..." : "Sign Up Free 🍃"}
+            {loading ? "Creating account..." : "Sign Up For Free 🍃"}
           </button>
         </div>
 
