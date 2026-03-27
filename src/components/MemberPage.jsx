@@ -25,17 +25,13 @@ const StarPicker = ({ value, onChange }) => {
 };
 
 const LoyaltyCardUI = ({ card, isActive = false, activeStamps = 0, stampsLeft = 0 }) => (
-  <div
-    className={`rounded-2xl p-5 md:p-6 text-white shadow-lg ${
-      isActive
-        ? "bg-gray-500"
-        : card?.used
-        ? "bg-gray-400"
-        : card?.completed
-        ? "bg-[#5c3317]"
-        : "bg-[#5c3317]"
-    }`}
-  >
+  <div className={`rounded-2xl p-5 md:p-6 text-white shadow-lg ${
+    card?.used
+      ? "bg-gray-400"
+      : card?.completed
+      ? "bg-[#5c3317]"
+      : "bg-[#5c3317]"
+  }`}>
     <div className="flex items-center justify-between mb-2">
       <div>
         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 font-display">Namidori</p>
@@ -180,29 +176,26 @@ const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
             zIndex: 0,
           }}
         />
+
         
-        {/* YOUR ORIGINAL FLIPPING CARD */}
         <div
           style={{
             position: "relative",
-            zIndex: 1,
-            transition: flipping
+            zIndex: peekCount + 1,
+            transition:      flipping
               ? "transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease"
               : "transform 0.26s cubic-bezier(0.34,1.56,0.64,1), opacity 0.26s ease",
-            transform: flipping ? "rotateY(-90deg) scale(0.96)" : "rotateY(0deg) scale(1)",
-            opacity: flipping ? 0.3 : 1,
+            transform:       flipping ? "rotateY(-90deg) scale(0.96)" : "rotateY(0deg) scale(1)",
+            opacity:         flipping ? 0.3 : 1,
             transformOrigin: "left center",
-          }}
-        >
+          }}>
           {deck[0].__type === "active" ? (
             <LoyaltyCardUI isActive activeStamps={activeStamps} stampsLeft={stampsLeft} />
           ) : (
             <LoyaltyCardUI card={deck[0]} />
           )}
         </div>
-      </div>
-
-
+        </div>
 
         {/* Tap hint */}
         {deck.length > 1 && (
