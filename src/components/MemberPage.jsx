@@ -174,10 +174,7 @@ const CyclingDeck = ({ cards, activeCard, activeStamps, stampsLeft }) => {
             backgroundColor: "#646464", // your card background color
             pointerEvents: "none",
             zIndex: 0,
-          }}
-        />
-
-        
+          }}/>
         <div
           style={{
             position: "relative",
