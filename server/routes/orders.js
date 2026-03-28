@@ -16,7 +16,12 @@ router.post("/", async (req, res) => {
       range: `${ORDER_SHEET}!A1:K1000`,
     });
     const rows = response.data.values || [];
-    const nextOrderId = String(rows.length).padStart(4, "0");
+    const dataRows = rows.slice(1); // skip header row
+    const maxId = dataRows.reduce((max, row) => {
+      const id = parseInt(row[0]) || 0;
+      return id > max ? id : max;
+    }, 0);
+    const nextOrderId = String(maxId + 1).padStart(4, "0");
 
     const now  = new Date();
     const date = now.toLocaleDateString("en-PH", { timeZone: "Asia/Manila" });
