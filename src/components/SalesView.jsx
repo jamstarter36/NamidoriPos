@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getOrders, deleteOrder } from "../api";
 
-export const SalesView = () => {
+export const SalesView = ({ isCashier }) => {
   const [orders, setOrders]   = useState([]);
   const [loading, setLoading] = useState(true);
   const [voidTarget, setVoidTarget] = useState(null);
@@ -88,10 +88,12 @@ export const SalesView = () => {
                         <td className="px-5 py-3 text-xs font-bold text-green-700">
                           <div className="flex items-center gap-2">
                             <span>#{order.order_id}</span>
-                            <button
-                              onClick={() => setVoidTarget(order.order_id)}
-                              className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
-                            >✕</button>
+                            {!isCashier && (
+                              <button
+                                onClick={() => setVoidTarget(order.order_id)}
+                                className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
+                              >✕</button>
+                            )}
                           </div>
                         </td>
                         <td className="px-5 py-3 text-xs text-stone-500">{order.date}</td>
@@ -135,10 +137,12 @@ export const SalesView = () => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-green-700">#{order.order_id}</span>
-                        <button
-                          onClick={() => setVoidTarget(order.order_id)}
-                          className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
-                        >✕</button>
+                        {!isCashier && (
+                          <button
+                            onClick={() => setVoidTarget(order.order_id)}
+                            className="w-4 h-4 rounded-full bg-red-100 text-red-400 text-[10px] font-bold hover:bg-red-200 hover:text-red-600 transition-all flex items-center justify-center"
+                          >✕</button>
+                        )}
                       </div>
                       <span className="text-sm font-bold text-amber-700">₱{order.total}</span>
                     </div>

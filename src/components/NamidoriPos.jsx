@@ -114,7 +114,7 @@ export const NamidoriPos = ({ onLogout, user }) => {
         />
       )}
 
-      {view === "sales" && !isCashier && <SalesView />}
+      {view === "sales" && <SalesView isCashier={isCashier} />}
 
       {view === "stock" && !isCashier && (
         <StockView items={items} setItems={setItems} />

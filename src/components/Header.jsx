@@ -25,11 +25,11 @@ export const Header = ({ view, setView, onLogout, isCashier }) => {
   const status = statusConfig[serverStatus];
 
   const tabs = [
-    { key: "pos",   label: "⚡ Order" },
-    ...(!isCashier ? [
-    { key: "sales", label: "📊 Sales" },
+  { key: "pos",   label: "⚡ Order" },
+  { key: "sales", label: "📊 Sales" },
+  ...(!isCashier ? [
     { key: "stock", label: "📦 Stock" },
-    ] : []),
+  ] : []),
   ];
 
   return (
