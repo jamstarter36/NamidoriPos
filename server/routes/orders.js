@@ -86,6 +86,8 @@ router.get("/", async (req, res) => {
   }
 });
 
+const VOID_SHEET = "VoidHistory";
+
 router.delete("/:order_id", async (req, res) => {
   try {
     const { order_id } = req.params;
@@ -105,7 +107,23 @@ router.delete("/:order_id", async (req, res) => {
     const rowIndex = rows.findIndex((row, i) => i > 0 && row[0] === order_id);
     if (rowIndex === -1) return res.status(404).json({ error: "Order not found" });
 
-    // Delete the row
+    const orderRow = rows[rowIndex];
+
+    // Copy to VoidHistory with void timestamp
+    const now      = new Date();
+    const voidDate = now.toLocaleDateString("en-PH", { timeZone: "Asia/Manila" });
+    const voidTime = now.toLocaleTimeString("en-PH", { timeZone: "Asia/Manila" });
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${VOID_SHEET}!A1`,
+      valueInputOption: "RAW",
+      requestBody: {
+        values: [[...orderRow, voidDate, voidTime]],
+      },
+    });
+
+    // Delete from Orders
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId: SPREADSHEET_ID,
       requestBody: {
@@ -122,10 +140,10 @@ router.delete("/:order_id", async (req, res) => {
       },
     });
 
-    res.json({ message: `Order ${order_id} deleted` });
+    res.json({ message: `Order ${order_id} voided` });
   } catch (error) {
     console.error("DELETE /orders/:order_id error:", error);
-    res.status(500).json({ error: "Failed to delete order" });
+    res.status(500).json({ error: "Failed to void order" });
   }
 });
 
