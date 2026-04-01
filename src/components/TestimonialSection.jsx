@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { getAllTestimonials } from "../api";
 
 const SWIPER_THRESHOLD = 5;
-const SHUFFLE_INTERVAL = 5000;
+const SHUFFLE_INTERVAL = 10000;
 
 const STEAM_PARTICLES = [
   { left: "8%",  delay: "0s",   dur: "5.5s", sway: "12px"  },
