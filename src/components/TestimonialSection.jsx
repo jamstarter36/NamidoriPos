@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { getAllTestimonials } from "../api";
 
 const SWIPER_THRESHOLD = 5;
+const SHUFFLE_INTERVAL = 5000; // ms
 
 const STEAM_PARTICLES = [
   { left: "8%",  delay: "0s",   dur: "5.5s", sway: "12px"  },
@@ -15,6 +16,15 @@ const STEAM_PARTICLES = [
   { left: "22%", delay: "5s",   dur: "6.8s", sway: "6px"   },
   { left: "60%", delay: "0.3s", dur: "7.5s", sway: "-9px"  },
 ];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 function StarRating({ count, size = "text-sm" }) {
   return (
@@ -67,16 +77,6 @@ function TestimonialCard({ full_name, testimony, stars, animDelay = "0s" }) {
   );
 }
 
-function GridLayout({ testimonials }) {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {testimonials.map((t, i) => (
-        <TestimonialCard key={t.id || i} {...t} animDelay={`${i * 0.08}s`} />
-      ))}
-    </div>
-  );
-}
-
 function getPageNumbers(current, total) {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
@@ -84,41 +84,93 @@ function getPageNumbers(current, total) {
   return [1, "...", current - 1, current, current + 1, "...", total];
 }
 
-function SwiperLayout({ testimonials }) {
-  const [current, setCurrent] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(1);
-  const wrapRef = useRef(null);
-  const touchStartX = useRef(null);
+// ── Grid layout (≤ SWIPER_THRESHOLD) with auto-shuffle + freeze on hover/touch ──
+function GridLayout({ testimonials, frozen, onFreeze, onUnfreeze }) {
+  const [displayed, setDisplayed] = useState(() => shuffle(testimonials));
+
+  // Re-shuffle when parent triggers (frozen === false means timer just fired)
+  const doShuffle = useCallback(() => {
+    setDisplayed(shuffle(testimonials));
+  }, [testimonials]);
+
+  // Expose shuffle trigger to parent via a ref approach
+  useEffect(() => {
+    if (!frozen) doShuffle();
+  }, [frozen]); // eslint-disable-line
+
+  return (
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+      onMouseEnter={onFreeze}
+      onMouseLeave={onUnfreeze}
+      onTouchStart={onFreeze}
+      onTouchEnd={onUnfreeze}
+    >
+      {displayed.map((t, i) => (
+        <TestimonialCard key={`${t.id}-${i}`} {...t} animDelay={`${i * 0.08}s`} />
+      ))}
+    </div>
+  );
+}
+
+// ── Swiper layout (> SWIPER_THRESHOLD) with auto-advance + freeze on hover/touch ──
+function SwiperLayout({ testimonials, frozen, onFreeze, onUnfreeze }) {
+  const [shuffled, setShuffled]     = useState(() => shuffle(testimonials));
+  const [current, setCurrent]       = useState(0);
+  const [visibleCount, setVisible]  = useState(1);
+  const wrapRef                     = useRef(null);
+  const touchStartX                 = useRef(null);
 
   useEffect(() => {
     const update = () => {
       const w = wrapRef.current?.offsetWidth || window.innerWidth;
-      if (w >= 1024) setVisibleCount(3);
-      else if (w >= 640) setVisibleCount(2);
-      else setVisibleCount(1);
+      if (w >= 1024) setVisible(3);
+      else if (w >= 640) setVisible(2);
+      else setVisible(1);
     };
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  const maxIndex = Math.max(0, testimonials.length - visibleCount);
+  const maxIndex = Math.max(0, shuffled.length - visibleCount);
   const safeCurrent = Math.min(current, maxIndex);
+
+  // When parent says not frozen, advance one step; if at end, re-shuffle and reset
+  useEffect(() => {
+    if (!frozen) {
+      setCurrent((prev) => {
+        const next = prev + 1;
+        if (next > maxIndex) {
+          setShuffled(shuffle(testimonials));
+          return 0;
+        }
+        return next;
+      });
+    }
+  }, [frozen]); // eslint-disable-line
+
   const go = (dir) => setCurrent((prev) => Math.max(0, Math.min(prev + dir, maxIndex)));
 
   const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
-  const handleTouchEnd = (e) => {
+  const handleTouchEnd   = (e) => {
     if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
     if (Math.abs(diff) > 40) go(diff > 0 ? 1 : -1);
     touchStartX.current = null;
   };
 
-  const gap = 16;
+  const gap       = 16;
   const cardWidth = `calc((100% - ${(visibleCount - 1) * gap}px) / ${visibleCount})`;
 
   return (
-    <div ref={wrapRef}>
+    <div
+      ref={wrapRef}
+      onMouseEnter={onFreeze}
+      onMouseLeave={onUnfreeze}
+      onTouchStart={(e) => { onFreeze(); handleTouchStart(e); }}
+      onTouchEnd={(e)   => { onUnfreeze(); handleTouchEnd(e); }}
+    >
       <div className="overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-[cubic-bezier(.4,0,.2,1)]"
@@ -126,31 +178,26 @@ function SwiperLayout({ testimonials }) {
             gap: `${gap}px`,
             transform: `translateX(calc(-${safeCurrent} * (100% / ${visibleCount} + ${gap / visibleCount}px)))`,
           }}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
         >
-          {testimonials.map((t, i) => (
-            <div key={t.id || i} className="flex-shrink-0" style={{ width: cardWidth }}>
+          {shuffled.map((t, i) => (
+            <div key={`${t.id}-${i}`} className="flex-shrink-0" style={{ width: cardWidth }}>
               <TestimonialCard {...t} animDelay={`${i * 0.06}s`} />
             </div>
           ))}
         </div>
       </div>
 
+      {/* Pagination */}
       <div className="flex items-center justify-center gap-1.5 mt-6 flex-wrap">
         <button
           onClick={() => go(-1)}
           disabled={safeCurrent === 0}
           className="min-w-[36px] h-9 px-1.5 rounded-lg border border-[#d4dbb8] bg-white text-[#4a5a3a] text-sm flex items-center justify-center hover:bg-[#eef1e4] hover:border-[#b0ba90] transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
-        >
-          &lt;
-        </button>
+        >&lt;</button>
 
         {getPageNumbers(safeCurrent + 1, maxIndex + 1).map((p, i) =>
           p === "..." ? (
-            <span key={`ellipsis-${i}`} className="min-w-[36px] h-9 flex items-center justify-center text-sm text-[#7a8a6a]">
-              …
-            </span>
+            <span key={`ellipsis-${i}`} className="min-w-[36px] h-9 flex items-center justify-center text-sm text-[#7a8a6a]">…</span>
           ) : (
             <button
               key={p}
@@ -160,9 +207,7 @@ function SwiperLayout({ testimonials }) {
                   ? "bg-[#c8d5f5] border-[#93aee8] text-blue-800"
                   : "bg-white border-[#d4dbb8] text-[#4a5a3a] hover:bg-[#eef1e4] hover:border-[#b0ba90]"
                 }`}
-            >
-              {p}
-            </button>
+            >{p}</button>
           )
         )}
 
@@ -170,9 +215,7 @@ function SwiperLayout({ testimonials }) {
           onClick={() => go(1)}
           disabled={safeCurrent === maxIndex}
           className="min-w-[36px] h-9 px-1.5 rounded-lg border border-[#d4dbb8] bg-white text-[#4a5a3a] text-sm flex items-center justify-center hover:bg-[#eef1e4] hover:border-[#b0ba90] transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
-        >
-          &gt;
-        </button>
+        >&gt;</button>
       </div>
     </div>
   );
@@ -194,10 +237,28 @@ function OverallRating({ testimonials }) {
   );
 }
 
+// ── Main export ───────────────────────────────────────────────────────────────
 export function TestimonialSection() {
   const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
+
+  // Frozen = user is hovering/touching; tick = increments every 5s to trigger children
+  const [frozen, setFrozen] = useState(false);
+  const [tick,   setTick]   = useState(0);
+  const intervalRef         = useRef(null);
+
+  // Start/stop the 5s interval based on frozen state
+  useEffect(() => {
+    if (frozen) {
+      clearInterval(intervalRef.current);
+    } else {
+      intervalRef.current = setInterval(() => {
+        setTick((t) => t + 1);
+      }, SHUFFLE_INTERVAL);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [frozen]);
 
   useEffect(() => {
     getAllTestimonials()
@@ -208,21 +269,23 @@ export function TestimonialSection() {
 
   const useSwiper = testimonials.length > SWIPER_THRESHOLD;
 
+  // Pass `tick` as frozen-like signal: children react when tick changes
+  // We pass frozen directly; children use it to know when NOT to act
+  // But children need to know WHEN to shuffle — we pass tick as a dep trigger
+  // Solution: pass a "shuffleTick" that only increments when not frozen
+  const [shuffleTick, setShuffleTick] = useState(0);
+  useEffect(() => {
+    if (!frozen) setShuffleTick((t) => t + 1);
+  }, [tick]); // eslint-disable-line
+
   return (
     <section className="relative w-full bg-[#d4dbb8] py-20 px-6 sm:px-10 md:px-16 lg:px-24 overflow-hidden">
 
-      {/* Steam particles */}
       {STEAM_PARTICLES.map((p, i) => (
         <span
           key={i}
           className="steam-particle"
-          style={{
-            left: p.left,
-            bottom: "10%",
-            animationDelay: p.delay,
-            animationDuration: p.dur,
-            "--sway": p.sway,
-          }}
+          style={{ left: p.left, bottom: "10%", animationDelay: p.delay, animationDuration: p.dur, "--sway": p.sway }}
         />
       ))}
 
@@ -238,6 +301,10 @@ export function TestimonialSection() {
           <p className="mt-3 text-sm text-[#4a5a3a] max-w-sm mx-auto leading-loose font-body">
             Every sip leaves a story. Here's what our readers have to say.
           </p>
+          {/* Freeze indicator */}
+          <div className={`mt-2 text-[10px] tracking-widest font-display uppercase transition-opacity duration-300 ${frozen ? "opacity-100 text-[#5c3317]" : "opacity-0"}`}>
+            ❄️ Paused
+          </div>
         </div>
 
         {loading && (
@@ -262,7 +329,22 @@ export function TestimonialSection() {
         {!loading && !error && testimonials.length > 0 && (
           <>
             <OverallRating testimonials={testimonials} />
-            {useSwiper ? <SwiperLayout testimonials={testimonials} /> : <GridLayout testimonials={testimonials} />}
+            {useSwiper
+              ? <SwiperLayout
+                  testimonials={testimonials}
+                  frozen={frozen}
+                  onFreeze={() => setFrozen(true)}
+                  onUnfreeze={() => setFrozen(false)}
+                  shuffleTick={shuffleTick}
+                />
+              : <GridLayout
+                  testimonials={testimonials}
+                  frozen={frozen}
+                  onFreeze={() => setFrozen(true)}
+                  onUnfreeze={() => setFrozen(false)}
+                  shuffleTick={shuffleTick}
+                />
+            }
           </>
         )}
 
