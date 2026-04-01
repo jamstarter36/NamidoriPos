@@ -277,7 +277,7 @@ export function TestimonialSection() {
         {loading && (
           <div className="flex justify-center items-center py-16 gap-2 text-[#8a9070]">
             <span className="animate-spin inline-block text-xl">🍃</span>
-            <span className="text-sm tracking-wide font-body">Brewing testimonials…</span>
+            <span className="text-sm tracking-wide font-body">Whisking testimonials…</span>
           </div>
         )}
 
